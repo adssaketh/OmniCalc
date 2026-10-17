@@ -1,0 +1,26 @@
+{
+	"appId": "com.saketh.omnicalc",
+	"appName": "OmniCalc",
+	"webDir": "dist",
+	"backgroundColor": "#111318",
+	"plugins": {
+		"StatusBar": {
+			"style": "DARK",
+			"backgroundColor": "#111318",
+			"overlaysWebView": false
+		},
+		"SplashScreen": {
+			"launchShowDuration": 1500,
+			"launchAutoHide": true,
+			"backgroundColor": "#111318",
+			"androidSplashResourceName": "splash",
+			"androidScaleType": "CENTER_INSIDE",
+			"showSpinner": false
+		}
+	},
+	"android": {
+		"backgroundColor": "#111318",
+		"allowMixedContent": false,
+		"captureInput": true
+	}
+}

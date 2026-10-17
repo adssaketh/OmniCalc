@@ -1,0 +1,1661 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { AngleMode, HistoryItem } from '../types';
+import { MathEvaluator } from '../engine/evaluator';
+import { soundFx } from '../utils/audio';
+import { Copy, Check, Delete, CornerDownLeft, ChevronUp, RotateCcw } from 'lucide-react';
+import { OmniCalcLogo } from './OmniCalcLogo';
+import { useOrientation } from '../hooks/useOrientation';
+import { SwipeableTabContainer } from './SwipeableTabContainer';
+
+interface CalculatorScreenProps {
+  angleMode: AngleMode;
+  onToggleAngleMode: () => void;
+  decimalPrecision: number;
+  soundEnabled: boolean;
+  hapticEnabled: boolean;
+  onAddHistory: (item: Omit<HistoryItem, 'id' | 'timestamp'>) => void;
+  externalExpression?: string;
+  history?: HistoryItem[];
+  onOpenHistory?: () => void;
+  onSelectHistoryItem?: (expr: string) => void;
+}
+
+type AdvancedTab = 'calculus' | 'trig' | 'powers' | 'prob' | 'constants';
+
+interface TabDef {
+  id: AdvancedTab;
+  label: string;
+  badge: string;
+}
+
+const ADVANCED_TABS: TabDef[] = [
+  { id: 'calculus', label: 'Calculus', badge: '∫' },
+  { id: 'trig', label: 'Trig & Hyp', badge: 'sin' },
+  { id: 'powers', label: 'Powers', badge: 'xʸ' },
+  { id: 'prob', label: 'Probability', badge: 'nCr' },
+  { id: 'constants', label: 'Constants', badge: 'π' },
+];
+
+export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
+  angleMode,
+  onToggleAngleMode,
+  decimalPrecision,
+  soundEnabled,
+  hapticEnabled,
+  onAddHistory,
+  externalExpression,
+  history,
+  onOpenHistory,
+  onSelectHistoryItem,
+}) => {
+  const { isLandscape } = useOrientation();
+  const [expression, setExpression] = useState<string>('0');
+  const [lastQuestion, setLastQuestion] = useState<string>('');
+  const [lastAnswer, setLastAnswer] = useState<string>('');
+  const [memory, setMemory] = useState<number>(0);
+  const [isScientific, setIsScientific] = useState<boolean>(false);
+  const [advancedTab, setAdvancedTab] = useState<AdvancedTab>('calculus');
+  const [copied, setCopied] = useState<boolean>(false);
+  const [hasEvaluated, setHasEvaluated] = useState<boolean>(false);
+  const [isEqualsPressed, setIsEqualsPressed] = useState<boolean>(false);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+
+  // Play sound helper
+  const playSound = (type: 'num' | 'op' | 'eval' | 'clear' | 'toggle' = 'num') => {
+    if (soundEnabled) soundFx.playClick(type);
+    if (hapticEnabled) soundFx.triggerHaptic();
+  };
+
+  // Sync external expression if loaded from history
+  useEffect(() => {
+    if (externalExpression !== undefined && externalExpression !== '') {
+      setExpression(externalExpression);
+      setLastQuestion('');
+      setLastAnswer('');
+      setHasEvaluated(false);
+    }
+  }, [externalExpression]);
+
+  // Count unmatched open parentheses
+  const getOpenParensCount = (expr: string): number => {
+    let count = 0;
+    for (const char of expr) {
+      if (char === '(') count++;
+      else if (char === ')') count--;
+    }
+    return Math.max(0, count);
+  };
+
+  const openParensCount = getOpenParensCount(expression);
+
+  // Insert token into expression
+  const handleInput = useCallback((token: string) => {
+    playSound('num');
+    setExpression((prev) => {
+      if (hasEvaluated) {
+        setHasEvaluated(false);
+        setLastQuestion('');
+        setLastAnswer('');
+        if (['+', '−', '×', '÷', '^', '%'].includes(token) || token.startsWith('^')) {
+          return prev + token;
+        }
+        return token;
+      }
+
+      if (prev === '0' && !['.', '+', '−', '×', '÷', '^', '%', '!', ')'].includes(token) && !token.startsWith('^')) {
+        return token;
+      }
+
+      if (token === '.') {
+        const segments = prev.split(/[\+\−\×\÷\^\(\)\%,]/);
+        const lastSegment = segments[segments.length - 1];
+        if (lastSegment.includes('.')) return prev;
+      }
+
+      return prev + token;
+    });
+  }, [hasEvaluated, soundEnabled, hapticEnabled]);
+
+  // Insert functions e.g. "sin("
+  const handleFunction = useCallback((fnName: string) => {
+    playSound('op');
+    setExpression((prev) => {
+      if (hasEvaluated) {
+        setHasEvaluated(false);
+        setLastQuestion('');
+        setLastAnswer('');
+        return `${fnName}(${prev})`;
+      }
+
+      if (prev === '0') {
+        return `${fnName}(`;
+      }
+
+      const lastChar = prev.slice(-1);
+      if (['+', '−', '×', '÷', '(', '^', ',', ' '].includes(lastChar)) {
+        return `${prev}${fnName}(`;
+      }
+
+      return `${prev}×${fnName}(`;
+    });
+  }, [hasEvaluated, soundEnabled, hapticEnabled]);
+
+  // Insert template e.g. "diff(", "integrate(", "sum("
+  const handleInsertTemplate = useCallback((template: string) => {
+    playSound('op');
+    setExpression((prev) => {
+      if (hasEvaluated || prev === '0') {
+        setHasEvaluated(false);
+        setLastQuestion('');
+        setLastAnswer('');
+        return template;
+      }
+
+      const lastChar = prev.slice(-1);
+      if (['+', '−', '×', '÷', '(', '^', ',', ' '].includes(lastChar)) {
+        return `${prev}${template}`;
+      }
+
+      return `${prev}×${template}`;
+    });
+  }, [hasEvaluated, soundEnabled, hapticEnabled]);
+
+  // Handle Parentheses
+  const handleParentheses = useCallback(() => {
+    playSound('op');
+    setExpression((prev) => {
+      if (hasEvaluated) {
+        setHasEvaluated(false);
+        return '(';
+      }
+
+      const openCount = (prev.match(/\(/g) || []).length;
+      const closeCount = (prev.match(/\)/g) || []).length;
+      const lastChar = prev.slice(-1);
+
+      if (openCount > closeCount && !['+', '−', '×', '÷', '(', '^', ',', ' '].includes(lastChar)) {
+        return prev + ')';
+      }
+
+      if (['+', '−', '×', '÷', '(', '^', '%', ',', ' '].includes(lastChar) || prev === '0') {
+        return prev === '0' ? '(' : prev + '(';
+      }
+
+      return prev + '×(';
+    });
+  }, [hasEvaluated, soundEnabled, hapticEnabled]);
+
+  // Clear All
+  const handleClear = useCallback(() => {
+    playSound('clear');
+    setExpression('0');
+    setLastQuestion('');
+    setLastAnswer('');
+    setHasEvaluated(false);
+  }, [soundEnabled, hapticEnabled]);
+
+  // Backspace
+  const handleBackspace = useCallback(() => {
+    playSound('op');
+    setExpression((prev) => {
+      if (hasEvaluated) {
+        setHasEvaluated(false);
+        return '0';
+      }
+      if (prev.length <= 1) return '0';
+
+      const multiCharTokens = [
+        'integrate(', 'randInt(', 'diff(', 'sum(', 'prod(', 'nCr(', 'nPr(',
+        'gcd(', 'lcm(', 'mod(', 'root(', 'logb(', 'rand()',
+        'asinh(', 'acosh(', 'atanh(', 'sech(', 'csch(', 'coth(',
+        'sinh(', 'cosh(', 'tanh(', 'asin(', 'acos(', 'atan(',
+        'sec(', 'csc(', 'cot(',
+        'sin(', 'cos(', 'tan(', 'log2(', 'log(', 'ln(', 'exp(',
+        'sqrt(', 'cbrt(', 'round(', 'floor(', 'ceil(', 'sign(', 'abs('
+      ];
+
+      for (const token of multiCharTokens) {
+        if (prev.endsWith(token)) {
+          const cut = prev.slice(0, -token.length);
+          return cut.length === 0 ? '0' : cut;
+        }
+      }
+
+      return prev.slice(0, -1);
+    });
+  }, [hasEvaluated, soundEnabled, hapticEnabled]);
+
+  // Evaluate Expression
+  const handleEvaluate = useCallback(() => {
+    playSound('eval');
+    try {
+      let exprToEval = expression;
+      const openCount = (exprToEval.match(/\(/g) || []).length;
+      const closeCount = (exprToEval.match(/\)/g) || []).length;
+      if (openCount > closeCount) {
+        exprToEval = exprToEval + ')'.repeat(openCount - closeCount);
+      }
+
+      const result = MathEvaluator.evaluate(exprToEval, angleMode);
+      const formatted = MathEvaluator.formatResult(result, decimalPrecision);
+
+      setLastQuestion(expression);
+      setLastAnswer(formatted);
+
+      onAddHistory({
+        expression,
+        result: formatted,
+        mode: isScientific ? 'scientific' : 'standard',
+      });
+
+      setExpression(formatted);
+      setHasEvaluated(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error';
+      setLastQuestion(expression);
+      setLastAnswer(msg);
+      setExpression(msg);
+      setHasEvaluated(true);
+    }
+  }, [expression, angleMode, decimalPrecision, isScientific, onAddHistory, soundEnabled, hapticEnabled]);
+
+  // Memory operations
+  const handleMemory = useCallback((action: 'MC' | 'MR' | 'M+' | 'M-' | 'MS') => {
+    playSound('op');
+    try {
+      const currentVal = MathEvaluator.evaluate(expression, angleMode);
+      switch (action) {
+        case 'MC':
+          setMemory(0);
+          break;
+        case 'MR':
+          setExpression(MathEvaluator.formatResult(memory, decimalPrecision));
+          setHasEvaluated(true);
+          break;
+        case 'MS':
+          setMemory(currentVal);
+          break;
+        case 'M+':
+          setMemory((m) => m + currentVal);
+          break;
+        case 'M-':
+          setMemory((m) => m - currentVal);
+          break;
+      }
+    } catch {
+      // ignore
+    }
+  }, [expression, angleMode, memory, decimalPrecision, soundEnabled, hapticEnabled]);
+
+  // Copy result
+  const handleCopy = useCallback(() => {
+    const textToCopy = hasEvaluated ? lastAnswer : expression;
+    navigator.clipboard.writeText(textToCopy);
+    setCopied(true);
+    playSound('toggle');
+    setTimeout(() => setCopied(false), 2000);
+  }, [hasEvaluated, lastAnswer, expression, playSound]);
+
+  // Navigate through calculation history tape with Up/Down arrow keys
+  const handleHistoryStep = useCallback(
+    (direction: -1 | 1) => {
+      if (!history || history.length === 0) return;
+      const nextIdx = historyIndex + direction;
+      if (nextIdx >= 0 && nextIdx < history.length) {
+        setHistoryIndex(nextIdx);
+        setExpression(history[nextIdx].expression);
+        setLastQuestion('');
+        setLastAnswer(history[nextIdx].result);
+        setHasEvaluated(false);
+        playSound('toggle');
+      } else if (nextIdx < 0) {
+        setHistoryIndex(-1);
+        setExpression('0');
+        setLastQuestion('');
+        setLastAnswer('');
+        setHasEvaluated(false);
+      }
+    },
+    [history, historyIndex, playSound]
+  );
+
+  // Global Physical / External Keyboard Input Handler (PC, Mac, Tablets with external keyboard)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 1. If user is currently typing in an input, textarea, or select element, do not intercept
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      // 2. Handle Ctrl / Cmd combinations
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'c' || e.key === 'C') {
+          handleCopy();
+          return;
+        }
+        if (e.key === 'z' || e.key === 'Z') {
+          e.preventDefault();
+          handleBackspace();
+          return;
+        }
+        return; // Pass through browser keys (Ctrl+R, Ctrl+Shift+I, etc.)
+      }
+
+      // 3. Numbers 0-9 (standard keyboard & numpad)
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
+        handleInput(e.key);
+        return;
+      }
+
+      // 4. Decimal point or comma (international keyboards)
+      if (e.key === '.' || e.key === ',') {
+        e.preventDefault();
+        if (e.key === ',' && expression.includes('(')) {
+          handleInput(',');
+        } else {
+          handleInput('.');
+        }
+        return;
+      }
+
+      // 5. Arithmetic operators
+      if (e.key === '+') {
+        e.preventDefault();
+        handleInput('+');
+        return;
+      }
+      if (e.key === '-') {
+        e.preventDefault();
+        handleInput('−');
+        return;
+      }
+      if (e.key === '*' || e.code === 'NumpadMultiply') {
+        e.preventDefault();
+        handleInput('×');
+        return;
+      }
+      if (e.key === '/' || e.code === 'NumpadDivide') {
+        e.preventDefault();
+        handleInput('÷');
+        return;
+      }
+      if (e.key === '%') {
+        e.preventDefault();
+        handleInput('%');
+        return;
+      }
+      if (e.key === '^') {
+        e.preventDefault();
+        handleInput('^');
+        return;
+      }
+      if (e.key === '!') {
+        e.preventDefault();
+        handleInput('!');
+        return;
+      }
+
+      // 6. Parentheses & Comma
+      if (e.key === '(') {
+        e.preventDefault();
+        handleInput('(');
+        return;
+      }
+      if (e.key === ')') {
+        e.preventDefault();
+        handleInput(')');
+        return;
+      }
+      if (e.key === ',') {
+        e.preventDefault();
+        handleInput(', ');
+        return;
+      }
+
+      // Tab switcher brackets [ and ] for quick external keyboard tab navigation
+      if (e.key === '[' || e.key === ']') {
+        e.preventDefault();
+        const tabList: AdvancedTab[] = ['calculus', 'trig', 'powers', 'prob', 'constants'];
+        const curIdx = tabList.indexOf(advancedTab);
+        if (e.key === '[') {
+          const prevIdx = curIdx > 0 ? curIdx - 1 : tabList.length - 1;
+          setAdvancedTab(tabList[prevIdx]);
+        } else {
+          const nextIdx = curIdx < tabList.length - 1 ? curIdx + 1 : 0;
+          setAdvancedTab(tabList[nextIdx]);
+        }
+        playSound('toggle');
+        return;
+      }
+
+      // 7. Equals & Enter (Evaluate)
+      if (e.key === 'Enter' || e.key === '=') {
+        e.preventDefault();
+        setIsEqualsPressed(true);
+        setTimeout(() => setIsEqualsPressed(false), 160);
+        handleEvaluate();
+        return;
+      }
+
+      // 8. Backspace & Deletion
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        handleBackspace();
+        return;
+      }
+
+      // 9. Clear / Escape / Delete
+      if (e.key === 'Escape' || e.key === 'Delete') {
+        e.preventDefault();
+        handleClear();
+        return;
+      }
+
+      // 10. History navigation (Arrow Up / Down)
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        handleHistoryStep(1);
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        handleHistoryStep(-1);
+        return;
+      }
+
+      // 11. Mathematical letter shortcuts
+      const lower = e.key.toLowerCase();
+      if (lower === 'x') {
+        e.preventDefault();
+        const last = expression.slice(-1);
+        if (['+', '−', '×', '÷', '(', '^', ',', ' '].includes(last) || expression === '0') {
+          handleInput('x');
+        } else {
+          handleInput('×');
+        }
+        return;
+      }
+      if (lower === 'y') {
+        e.preventDefault();
+        handleInput('y');
+        return;
+      }
+      if (lower === 's') {
+        e.preventDefault();
+        handleFunction('sin');
+        return;
+      }
+      if (lower === 'c') {
+        e.preventDefault();
+        handleFunction('cos');
+        return;
+      }
+      if (lower === 't') {
+        e.preventDefault();
+        handleFunction('tan');
+        return;
+      }
+      if (lower === 'l') {
+        e.preventDefault();
+        handleFunction('ln');
+        return;
+      }
+      if (lower === 'p') {
+        e.preventDefault();
+        handleInput('PI');
+        return;
+      }
+      if (lower === 'e' && !/[0-9]/.test(expression.slice(-1))) {
+        e.preventDefault();
+        handleInput('E');
+        return;
+      }
+      if (lower === 'r' || lower === 'q') {
+        e.preventDefault();
+        handleFunction('sqrt');
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    handleInput,
+    handleFunction,
+    handleBackspace,
+    handleClear,
+    handleEvaluate,
+    handleCopy,
+    handleHistoryStep,
+    expression,
+    advancedTab,
+    playSound,
+  ]);
+
+  // Clipboard Paste handler (Ctrl+V directly into calculator)
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      const pastedText = e.clipboardData?.getData('text');
+      if (pastedText) {
+        const cleaned = pastedText.trim().replace(/\s+/g, '');
+        if (/^[0-9+\-*/÷×^().,%!a-zA-Z_]+$/.test(cleaned)) {
+          e.preventDefault();
+          const mapped = cleaned
+            .replace(/\*/g, '×')
+            .replace(/\//g, '÷')
+            .replace(/-/g, '−');
+          setExpression(mapped);
+          setHasEvaluated(false);
+          playSound('num');
+        }
+      }
+    };
+
+    window.addEventListener('paste', handlePaste);
+    return () => window.removeEventListener('paste', handlePaste);
+  }, [playSound]);
+
+  // Render Advanced Tab Content for portrait & landscape
+  const renderAdvancedTabContent = (isLandscapeMode: boolean = false) => {
+    const gridClass = isLandscapeMode
+      ? "grid grid-cols-4 grid-rows-5 gap-1.5 sm:gap-2 h-full w-full"
+      : "grid grid-cols-4 sm:grid-cols-6 gap-1.5 sm:gap-2";
+
+    const btnClass = isLandscapeMode
+      ? "h-full w-full min-h-[42px] text-xs font-semibold rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container)] text-[var(--m3-on-surface)] transition-all cursor-pointer flex flex-col items-center justify-center p-1 select-none active:scale-95"
+      : "py-2.5 px-1.5 text-xs font-semibold rounded-[18px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] transition-all cursor-pointer flex flex-col items-center justify-center";
+
+    switch (advancedTab) {
+      case 'calculus':
+        return (
+          <div className="flex flex-col h-full w-full justify-between">
+            <div className={gridClass}>
+              {/* Row 1: Core Calculus Operators */}
+              <button onClick={() => handleInsertTemplate('diff(')} className={btnClass} title="Numerical Derivative: diff(expr, var)">
+                <span className="font-bold">d/dx</span>
+                <span className="text-[10px] opacity-70">derivative</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('integrate(')} className={btnClass} title="Definite Integral: integrate(expr, a, b)">
+                <span className="font-bold">∫ dx</span>
+                <span className="text-[10px] opacity-70">integral</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('sum(')} className={btnClass} title="Series Summation: sum(expr, start, end)">
+                <span className="font-bold">∑</span>
+                <span className="text-[10px] opacity-70">sum</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('prod(')} className={btnClass} title="Series Product: prod(expr, start, end)">
+                <span className="font-bold">∏</span>
+                <span className="text-[10px] opacity-70">product</span>
+              </button>
+
+              {/* Row 2: Limit, Abs, Sign, Natural Log */}
+              <button onClick={() => handleInsertTemplate('limit(')} className={btnClass} title="Limit: limit(expr, x, a)">
+                <span className="font-bold">lim</span>
+                <span className="text-[10px] opacity-70">limit</span>
+              </button>
+              <button onClick={() => handleFunction('abs')} className={btnClass} title="Absolute Value: |x|">
+                <span className="font-bold">|x|</span>
+                <span className="text-[10px] opacity-70">abs</span>
+              </button>
+              <button onClick={() => handleFunction('sign')} className={btnClass} title="Sign Function: sgn(x)">
+                <span className="font-bold">sgn</span>
+                <span className="text-[10px] opacity-70">sign</span>
+              </button>
+              <button onClick={() => handleFunction('ln')} className={btnClass} title="Natural Logarithm: ln(x)">
+                <span className="font-bold">ln</span>
+                <span className="text-[10px] opacity-70">base e</span>
+              </button>
+
+              {/* Row 3: Variables & Syntax Symbols */}
+              <button onClick={() => handleInput('x')} className={btnClass} title="Variable x">
+                <span className="font-mono font-bold text-sm text-[var(--m3-primary)]">x</span>
+                <span className="text-[10px] opacity-70">var x</span>
+              </button>
+              <button onClick={() => handleInput('y')} className={btnClass} title="Variable y">
+                <span className="font-mono font-bold text-sm text-[var(--m3-tertiary)]">y</span>
+                <span className="text-[10px] opacity-70">var y</span>
+              </button>
+              <button onClick={() => handleInput(', ')} className={btnClass} title="Argument Separator (Comma)">
+                <span className="font-bold text-sm">,</span>
+                <span className="text-[10px] opacity-70">comma</span>
+              </button>
+              <button onClick={() => handleParentheses()} className={btnClass} title="Parentheses ()">
+                <span className="font-bold text-sm">( )</span>
+                <span className="text-[10px] opacity-70">parens</span>
+              </button>
+
+              {/* Row 4: Power and Roots */}
+              <button onClick={() => handleInput('^2')} className={btnClass} title="Square: x²">
+                <span className="font-bold">x²</span>
+                <span className="text-[10px] opacity-70">square</span>
+              </button>
+              <button onClick={() => handleInput('^')} className={btnClass} title="Power: xʸ">
+                <span className="font-bold">xʸ</span>
+                <span className="text-[10px] opacity-70">power</span>
+              </button>
+              <button onClick={() => handleFunction('sqrt')} className={btnClass} title="Square Root: √x">
+                <span className="font-bold">√x</span>
+                <span className="text-[10px] opacity-70">root</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('exp(')} className={btnClass} title="Exponential: eˣ">
+                <span className="font-bold">eˣ</span>
+                <span className="text-[10px] opacity-70">exp</span>
+              </button>
+
+              {/* Row 5: Quick Formula Templates aligned with Row 5 of Keypad */}
+              <button
+                onClick={() => handleInsertTemplate('diff(x^2, ')}
+                className={`${btnClass} bg-[var(--m3-surface-container-high)] border-[var(--m3-primary)]/40`}
+                title="Quick Template: diff(x², x)"
+              >
+                <span className="font-bold text-[11px] text-[var(--m3-primary)]">d/dx(x²)</span>
+                <span className="text-[9px] opacity-75">formula</span>
+              </button>
+              <button
+                onClick={() => handleInsertTemplate('integrate(x^2, 0, ')}
+                className={`${btnClass} bg-[var(--m3-surface-container-high)] border-[var(--m3-primary)]/40`}
+                title="Quick Template: integrate(x², 0, 1)"
+              >
+                <span className="font-bold text-[11px] text-[var(--m3-primary)]">∫(x²)</span>
+                <span className="text-[9px] opacity-75">formula</span>
+              </button>
+              <button
+                onClick={() => handleInsertTemplate('sum(x, 1, ')}
+                className={`${btnClass} bg-[var(--m3-surface-container-high)] border-[var(--m3-primary)]/40`}
+                title="Quick Template: sum(x, 1, n)"
+              >
+                <span className="font-bold text-[11px] text-[var(--m3-primary)]">∑(x)</span>
+                <span className="text-[9px] opacity-75">formula</span>
+              </button>
+              <button
+                onClick={() => handleInsertTemplate('prod(x, 1, ')}
+                className={`${btnClass} bg-[var(--m3-surface-container-high)] border-[var(--m3-primary)]/40`}
+                title="Quick Template: prod(x, 1, n)"
+              >
+                <span className="font-bold text-[11px] text-[var(--m3-primary)]">∏(x)</span>
+                <span className="text-[9px] opacity-75">formula</span>
+              </button>
+            </div>
+
+            {!isLandscapeMode && (
+              <div className="text-[10px] text-center opacity-75 font-mono text-[var(--m3-on-surface-variant)] truncate pt-1">
+                Format: diff(f(x), x_val) • integrate(f(x), a, b) • sum(f(x), 1, n)
+              </div>
+            )}
+          </div>
+        );
+
+      case 'trig':
+        return (
+          <div className="flex flex-col h-full w-full justify-between">
+            <div className={gridClass}>
+              {/* Row 1: Primary Trig */}
+              <button onClick={() => handleFunction('sin')} className={btnClass}><span className="font-bold">sin</span><span className="text-[10px] opacity-70">sine</span></button>
+              <button onClick={() => handleFunction('cos')} className={btnClass}><span className="font-bold">cos</span><span className="text-[10px] opacity-70">cosine</span></button>
+              <button onClick={() => handleFunction('tan')} className={btnClass}><span className="font-bold">tan</span><span className="text-[10px] opacity-70">tangent</span></button>
+              <button onClick={() => handleFunction('sec')} className={btnClass}><span className="font-bold">sec</span><span className="text-[10px] opacity-70">secant</span></button>
+
+              {/* Row 2: Secondary & Inverse Trig */}
+              <button onClick={() => handleFunction('csc')} className={btnClass}><span className="font-bold">csc</span><span className="text-[10px] opacity-70">cosecant</span></button>
+              <button onClick={() => handleFunction('cot')} className={btnClass}><span className="font-bold">cot</span><span className="text-[10px] opacity-70">cotangent</span></button>
+              <button onClick={() => handleFunction('asin')} className={btnClass}><span className="font-bold">sin⁻¹</span><span className="text-[10px] opacity-70">arcsin</span></button>
+              <button onClick={() => handleFunction('acos')} className={btnClass}><span className="font-bold">cos⁻¹</span><span className="text-[10px] opacity-70">arccos</span></button>
+
+              {/* Row 3: Inverse & Hyperbolic */}
+              <button onClick={() => handleFunction('atan')} className={btnClass}><span className="font-bold">tan⁻¹</span><span className="text-[10px] opacity-70">arctan</span></button>
+              <button onClick={() => handleFunction('sinh')} className={btnClass}><span className="font-bold">sinh</span><span className="text-[10px] opacity-70">hyp sin</span></button>
+              <button onClick={() => handleFunction('cosh')} className={btnClass}><span className="font-bold">cosh</span><span className="text-[10px] opacity-70">hyp cos</span></button>
+              <button onClick={() => handleFunction('tanh')} className={btnClass}><span className="font-bold">tanh</span><span className="text-[10px] opacity-70">hyp tan</span></button>
+
+              {/* Row 4: Inverse Hyperbolic & Reciprocals */}
+              <button onClick={() => handleFunction('asinh')} className={btnClass}><span className="font-bold">sinh⁻¹</span><span className="text-[10px] opacity-70">arsinh</span></button>
+              <button onClick={() => handleFunction('acosh')} className={btnClass}><span className="font-bold">cosh⁻¹</span><span className="text-[10px] opacity-70">arcosh</span></button>
+              <button onClick={() => handleFunction('atanh')} className={btnClass}><span className="font-bold">tanh⁻¹</span><span className="text-[10px] opacity-70">artanh</span></button>
+              <button onClick={() => handleFunction('sech')} className={btnClass}><span className="font-bold">sech</span><span className="text-[10px] opacity-70">hyp sec</span></button>
+
+              {/* Row 5: csch, coth, Pi, and Angle Mode Switcher */}
+              <button onClick={() => handleFunction('csch')} className={btnClass}><span className="font-bold">csch</span><span className="text-[10px] opacity-70">hyp csc</span></button>
+              <button onClick={() => handleFunction('coth')} className={btnClass}><span className="font-bold">coth</span><span className="text-[10px] opacity-70">hyp cot</span></button>
+              <button onClick={() => handleInput('π')} className={btnClass} title="Pi π ≈ 3.14159">
+                <span className="font-bold text-sm">π</span>
+                <span className="text-[10px] opacity-70">3.14159</span>
+              </button>
+              <button
+                onClick={onToggleAngleMode}
+                className={`${btnClass} bg-[var(--m3-primary-container)] text-[var(--m3-on-primary-container)] border-[var(--m3-primary)]/50`}
+                title="Toggle Angle Mode (DEG/RAD/GRAD)"
+              >
+                <span className="font-bold font-mono text-xs">{angleMode.toUpperCase()}</span>
+                <span className="text-[9px] opacity-80">switch mode</span>
+              </button>
+            </div>
+          </div>
+        );
+
+      case 'powers':
+        return (
+          <div className="flex flex-col h-full w-full justify-between">
+            <div className={gridClass}>
+              {/* Row 1: Common Powers */}
+              <button onClick={() => handleInput('^2')} className={btnClass}>
+                <span className="font-bold">x²</span>
+                <span className="text-[10px] opacity-70">square</span>
+              </button>
+              <button onClick={() => handleInput('^3')} className={btnClass}>
+                <span className="font-bold">x³</span>
+                <span className="text-[10px] opacity-70">cube</span>
+              </button>
+              <button onClick={() => handleInput('^')} className={btnClass}>
+                <span className="font-bold">xʸ</span>
+                <span className="text-[10px] opacity-70">power</span>
+              </button>
+              <button onClick={() => handleInput('^(-1)')} className={btnClass}>
+                <span className="font-bold">x⁻¹</span>
+                <span className="text-[10px] opacity-70">1/x</span>
+              </button>
+
+              {/* Row 2: Roots */}
+              <button onClick={() => handleFunction('sqrt')} className={btnClass}>
+                <span className="font-bold">√x</span>
+                <span className="text-[10px] opacity-70">sq root</span>
+              </button>
+              <button onClick={() => handleFunction('cbrt')} className={btnClass}>
+                <span className="font-bold">³√x</span>
+                <span className="text-[10px] opacity-70">cube root</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('root(')} className={btnClass} title="Arbitrary root(deg, x)">
+                <span className="font-bold">ʸ√x</span>
+                <span className="text-[10px] opacity-70">root(y,x)</span>
+              </button>
+              <button onClick={() => handleFunction('abs')} className={btnClass}>
+                <span className="font-bold">|x|</span>
+                <span className="text-[10px] opacity-70">absolute</span>
+              </button>
+
+              {/* Row 3: Exponential Functions */}
+              <button onClick={() => handleInsertTemplate('10^(')} className={btnClass}>
+                <span className="font-bold">10ˣ</span>
+                <span className="text-[10px] opacity-70">10^x</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('2^(')} className={btnClass}>
+                <span className="font-bold">2ˣ</span>
+                <span className="text-[10px] opacity-70">2^x</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('exp(')} className={btnClass}>
+                <span className="font-bold">eˣ</span>
+                <span className="text-[10px] opacity-70">exp(x)</span>
+              </button>
+              <button onClick={() => handleInput('e')} className={btnClass}>
+                <span className="font-bold text-sm">e</span>
+                <span className="text-[10px] opacity-70">2.71828</span>
+              </button>
+
+              {/* Row 4: Logarithms */}
+              <button onClick={() => handleFunction('ln')} className={btnClass}>
+                <span className="font-bold">ln</span>
+                <span className="text-[10px] opacity-70">base e</span>
+              </button>
+              <button onClick={() => handleFunction('log')} className={btnClass}>
+                <span className="font-bold">log₁₀</span>
+                <span className="text-[10px] opacity-70">base 10</span>
+              </button>
+              <button onClick={() => handleFunction('log2')} className={btnClass}>
+                <span className="font-bold">log₂</span>
+                <span className="text-[10px] opacity-70">base 2</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('logb(')} className={btnClass} title="logb(base, x)">
+                <span className="font-bold">log_b</span>
+                <span className="text-[10px] opacity-70">any base</span>
+              </button>
+
+              {/* Row 5: Mathematical Helpers */}
+              <button onClick={() => handleFunction('sign')} className={btnClass}>
+                <span className="font-bold">sgn</span>
+                <span className="text-[10px] opacity-70">sign</span>
+              </button>
+              <button onClick={() => handleInput('%')} className={btnClass}>
+                <span className="font-bold">%</span>
+                <span className="text-[10px] opacity-70">percent</span>
+              </button>
+              <button onClick={() => handleParentheses()} className={btnClass}>
+                <span className="font-bold">( )</span>
+                <span className="text-[10px] opacity-70">brackets</span>
+              </button>
+              <button onClick={() => handleInput(', ')} className={btnClass}>
+                <span className="font-bold text-sm">,</span>
+                <span className="text-[10px] opacity-70">comma</span>
+              </button>
+            </div>
+          </div>
+        );
+
+      case 'prob':
+        return (
+          <div className="flex flex-col h-full w-full justify-between">
+            <div className={gridClass}>
+              {/* Row 1: Permutations, Combinations, Factorial, Modulo */}
+              <button onClick={() => handleInsertTemplate('nPr(')} className={btnClass} title="Permutations: nPr(n, r)">
+                <span className="font-bold">nPr</span>
+                <span className="text-[10px] opacity-70">permutation</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('nCr(')} className={btnClass} title="Combinations: nCr(n, r)">
+                <span className="font-bold">nCr</span>
+                <span className="text-[10px] opacity-70">combination</span>
+              </button>
+              <button onClick={() => handleInput('!')} className={btnClass} title="Factorial: x!">
+                <span className="font-bold">x!</span>
+                <span className="text-[10px] opacity-70">factorial</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('mod(')} className={btnClass} title="Modulo: mod(a, b)">
+                <span className="font-bold">mod</span>
+                <span className="text-[10px] opacity-70">modulo</span>
+              </button>
+
+              {/* Row 2: GCD, LCM, Rounding, Sign */}
+              <button onClick={() => handleInsertTemplate('gcd(')} className={btnClass} title="Greatest Common Divisor">
+                <span className="font-bold">gcd</span>
+                <span className="text-[10px] opacity-70">greatest div</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('lcm(')} className={btnClass} title="Least Common Multiple">
+                <span className="font-bold">lcm</span>
+                <span className="text-[10px] opacity-70">least mult</span>
+              </button>
+              <button onClick={() => handleFunction('round')} className={btnClass} title="Round to nearest integer">
+                <span className="font-bold">round</span>
+                <span className="text-[10px] opacity-70">nearest</span>
+              </button>
+              <button onClick={() => handleFunction('sign')} className={btnClass}>
+                <span className="font-bold">sgn</span>
+                <span className="text-[10px] opacity-70">sign</span>
+              </button>
+
+              {/* Row 3: Floor, Ceil, Random Generators */}
+              <button onClick={() => handleFunction('floor')} className={btnClass} title="Floor: greatest integer <= x">
+                <span className="font-bold">floor</span>
+                <span className="text-[10px] opacity-70">round down</span>
+              </button>
+              <button onClick={() => handleFunction('ceil')} className={btnClass} title="Ceil: least integer >= x">
+                <span className="font-bold">ceil</span>
+                <span className="text-[10px] opacity-70">round up</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('rand()')} className={btnClass} title="Random number 0..1">
+                <span className="font-bold">rand()</span>
+                <span className="text-[10px] opacity-70">0 ... 1</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('randInt(')} className={btnClass} title="Random integer: randInt(min, max)">
+                <span className="font-bold">randInt</span>
+                <span className="text-[10px] opacity-70">min, max</span>
+              </button>
+
+              {/* Row 4: Statistics & Comparisons */}
+              <button onClick={() => handleInsertTemplate('min(')} className={btnClass} title="Minimum: min(a, b)">
+                <span className="font-bold">min</span>
+                <span className="text-[10px] opacity-70">minimum</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('max(')} className={btnClass} title="Maximum: max(a, b)">
+                <span className="font-bold">max</span>
+                <span className="text-[10px] opacity-70">maximum</span>
+              </button>
+              <button onClick={() => handleInsertTemplate('mean(')} className={btnClass} title="Average / Mean: mean(a, b)">
+                <span className="font-bold">avg</span>
+                <span className="text-[10px] opacity-70">average</span>
+              </button>
+              <button onClick={() => handleFunction('abs')} className={btnClass} title="Absolute Value: |x|">
+                <span className="font-bold">|x|</span>
+                <span className="text-[10px] opacity-70">absolute</span>
+              </button>
+
+              {/* Row 5: Symbols & Comma */}
+              <button onClick={() => handleInput(', ')} className={btnClass} title="Comma Separator">
+                <span className="font-bold text-sm">,</span>
+                <span className="text-[10px] opacity-70">comma</span>
+              </button>
+              <button onClick={() => handleParentheses()} className={btnClass}>
+                <span className="font-bold text-sm">( )</span>
+                <span className="text-[10px] opacity-70">parens</span>
+              </button>
+              <button onClick={() => handleInput('%')} className={btnClass}>
+                <span className="font-bold">%</span>
+                <span className="text-[10px] opacity-70">percent</span>
+              </button>
+              <button onClick={() => handleInput('π')} className={btnClass}>
+                <span className="font-bold text-sm">π</span>
+                <span className="text-[10px] opacity-70">3.14159</span>
+              </button>
+            </div>
+
+            {!isLandscapeMode && (
+              <div className="text-[10px] text-center opacity-75 font-mono text-[var(--m3-on-surface-variant)] truncate pt-1">
+                Syntax: nCr(n, r) • nPr(n, r) • gcd(a, b) • lcm(a, b) • randInt(1, 100)
+              </div>
+            )}
+          </div>
+        );
+
+      case 'constants':
+        return (
+          <div className="flex flex-col h-full w-full justify-between">
+            <div className={gridClass}>
+              {/* Row 1: Mathematical & Relativistic Constants */}
+              <button onClick={() => handleInput('π')} className={btnClass} title="Pi ≈ 3.1415926535">
+                <span className="font-bold text-sm">π</span>
+                <span className="text-[10px] opacity-70">3.14159</span>
+              </button>
+              <button onClick={() => handleInput('e')} className={btnClass} title="Euler's number ≈ 2.7182818284">
+                <span className="font-bold text-sm">e</span>
+                <span className="text-[10px] opacity-70">2.71828</span>
+              </button>
+              <button onClick={() => handleInput('φ')} className={btnClass} title="Golden Ratio φ ≈ 1.6180339887">
+                <span className="font-bold text-sm">φ</span>
+                <span className="text-[10px] opacity-70">1.61803</span>
+              </button>
+              <button onClick={() => handleInput('c')} className={btnClass} title="Speed of light c = 299,792,458 m/s">
+                <span className="font-bold">c</span>
+                <span className="text-[10px] opacity-70">light speed</span>
+              </button>
+
+              {/* Row 2: Quantum & Gravitational Constants */}
+              <button onClick={() => handleInput('h')} className={btnClass} title="Planck constant h = 6.62607015×10⁻³⁴ J·s">
+                <span className="font-bold">h</span>
+                <span className="text-[10px] opacity-70">planck</span>
+              </button>
+              <button onClick={() => handleInput('hbar')} className={btnClass} title="Reduced Planck constant ħ = 1.05457×10⁻³⁴ J·s">
+                <span className="font-bold">ħ</span>
+                <span className="text-[10px] opacity-70">h / 2π</span>
+              </button>
+              <button onClick={() => handleInput('G')} className={btnClass} title="Gravitational constant G = 6.67430×10⁻¹¹ N·m²/kg²">
+                <span className="font-bold">G</span>
+                <span className="text-[10px] opacity-70">gravity</span>
+              </button>
+              <button onClick={() => handleInput('kB')} className={btnClass} title="Boltzmann constant kB = 1.380649×10⁻²³ J/K">
+                <span className="font-bold">k_B</span>
+                <span className="text-[10px] opacity-70">boltzmann</span>
+              </button>
+
+              {/* Row 3: Atomic & Fundamental Constants */}
+              <button onClick={() => handleInput('NA')} className={btnClass} title="Avogadro constant NA = 6.02214076×10²³ mol⁻¹">
+                <span className="font-bold">N_A</span>
+                <span className="text-[10px] opacity-70">avogadro</span>
+              </button>
+              <button onClick={() => handleInput('qe')} className={btnClass} title="Elementary charge e = 1.602176634×10⁻¹⁹ C">
+                <span className="font-bold">q_e</span>
+                <span className="text-[10px] opacity-70">elem charge</span>
+              </button>
+              <button onClick={() => handleInput('me')} className={btnClass} title="Electron mass me = 9.1093837×10⁻³¹ kg">
+                <span className="font-bold">m_e</span>
+                <span className="text-[10px] opacity-70">electron</span>
+              </button>
+              <button onClick={() => handleInput('g')} className={btnClass} title="Standard gravity g = 9.80665 m/s²">
+                <span className="font-bold">g</span>
+                <span className="text-[10px] opacity-70">9.80665 m/s²</span>
+              </button>
+
+              {/* Row 4: Subatomic & Electrodynamic Constants */}
+              <button onClick={() => handleInput('mp')} className={btnClass} title="Proton mass mp = 1.67262×10⁻²⁷ kg">
+                <span className="font-bold">m_p</span>
+                <span className="text-[10px] opacity-70">proton mass</span>
+              </button>
+              <button onClick={() => handleInput('mn')} className={btnClass} title="Neutron mass mn = 1.67493×10⁻²⁷ kg">
+                <span className="font-bold">m_n</span>
+                <span className="text-[10px] opacity-70">neutron mass</span>
+              </button>
+              <button onClick={() => handleInput('eps0')} className={btnClass} title="Permittivity ε₀ = 8.85418×10⁻¹² F/m">
+                <span className="font-bold">ε₀</span>
+                <span className="text-[10px] opacity-70">permittivity</span>
+              </button>
+              <button onClick={() => handleInput('mu0')} className={btnClass} title="Permeability μ₀ = 1.25663×10⁻⁶ N/A²">
+                <span className="font-bold">μ₀</span>
+                <span className="text-[10px] opacity-70">permeability</span>
+              </button>
+
+              {/* Row 5: Thermodynamic & Planetary Constants */}
+              <button onClick={() => handleInput('R')} className={btnClass} title="Molar Gas constant R = 8.31446 J/(mol·K)">
+                <span className="font-bold">R</span>
+                <span className="text-[10px] opacity-70">gas const</span>
+              </button>
+              <button onClick={() => handleInput('sigma')} className={btnClass} title="Stefan-Boltzmann constant σ = 5.67037×10⁻⁸ W/(m²·K⁴)">
+                <span className="font-bold">σ</span>
+                <span className="text-[10px] opacity-70">stefan-boltz</span>
+              </button>
+              <button onClick={() => handleInput('atm')} className={btnClass} title="Standard Atmosphere = 101,325 Pa">
+                <span className="font-bold">atm</span>
+                <span className="text-[10px] opacity-70">101325 Pa</span>
+              </button>
+              <button onClick={() => handleInput('au')} className={btnClass} title="Astronomical Unit au = 1.49597×10¹¹ m">
+                <span className="font-bold">au</span>
+                <span className="text-[10px] opacity-70">astron unit</span>
+              </button>
+            </div>
+          </div>
+        );
+    }
+  };
+
+  // =========================================================================
+  // LANDSCAPE LAYOUT (Pixel Complete Dual-Pane / Unified Tablet Experience)
+  // =========================================================================
+  if (isLandscape) {
+    return (
+      <div className="w-full max-w-7xl mx-auto flex gap-3 sm:gap-4 min-h-[520px] max-h-[860px] h-[calc(100vh-130px)] select-none">
+        {/* Left Side: Display, Angle Status, Tape preview */}
+        <div
+          className="w-[280px] sm:w-[310px] md:w-[330px] lg:w-[350px] xl:w-[370px] shrink-0 rounded-[28px] p-4 flex flex-col justify-between border border-[var(--m3-outline-variant)] shadow-lg backdrop-blur-xl"
+          style={{
+            backgroundColor: 'var(--m3-surface-container-low)',
+          }}
+        >
+          {/* Top Status Badges */}
+          <div className="flex items-center justify-between">
+            <button
+              onClick={onToggleAngleMode}
+              className="px-2.5 py-1 text-xs font-mono font-bold rounded-full border border-[var(--m3-outline-variant)] transition-all active:scale-95 cursor-pointer shadow-sm"
+              style={{
+                backgroundColor: 'var(--m3-surface-container-high)',
+                color: 'var(--m3-primary)',
+              }}
+              title="Click to toggle angle mode (DEG/RAD/GRAD)"
+            >
+              {angleMode.toUpperCase()}
+            </button>
+
+            <div className="flex items-center gap-1.5">
+              {onOpenHistory && (
+                <button
+                  onClick={onOpenHistory}
+                  className="p-1.5 rounded-full border border-[var(--m3-outline-variant)]/40 transition-all active:scale-90 cursor-pointer flex items-center gap-1"
+                  style={{
+                    backgroundColor: 'var(--m3-surface-container-high)',
+                    color: 'var(--m3-on-surface-variant)',
+                  }}
+                  title="View Calculation History"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  {history && history.length > 0 && (
+                    <span className="text-[10px] font-mono font-bold px-1 rounded-full bg-[var(--m3-primary)] text-[var(--m3-on-primary)]">
+                      {history.length > 9 ? '9+' : history.length}
+                    </span>
+                  )}
+                </button>
+              )}
+
+              <button
+                onClick={handleCopy}
+                className="p-1.5 rounded-full border border-[var(--m3-outline-variant)]/40 transition-all active:scale-90 cursor-pointer"
+                style={{
+                  backgroundColor: 'var(--m3-surface-container-high)',
+                  color: 'var(--m3-on-surface-variant)',
+                }}
+                title="Copy Result"
+              >
+                {copied ? (
+                  <Check className="w-3.5 h-3.5 text-green-500" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Numbers Output Display */}
+          <div className="flex flex-col justify-end text-right my-auto overflow-hidden">
+            {lastQuestion && (
+              <div
+                className="font-mono text-xs tracking-wide truncate mb-1 opacity-70"
+                style={{ color: 'var(--m3-outline)' }}
+              >
+                {lastQuestion} =
+              </div>
+            )}
+            <div
+              className={`font-mono font-bold tracking-tight overflow-x-auto whitespace-nowrap scrollbar-none py-1 select-all ${
+                expression.length > 12 ? 'text-2xl' : 'text-3xl'
+              }`}
+              style={{ color: 'var(--m3-on-surface)' }}
+            >
+              {expression}
+            </div>
+
+            {lastAnswer && hasEvaluated && (
+              <div
+                className="font-mono font-bold text-xl sm:text-2xl mt-1 tracking-tight truncate animate-m3-result-update"
+                style={{ color: 'var(--m3-primary)' }}
+              >
+                = {lastAnswer}
+              </div>
+            )}
+          </div>
+
+          {/* Memory Row */}
+          <div className="grid grid-cols-4 gap-1.5 pt-2 border-t border-[var(--m3-outline-variant)]/30">
+            {(['MC', 'MR', 'M+', 'M-'] as const).map((mAct) => (
+              <button
+                key={mAct}
+                onClick={() => handleMemory(mAct)}
+                className="py-1.5 text-[11px] font-mono font-bold rounded-full transition-all active:scale-95 border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+                style={{
+                  backgroundColor: 'var(--m3-surface-container)',
+                  color: 'var(--m3-on-surface-variant)',
+                }}
+              >
+                {mAct}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Side: Pixel Complete Keypad with Dedicated Category Tabs */}
+        <div
+          className="flex-1 rounded-[28px] p-3 sm:p-4 border border-[var(--m3-outline-variant)] shadow-lg flex flex-col justify-between overflow-hidden"
+          style={{
+            backgroundColor: 'var(--m3-surface-container-low)',
+          }}
+        >
+          {/* Keypad Grid: Columns 1-4 for selected tab functions; Columns 5-8 for standard numbers & operations */}
+          <div className="grid grid-cols-8 gap-2 sm:gap-2.5 flex-1 h-full">
+            {/* Left 4 columns: Advanced Category Tab Functions (Swipeable + Wheel + Chevron buttons) */}
+            <div className="col-span-4 h-full flex flex-col justify-between">
+              <SwipeableTabContainer
+                tabs={ADVANCED_TABS}
+                activeTabId={advancedTab}
+                onSelectTab={(id) => {
+                  playSound('toggle');
+                  setAdvancedTab(id as AdvancedTab);
+                }}
+                compact={true}
+                showNavButtons={true}
+                tabBarClassName="pb-1 mb-1.5"
+                className="w-full h-full flex-1 flex flex-col justify-between"
+              >
+                <div className="w-full h-full flex-1 flex flex-col">
+                  {renderAdvancedTabContent(true)}
+                </div>
+              </SwipeableTabContainer>
+            </div>
+
+            {/* Right 4 columns: Numbers & Standard Arithmetic Keypad */}
+            <div className="col-span-4 grid grid-cols-4 grid-rows-5 gap-1.5 sm:gap-2 h-full">
+              {/* Row 1 */}
+              <button onClick={handleClear} className="h-full w-full min-h-[42px] text-sm font-bold rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-tertiary-container)] text-[var(--m3-on-tertiary-container)] flex items-center justify-center">AC</button>
+              <button onClick={handleBackspace} className="h-full w-full min-h-[42px] text-sm font-semibold rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container)] text-[var(--m3-on-surface)] flex items-center justify-center"><Delete className="w-4 h-4" /></button>
+              <button onClick={() => handleInput('%')} className="h-full w-full min-h-[42px] text-sm font-semibold rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container)] text-[var(--m3-on-surface)] flex items-center justify-center">%</button>
+              <button onClick={() => handleInput('÷')} className="h-full w-full min-h-[42px] text-xl font-bold rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-secondary-container)] text-[var(--m3-on-secondary-container)] flex items-center justify-center">÷</button>
+
+              {/* Row 2 */}
+              <button onClick={() => handleInput('7')} className="h-full w-full min-h-[42px] text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">7</button>
+              <button onClick={() => handleInput('8')} className="h-full w-full min-h-[42px] text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">8</button>
+              <button onClick={() => handleInput('9')} className="h-full w-full min-h-[42px] text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">9</button>
+              <button onClick={() => handleInput('×')} className="h-full w-full min-h-[42px] text-xl font-bold rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-secondary-container)] text-[var(--m3-on-secondary-container)] flex items-center justify-center">×</button>
+
+              {/* Row 3 */}
+              <button onClick={() => handleInput('4')} className="h-full w-full min-h-[42px] text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">4</button>
+              <button onClick={() => handleInput('5')} className="h-full w-full min-h-[42px] text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">5</button>
+              <button onClick={() => handleInput('6')} className="h-full w-full min-h-[42px] text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">6</button>
+              <button onClick={() => handleInput('−')} className="h-full w-full min-h-[42px] text-xl font-bold rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-secondary-container)] text-[var(--m3-on-secondary-container)] flex items-center justify-center">−</button>
+
+              {/* Row 4 */}
+              <button onClick={() => handleInput('1')} className="h-full w-full min-h-[42px] text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">1</button>
+              <button onClick={() => handleInput('2')} className="h-full w-full min-h-[42px] text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">2</button>
+              <button onClick={() => handleInput('3')} className="h-full w-full min-h-[42px] text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">3</button>
+              <button onClick={() => handleInput('+')} className="h-full w-full min-h-[42px] text-xl font-bold rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-secondary-container)] text-[var(--m3-on-secondary-container)] flex items-center justify-center">+</button>
+
+              {/* Row 5 */}
+              <button onClick={() => handleInput('0')} className="h-full w-full min-h-[42px] col-span-2 text-xl font-mono font-medium rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">0</button>
+              <button onClick={() => handleInput('.')} className="h-full w-full min-h-[42px] text-xl font-mono font-bold rounded-[16px] m3-key border border-[var(--m3-outline-variant)]/40 bg-[var(--m3-surface-container-high)] text-[var(--m3-on-surface)] flex items-center justify-center">.</button>
+              {/* Landscape Equals Key */}
+              <button
+                onClick={handleEvaluate}
+                className={`h-full w-full min-h-[42px] text-xl font-bold rounded-[16px] m3-key m3-equals-key flex items-center justify-center gap-1 border border-[var(--m3-primary)] cursor-pointer transition-all duration-150 ${
+                  isEqualsPressed ? 'scale-[0.93] brightness-125 shadow-[0_0_32px_6px_color-mix(in_srgb,var(--m3-primary)_85%,transparent)]' : ''
+                }`}
+                style={{
+                  backgroundColor: 'var(--m3-primary)',
+                  color: 'var(--m3-on-primary)',
+                }}
+              >
+                <span>=</span>
+                <CornerDownLeft className="w-3.5 h-3.5 opacity-80" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // PORTRAIT LAYOUT (Google Pixel Portrait with Sticky Display & M3 squircle keys)
+  // =========================================================================
+  return (
+    <div className="w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto flex flex-col justify-start select-none">
+      {/* Outer Calculator Shell - M3 Expressive Card with 32px rounded corners and tonal surface */}
+      <div
+        className="w-full rounded-[32px] sm:rounded-[36px] p-3 sm:p-5 shadow-2xl backdrop-blur-2xl flex flex-col transition-colors border border-[var(--m3-outline-variant)]"
+        style={{
+          backgroundColor: 'color-mix(in srgb, var(--m3-surface-container-low) 96%, transparent)',
+        }}
+      >
+        {/* Sticky Number Screen - Always visible even on scrolling through keys */}
+        <div
+          className="sticky top-[70px] sm:top-[78px] z-30 w-full rounded-[26px] sm:rounded-[28px] p-4 sm:p-5 mb-3 flex flex-col justify-between min-h-[135px] sm:min-h-[150px] shadow-lg backdrop-blur-2xl transition-all border border-[var(--m3-outline-variant)]/40"
+          style={{
+            backgroundColor: 'var(--m3-surface-container-highest)',
+          }}
+        >
+          {/* Header Row of Screen: Angle mode badge, Open parens counter, History & Copy */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <button
+                onClick={onToggleAngleMode}
+                className="px-2.5 py-1 text-xs font-mono font-bold rounded-full border border-[var(--m3-outline-variant)] transition-all duration-150 active:scale-95 cursor-pointer shadow-sm"
+                style={{
+                  backgroundColor: 'var(--m3-surface-container-high)',
+                  color: 'var(--m3-primary)',
+                }}
+                title="Click to toggle angle mode (DEG/RAD/GRAD)"
+              >
+                {angleMode.toUpperCase()}
+              </button>
+
+              {openParensCount > 0 && (
+                <span
+                  className="px-2 py-0.5 text-xs font-mono rounded-full border border-[var(--m3-outline-variant)]/60 animate-pulse"
+                  style={{
+                    backgroundColor: 'var(--m3-surface-container-high)',
+                    color: 'var(--m3-tertiary)',
+                  }}
+                  title="Unclosed parentheses"
+                >
+                  {openParensCount} unclosed (
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {onOpenHistory && (
+                <button
+                  onClick={onOpenHistory}
+                  className="p-1.5 rounded-full transition-all duration-150 active:scale-90 border border-[var(--m3-outline-variant)]/40 cursor-pointer flex items-center gap-1"
+                  style={{
+                    backgroundColor: 'var(--m3-surface-container-high)',
+                    color: 'var(--m3-on-surface-variant)',
+                  }}
+                  title="View History Tape"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  {history && history.length > 0 && (
+                    <span className="text-[10px] font-mono font-bold px-1 rounded-full bg-[var(--m3-primary)] text-[var(--m3-on-primary)]">
+                      {history.length > 9 ? '9+' : history.length}
+                    </span>
+                  )}
+                </button>
+              )}
+
+              <button
+                onClick={handleCopy}
+                className="p-1.5 rounded-full transition-all duration-150 active:scale-90 border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+                style={{
+                  backgroundColor: 'var(--m3-surface-container-high)',
+                  color: 'var(--m3-on-surface-variant)',
+                }}
+                title="Copy current result or expression"
+              >
+                {copied ? (
+                  <Check className="w-3.5 h-3.5 text-green-500" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Expressions & Answers - Tabular Digits & Fluid Autoscaling */}
+          <div className="flex flex-col justify-end text-right">
+            {lastQuestion && (
+              <div
+                className="font-mono text-xs sm:text-sm tracking-wide truncate mb-1 opacity-70"
+                style={{ color: 'var(--m3-outline)' }}
+              >
+                {lastQuestion} =
+              </div>
+            )}
+            <div
+              className={`font-mono font-bold tracking-tight overflow-x-auto whitespace-nowrap scrollbar-none py-1 select-all ${
+                expression.length > 14
+                  ? 'text-2xl sm:text-3xl'
+                  : expression.length > 8
+                  ? 'text-3xl sm:text-4xl'
+                  : 'text-4xl sm:text-5xl md:text-6xl'
+              }`}
+              style={{ color: 'var(--m3-on-surface)' }}
+            >
+              {expression}
+            </div>
+
+            {/* Live Evaluated Result Line */}
+            {lastAnswer && hasEvaluated && (
+              <div
+                className="font-mono font-bold text-xl sm:text-2xl md:text-3xl mt-1 tracking-tight truncate animate-m3-result-update"
+                style={{ color: 'var(--m3-primary)' }}
+              >
+                = {lastAnswer}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* M3 Expressive Quick Memory Ribbon Bar */}
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-3">
+          {(['MC', 'MR', 'M+', 'M-'] as const).map((mAct) => (
+            <button
+              key={mAct}
+              onClick={() => handleMemory(mAct)}
+              className="py-1.5 text-xs font-mono font-bold rounded-full transition-all active:scale-95 border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+              style={{
+                backgroundColor: mAct === 'MR' && memory !== 0 ? 'var(--m3-secondary-container)' : 'var(--m3-surface-container)',
+                color: mAct === 'MR' && memory !== 0 ? 'var(--m3-on-secondary-container)' : 'var(--m3-on-surface-variant)',
+              }}
+            >
+              {mAct}
+            </button>
+          ))}
+        </div>
+
+        {/* Scientific Advanced Drawer with Dedicated Category Tabs */}
+        {isScientific && (
+          <div className="mb-3 p-3 sm:p-4 rounded-[28px] border border-[var(--m3-outline-variant)] shadow-inner transition-all animate-fadeIn" style={{ backgroundColor: 'var(--m3-surface-container)' }}>
+            {/* Drawer Sub-Header */}
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-[var(--m3-outline-variant)]/40">
+              <div className="flex items-center gap-2">
+                <OmniCalcLogo className="w-4 h-4" />
+                <span className="text-xs font-semibold" style={{ color: 'var(--m3-on-surface)' }}>
+                  Advanced Scientific Operations
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  playSound('toggle');
+                  setIsScientific(false);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--m3-outline-variant)] transition-all duration-150 active:scale-90 cursor-pointer"
+                style={{
+                  backgroundColor: 'var(--m3-surface-container-high)',
+                  color: 'var(--m3-primary)',
+                }}
+              >
+                <span className="text-[11px] font-semibold">Hide</span>
+                <ChevronUp className="w-3 h-3" />
+              </button>
+            </div>
+
+            {/* Category Tab Selector Strip with 120Hz Direct Swipe Gestures */}
+            <SwipeableTabContainer
+              tabs={ADVANCED_TABS}
+              activeTabId={advancedTab}
+              onSelectTab={(id) => {
+                playSound('toggle');
+                setAdvancedTab(id as AdvancedTab);
+              }}
+              compact={true}
+              showNavButtons={true}
+              tabBarClassName="pb-1 mb-2"
+              tabPillClassName="bg-[var(--m3-surface-container-high)]"
+              className="w-full"
+            >
+              <div className="w-full">
+                {renderAdvancedTabContent(false)}
+              </div>
+            </SwipeableTabContainer>
+          </div>
+        )}
+
+        {/* Primary Calculator Keypad: Android Material 3 Expressive Squircle & Pill Keypad */}
+        <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
+          {/* Row 1: Function / Clear Row */}
+          <button
+            onClick={handleClear}
+            className="h-14 sm:h-16 md:h-18 text-base sm:text-lg font-bold rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container)',
+              color: 'var(--m3-tertiary)',
+            }}
+          >
+            AC
+          </button>
+          <button
+            onClick={handleBackspace}
+            className="h-14 sm:h-16 md:h-18 text-sm sm:text-base font-semibold rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container)',
+              color: 'var(--m3-on-surface-variant)',
+            }}
+            title="Backspace"
+          >
+            <Delete className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+          <button
+            onClick={() => handleInput('%')}
+            className="h-14 sm:h-16 md:h-18 text-base sm:text-lg font-semibold rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container)',
+              color: 'var(--m3-on-surface-variant)',
+            }}
+          >
+            %
+          </button>
+          <button
+            onClick={() => handleInput('÷')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-semibold rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-secondary-container)',
+              color: 'var(--m3-on-secondary-container)',
+            }}
+          >
+            ÷
+          </button>
+
+          {/* Row 2: 7, 8, 9, × */}
+          <button
+            onClick={() => handleInput('7')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            7
+          </button>
+          <button
+            onClick={() => handleInput('8')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            8
+          </button>
+          <button
+            onClick={() => handleInput('9')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            9
+          </button>
+          <button
+            onClick={() => handleInput('×')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-semibold rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-secondary-container)',
+              color: 'var(--m3-on-secondary-container)',
+            }}
+          >
+            ×
+          </button>
+
+          {/* Row 3: 4, 5, 6, − */}
+          <button
+            onClick={() => handleInput('4')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            4
+          </button>
+          <button
+            onClick={() => handleInput('5')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            5
+          </button>
+          <button
+            onClick={() => handleInput('6')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            6
+          </button>
+          <button
+            onClick={() => handleInput('−')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-semibold rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-secondary-container)',
+              color: 'var(--m3-on-secondary-container)',
+            }}
+          >
+            −
+          </button>
+
+          {/* Row 4: 1, 2, 3, + */}
+          <button
+            onClick={() => handleInput('1')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            1
+          </button>
+          <button
+            onClick={() => handleInput('2')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            2
+          </button>
+          <button
+            onClick={() => handleInput('3')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            3
+          </button>
+          <button
+            onClick={() => handleInput('+')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-semibold rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-secondary-container)',
+              color: 'var(--m3-on-secondary-container)',
+            }}
+          >
+            +
+          </button>
+
+          {/* Row 5: fx ADV Drawer Toggle + 0 + . + Hero Equals Pill (zero resting glow, lights up vibrant only on press) */}
+          <button
+            onClick={() => {
+              playSound('toggle');
+              setIsScientific(!isScientific);
+            }}
+            className="h-14 sm:h-16 md:h-18 px-2 text-xs sm:text-sm font-semibold rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center gap-1.5 transition-all border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: isScientific
+                ? 'var(--m3-tertiary-container)'
+                : 'var(--m3-surface-container)',
+              color: isScientific
+                ? 'var(--m3-on-tertiary-container)'
+                : 'var(--m3-primary)',
+            }}
+            title={isScientific ? 'Hide advanced symbols keys' : 'Show advanced symbols keys (calculus, trig, powers, prob, constants)'}
+          >
+            <OmniCalcLogo className="w-4 h-4 shrink-0" />
+            <span className="font-mono font-bold tracking-tight">{isScientific ? 'fx ON' : 'fx ADV'}</span>
+          </button>
+
+          <button
+            onClick={() => handleInput('0')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-medium rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            0
+          </button>
+          <button
+            onClick={() => handleInput('.')}
+            className="h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-mono font-bold rounded-[24px] sm:rounded-[28px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--m3-surface-container-high)',
+              color: 'var(--m3-on-surface)',
+            }}
+          >
+            .
+          </button>
+
+          {/* Material 3 HERO Equals Button Pill - ZERO resting glow, lights up vibrant only on pressing it */}
+          <button
+            onClick={handleEvaluate}
+            className={`h-14 sm:h-16 md:h-18 text-2xl sm:text-3xl font-bold rounded-[24px] sm:rounded-[28px] sm:rounded-full m3-key m3-equals-key flex items-center justify-center gap-1.5 border border-[var(--m3-primary)] cursor-pointer transition-all duration-150 ${
+              isEqualsPressed ? 'scale-[0.93] brightness-125 shadow-[0_0_32px_6px_color-mix(in_srgb,var(--m3-primary)_85%,transparent)]' : ''
+            }`}
+            style={{
+              backgroundColor: 'var(--m3-primary)',
+              color: 'var(--m3-on-primary)',
+            }}
+          >
+            <span>=</span>
+            <CornerDownLeft className="w-4 h-4 sm:w-5 sm:h-5 opacity-75" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

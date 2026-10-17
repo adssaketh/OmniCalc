@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background subtle metallic silver-white gradient -->
+    <radialGradient id="bgGradient" cx="45%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#edf1f7" />
+      <stop offset="100%" stop-color="#d5dbe5" />
+    </radialGradient>
+
+    <!-- Green capsule gradient -->
+    <linearGradient id="greenPillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0bd40b" />
+      <stop offset="50%" stop-color="#00c800" />
+      <stop offset="100%" stop-color="#00a800" />
+    </linearGradient>
+
+    <!-- Charcoal buttons gradient -->
+    <linearGradient id="darkBtnGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#333333" />
+      <stop offset="100%" stop-color="#222222" />
+    </linearGradient>
+
+    <!-- Subtle drop shadows -->
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.12" />
+    </filter>
+  </defs>
+
+  <!-- Base circular icon body -->
+  <circle cx="256" cy="256" r="248" fill="url(#bgGradient)" />
+
+  <!-- Left: Top Circle (Plus Button) -->
+  <circle cx="155" cy="160" r="90" fill="url(#darkBtnGrad)" filter="url(#softShadow)" />
+  <!-- Plus sign: Horizontal bar -->
+  <rect x="108" y="149" width="94" height="22" rx="11" fill="#ffffff" />
+  <!-- Plus sign: Vertical bar -->
+  <rect x="144" y="113" width="22" height="94" rx="11" fill="#ffffff" />
+
+  <!-- Left: Bottom Circle (Minus Button) -->
+  <circle cx="155" cy="352" r="90" fill="url(#darkBtnGrad)" filter="url(#softShadow)" />
+  <!-- Minus sign bar -->
+  <rect x="110" y="341" width="90" height="22" rx="11" fill="#ffffff" />
+
+  <!-- Right: Green Pill Capsule (Equals Button) -->
+  <rect x="266" y="65" width="182" height="382" rx="91" fill="url(#greenPillGrad)" filter="url(#softShadow)" />
+  <!-- Equals sign: Top bar -->
+  <rect x="312" y="232" width="90" height="22" rx="11" fill="#ffffff" />
+  <!-- Equals sign: Bottom bar -->
+  <rect x="312" y="280" width="90" height="22" rx="11" fill="#ffffff" />
+</svg>

@@ -1,0 +1,133 @@
+# OmniCalc By Saketh — Android APK & Google Play Store Guide
+
+**App ID**: `com.saketh.omnicalc`  
+**App Name**: `OmniCalc`  
+**Architecture**: Capacitor 7 + React 19 + Vite 8 + Tailwind CSS  
+**Offline Capability**: 100% Fully Offline (all JS, CSS, icons, and fonts bundled in APK)
+
+---
+
+## 📦 Download the Complete Native Android Project
+
+A complete, pre-configured zip archive containing the built web app and the native Android project is included in this repository:
+- **Direct Web Download**: `/OmniCalc-Android-Capacitor.zip` (available from the app root)
+- Or extract directly if cloning this repo: the `./android` directory is already generated and synced.
+
+---
+
+## 🚀 1. Building Locally via Command Line
+
+### Prerequisites
+- **JDK 17 or 21** installed (`java -version`)
+- **Android Studio** with Android SDK 36 (or command-line tools)
+- Environment variables: `ANDROID_HOME` pointing to your Android SDK directory.
+
+### Quick Build Commands
+
+#### A. Produce a Debug APK (`app-debug.apk`)
+```bash
+# 1. Install dependencies (if not already done)
+npm install
+
+# 2. Build the web app and sync native assets to Android
+npm run build
+npx cap sync android
+
+# 3. Compile the debug APK using Gradle
+cd android
+./gradlew assembleDebug
+
+# Output location:
+# android/app/build/outputs/apk/debug/app-debug.apk
+```
+You can transfer `app-debug.apk` directly to your Android device via USB/ADB:
+```bash
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+---
+
+#### B. Generate a Release Signing Keystore (One-Time)
+Run the Java `keytool` command to create your production keystore:
+```bash
+keytool -genkey -v -keystore omnicalc-release-key.jks \
+  -keyalg RSA -keysize 2048 -validity 10000 \
+  -alias omnicalc \
+  -storetype JKS
+```
+*Keep `omnicalc-release-key.jks` and your keystore password safe. Google Play requires this key to sign future app updates.*
+
+---
+
+#### C. Produce a Signed Release APK
+To sign via Gradle, configure `android/app/build.gradle` or sign the unsigned release APK directly:
+```bash
+cd android
+./gradlew assembleRelease
+
+# Sign using apksigner (part of Android SDK build-tools):
+$ANDROID_HOME/build-tools/36.0.0/apksigner sign \
+  --ks omnicalc-release-key.jks \
+  --ks-key-alias omnicalc \
+  --out app/build/outputs/apk/release/app-release-signed.apk \
+  app/build/outputs/apk/release/app-release-unsigned.apk
+```
+
+---
+
+#### D. Produce an Android App Bundle (.aab) for Google Play Console
+Google Play requires `.aab` format for all new app submissions:
+```bash
+cd android
+./gradlew bundleRelease
+
+# Sign the release bundle:
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+  -keystore omnicalc-release-key.jks \
+  app/build/outputs/bundle/release/app-release.aab \
+  omnicalc
+
+# Output location ready for Play Store:
+# android/app/build/outputs/bundle/release/app-release.aab
+```
+
+---
+
+## 🤖 2. Automated Build with GitHub Actions
+
+The repository includes a ready-to-run workflow at `.github/workflows/build-apk.yml`.
+
+Whenever you push to `main` or trigger a `workflow_dispatch` on GitHub:
+1. It installs Node.js and builds the web app with Vite.
+2. Runs `npx cap sync android`.
+3. Sets up JDK 17 and Android SDK.
+4. Executes `./gradlew assembleDebug` and `./gradlew bundleRelease`.
+5. Uploads `OmniCalc-Debug-APK` (`app-debug.apk`) and `OmniCalc-Release-AAB` as downloadable artifacts right from your GitHub Actions run page.
+
+---
+
+## 📱 3. Android Polish & WebView Adaptations Summary
+
+1. **Service Worker Guard**:
+   - In native Android (`Capacitor.isNativePlatform()`), service workers are automatically unregistered and registration is safely bypassed. All assets load locally from `android/app/src/main/assets/public/` via Android's local asset loader.
+2. **Local Fonts & Icons**:
+   - Remote Google Fonts dependencies have been replaced with local `@font-face` definitions pointing to offline TTF files in `/fonts/` (`Outfit` & `JetBrains Mono`). Zero external network requests are needed for styling.
+3. **Adaptive Launcher Icons & Splash**:
+   - Generated 105 adaptive icon and splash screen assets across all densities (`ldpi`, `mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`) matching the Material 3 Expressive theme `#111318`.
+4. **Android Back Button Handling**:
+   - Dismisses Settings or History modals first. If no modals are active, cleanly calls `CapApp.exitApp()`.
+5. **Dynamic Status Bar & Navigation Bar**:
+   - Dark theme `#111318` applied across `styles.xml`, `colors.xml`, and dynamically updated with `@capacitor/status-bar`.
+6. **Robust Offline Currency Converter**:
+   - When offline, currency conversions instantly use last-cached or default rates without crashing or throwing fetch errors.
+7. **Clean Shipped Dependencies**:
+   - Stripped unused backend/server dependencies (`express`, `dotenv`, `@types/express`) and unused AI packages (`@google/genai`).
+
+---
+
+## 🔗 4. Guidance on `assetlinks.json` (Capacitor vs TWA)
+
+- **For this Capacitor build**:
+  `public/.well-known/assetlinks.json` is **NOT required**. Capacitor runs a self-contained WebView that loads local app assets directly (`capacitor://localhost/` or `https://localhost/`). There is no hosted web domain ownership verification required.
+- **When is `assetlinks.json` needed?**:
+  Only if you later decide to deploy a **Trusted Web Activity (TWA)** instead of Capacitor. In a TWA, Android verifies domain ownership between your hosted URL (e.g. `https://your-domain.com/.well-known/assetlinks.json`) and your app's SHA-256 certificate fingerprint to hide the browser address bar.

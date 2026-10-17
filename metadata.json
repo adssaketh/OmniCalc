@@ -1,0 +1,8 @@
+{
+  "name": "OmniCalc V2",
+  "description": "Comprehensive scientific, physics constants \u0026 solvers, financial SIP with step-up, unit converter, and graphing calculator suite with tactile sound and precision math.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

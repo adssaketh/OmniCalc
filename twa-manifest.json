@@ -1,0 +1,69 @@
+{
+  "packageId": "com.saketh.omnicalc",
+  "host": "ais-pre-vb4eyn43cysuclmgidpya2-933620344389.asia-southeast1.run.app",
+  "name": "OmniCalc By Saketh",
+  "launcherName": "OmniCalc",
+  "display": "standalone",
+  "themeColor": "#111318",
+  "themeColorDark": "#111318",
+  "navigationColor": "#111318",
+  "navigationColorDark": "#111318",
+  "navigationDividerColor": "#00000000",
+  "navigationDividerColorDark": "#00000000",
+  "backgroundColor": "#111318",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://ais-pre-vb4eyn43cysuclmgidpya2-933620344389.asia-southeast1.run.app/pwa-512x512.png",
+  "maskableIconUrl": "https://ais-pre-vb4eyn43cysuclmgidpya2-933620344389.asia-southeast1.run.app/pwa-maskable-512x512.png",
+  "monochromeIconUrl": "",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "omnicalc"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Calculator",
+      "short_name": "Calc",
+      "url": "/?mode=standard",
+      "icon": "https://ais-pre-vb4eyn43cysuclmgidpya2-933620344389.asia-southeast1.run.app/pwa-192x192.png"
+    },
+    {
+      "name": "Converter",
+      "short_name": "Convert",
+      "url": "/?mode=converter",
+      "icon": "https://ais-pre-vb4eyn43cysuclmgidpya2-933620344389.asia-southeast1.run.app/pwa-192x192.png"
+    },
+    {
+      "name": "Finance SIP",
+      "short_name": "Finance",
+      "url": "/?mode=finance",
+      "icon": "https://ais-pre-vb4eyn43cysuclmgidpya2-933620344389.asia-southeast1.run.app/pwa-192x192.png"
+    },
+    {
+      "name": "Physics Lab",
+      "short_name": "Physics",
+      "url": "/?mode=physics",
+      "icon": "https://ais-pre-vb4eyn43cysuclmgidpya2-933620344389.asia-southeast1.run.app/pwa-192x192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://ais-pre-vb4eyn43cysuclmgidpya2-933620344389.asia-southeast1.run.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": false
+    },
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false
+}

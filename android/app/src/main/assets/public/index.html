@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>OmniCalc By Saketh</title>
+    <meta name="description" content="OmniCalc By Saketh - Comprehensive scientific, physics constants & solvers, financial SIP with step-up, unit converter, and graphing calculator suite." />
+    <meta property="og:title" content="OmniCalc By Saketh" />
+    <meta property="og:description" content="OmniCalc - Comprehensive scientific, physics constants & solvers, financial SIP with step-up, unit converter, and graphing calculator suite." />
+    <meta property="og:type" content="website" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" id="theme-color-light" media="(prefers-color-scheme: light)" content="#f8f9fa" />
+    <meta name="theme-color" id="theme-color-dark" media="(prefers-color-scheme: dark)" content="#111318" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="OmniCalc" />
+    <!-- Instant Status Bar Theme Sync: applies theme color before first paint to prevent mismatch on Android / browser -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('omni_calc_settings');
+          var settings = saved ? JSON.parse(saved) : {};
+          var theme = settings.theme || 'm3-iris';
+          var colorMode = settings.colorMode || 'system';
+          var prefersDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : true;
+          var isDark = colorMode === 'system' ? prefersDark : colorMode === 'dark';
+
+          var darkSurfaces = {
+            'm3-iris': '#111318',
+            'm3-ocean': '#0e1417',
+            'm3-forest': '#101510',
+            'm3-sunset': '#171210',
+            'm3-amoled': '#000000',
+            'oled-midnight': '#000000',
+            'cyber-emerald': '#101510',
+            'dark-obsidian': '#111318'
+          };
+          var lightSurfaces = {
+            'm3-iris': '#f8f9fa',
+            'm3-ocean': '#f5fbfa',
+            'm3-forest': '#f7fbf2',
+            'm3-sunset': '#fff8f6',
+            'm3-amoled': '#ffffff',
+            'oled-midnight': '#ffffff',
+            'cyber-emerald': '#f7fbf2',
+            'dark-obsidian': '#f8f9fa'
+          };
+          var themeDataMap = {
+            'm3-ocean': 'oceanic',
+            'm3-forest': 'forest',
+            'm3-sunset': 'sunset',
+            'm3-amoled': 'amoled',
+            'oled-midnight': 'amoled',
+            'cyber-emerald': 'forest',
+            'm3-iris': 'iris',
+            'dark-obsidian': 'iris'
+          };
+          var surface = (isDark ? darkSurfaces[theme] : lightSurfaces[theme]) || (isDark ? '#111318' : '#f8f9fa');
+          var dataTheme = themeDataMap[theme] || 'iris';
+
+          document.documentElement.setAttribute('data-m3-theme', dataTheme);
+          document.documentElement.setAttribute('data-m3-mode', isDark ? 'dark' : 'light');
+          document.documentElement.style.backgroundColor = surface;
+          document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <script type="module" crossorigin src="/assets/index-C7igLtNw.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-wW4dAim7.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="min-h-full antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div id="root"></div>
+  </body>
+</html>
+
