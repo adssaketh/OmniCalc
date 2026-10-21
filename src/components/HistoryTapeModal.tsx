@@ -94,15 +94,15 @@ export const HistoryTapeModal: React.FC<HistoryTapeModalProps> = ({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-md animate-in fade-in duration-200"
-      style={{ backgroundColor: 'var(--m3-scrim)' }}
+      style={{ backgroundColor: 'var(--m3-scrim, rgba(0, 0, 0, 0.75))' }}
       onClick={onClose}
     >
       <div
         className="w-full max-w-lg sm:max-w-xl md:max-w-2xl rounded-[32px] sm:rounded-[36px] border shadow-2xl overflow-hidden flex flex-col max-h-[88vh] transition-all"
         style={{
-          backgroundColor: 'var(--m3-surface-container-low)',
-          borderColor: 'var(--m3-outline-variant)',
-          color: 'var(--m3-on-surface)',
+          backgroundColor: 'var(--m3-surface-container-low, #191b20)',
+          borderColor: 'var(--m3-outline-variant, #43474e)',
+          color: 'var(--m3-on-surface, #e2e2e9)',
         }}
         onClick={(e) => e.stopPropagation()}
       >

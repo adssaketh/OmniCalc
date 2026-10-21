@@ -433,8 +433,8 @@ export default function App() {
 
         {/* Main Workspace Area with adaptive responsive padding and viewport utilization */}
         <main
-          className={`flex-1 w-full max-w-[1650px] mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-4 flex flex-col min-h-0 ${
-            isLargeScreen ? 'pb-4 lg:pb-6' : 'pb-24 sm:pb-28'
+          className={`flex-1 w-full max-w-[1650px] mx-auto px-2 sm:px-6 lg:px-8 py-1.5 sm:py-3 flex flex-col min-h-0 ${
+            isLargeScreen ? 'pb-4 lg:pb-6' : 'pb-[76px] sm:pb-24'
           }`}
         >
           {/* Animated Screen Container */}

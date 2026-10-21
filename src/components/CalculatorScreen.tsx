@@ -1268,14 +1268,14 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
     <div className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto flex-1 flex flex-col justify-between select-none h-full min-h-0">
       {/* Outer Calculator Shell - M3 Expressive Card with adaptive height and tonal surface */}
       <div
-        className="w-full flex-1 flex flex-col justify-between rounded-[32px] sm:rounded-[36px] md:rounded-[44px] p-3.5 sm:p-5 md:p-6 lg:p-7 shadow-2xl backdrop-blur-2xl transition-colors border border-[var(--m3-outline-variant)] min-h-0"
+        className="w-full flex-1 flex flex-col justify-between rounded-[28px] sm:rounded-[36px] md:rounded-[44px] p-2.5 sm:p-5 md:p-6 lg:p-7 shadow-2xl backdrop-blur-2xl transition-colors border border-[var(--m3-outline-variant)] min-h-0"
         style={{
           backgroundColor: 'color-mix(in srgb, var(--m3-surface-container-low) 96%, transparent)',
         }}
       >
         {/* Sticky Number Screen - Always visible with large responsive typography */}
         <div
-          className="w-full rounded-[26px] sm:rounded-[28px] md:rounded-[32px] p-4 sm:p-5 md:p-6 mb-2.5 sm:mb-3 md:mb-4 flex flex-col justify-between min-h-[140px] sm:min-h-[160px] md:min-h-[190px] lg:min-h-[220px] shadow-lg backdrop-blur-2xl transition-all border border-[var(--m3-outline-variant)]/40 shrink-0"
+          className="w-full rounded-[26px] sm:rounded-[28px] md:rounded-[32px] p-3 sm:p-5 md:p-6 mb-2 sm:mb-3 md:mb-4 flex flex-col justify-between min-h-[96px] sm:min-h-[140px] md:min-h-[190px] lg:min-h-[220px] shadow-lg backdrop-blur-2xl transition-all border border-[var(--m3-outline-variant)]/40 shrink-0"
           style={{
             backgroundColor: 'var(--m3-surface-container-highest)',
           }}
@@ -1383,12 +1383,12 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
         </div>
 
         {/* M3 Expressive Quick Memory Ribbon Bar */}
-        <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-2.5 sm:mb-3.5 shrink-0">
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-2 sm:mb-3 shrink-0">
           {(['MC', 'MR', 'M+', 'M-'] as const).map((mAct) => (
             <button
               key={mAct}
               onClick={() => handleMemory(mAct)}
-              className="h-9 sm:h-10 md:h-11 text-xs sm:text-sm font-mono font-bold rounded-full transition-all active:scale-95 border border-[var(--m3-outline-variant)]/40 cursor-pointer flex items-center justify-center"
+              className="h-8 sm:h-10 md:h-11 text-xs sm:text-sm font-mono font-bold rounded-full transition-all active:scale-95 border border-[var(--m3-outline-variant)]/40 cursor-pointer flex items-center justify-center"
               style={{
                 backgroundColor: mAct === 'MR' && memory !== 0 ? 'var(--m3-secondary-container)' : 'var(--m3-surface-container)',
                 color: mAct === 'MR' && memory !== 0 ? 'var(--m3-on-secondary-container)' : 'var(--m3-on-surface-variant)',
@@ -1448,11 +1448,11 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
         )}
 
         {/* Primary Calculator Keypad: Full-Height Proportional Tablet & Mobile Squircle Keypad */}
-        <div className="flex-1 grid grid-cols-4 grid-rows-5 gap-2 sm:gap-2.5 md:gap-3.5 lg:gap-4 h-full min-h-0">
+        <div className="flex-1 grid grid-cols-4 grid-rows-5 gap-1.5 sm:gap-2.5 md:gap-3.5 lg:gap-4 h-full min-h-0">
           {/* Row 1: Function / Clear Row */}
           <button
             onClick={handleClear}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-base sm:text-xl md:text-2xl font-bold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-base sm:text-xl md:text-2xl font-bold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container)',
               color: 'var(--m3-tertiary)',
@@ -1462,7 +1462,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={handleBackspace}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-sm sm:text-base font-semibold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-sm sm:text-base font-semibold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container)',
               color: 'var(--m3-on-surface-variant)',
@@ -1473,7 +1473,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('%')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-base sm:text-xl md:text-2xl font-semibold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-base sm:text-xl md:text-2xl font-semibold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container)',
               color: 'var(--m3-on-surface-variant)',
@@ -1483,7 +1483,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('÷')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-semibold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-semibold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-secondary-container)',
               color: 'var(--m3-on-secondary-container)',
@@ -1495,7 +1495,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           {/* Row 2: 7, 8, 9, × */}
           <button
             onClick={() => handleInput('7')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1505,7 +1505,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('8')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1515,7 +1515,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('9')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1525,7 +1525,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('×')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-semibold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-semibold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-secondary-container)',
               color: 'var(--m3-on-secondary-container)',
@@ -1537,7 +1537,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           {/* Row 3: 4, 5, 6, − */}
           <button
             onClick={() => handleInput('4')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1547,7 +1547,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('5')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1557,7 +1557,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('6')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1567,7 +1567,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('−')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-semibold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-semibold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-secondary-container)',
               color: 'var(--m3-on-secondary-container)',
@@ -1579,7 +1579,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           {/* Row 4: 1, 2, 3, + */}
           <button
             onClick={() => handleInput('1')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1589,7 +1589,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('2')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1599,7 +1599,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('3')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1609,7 +1609,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('+')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-semibold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-semibold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-secondary-container)',
               color: 'var(--m3-on-secondary-container)',
@@ -1624,7 +1624,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
               playSound('toggle');
               setIsScientific(!isScientific);
             }}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] px-2 text-xs sm:text-base font-semibold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center gap-1.5 transition-all border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] px-2 text-xs sm:text-base font-semibold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center gap-1.5 transition-all border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95"
             style={{
               backgroundColor: isScientific
                 ? 'var(--m3-tertiary-container)'
@@ -1641,7 +1641,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
 
           <button
             onClick={() => handleInput('0')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-medium rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1651,7 +1651,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           </button>
           <button
             onClick={() => handleInput('.')}
-            className="h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-bold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
+            className="h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-mono font-bold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] m3-key flex items-center justify-center border border-[var(--m3-outline-variant)]/40 cursor-pointer active:scale-95 transition-transform"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
               color: 'var(--m3-on-surface)',
@@ -1663,7 +1663,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           {/* Material 3 HERO Equals Button Pill */}
           <button
             onClick={handleEvaluate}
-            className={`h-full w-full min-h-[52px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-bold rounded-[20px] sm:rounded-[26px] md:rounded-[32px] sm:rounded-full m3-key m3-equals-key flex items-center justify-center gap-2 border border-[var(--m3-primary)] cursor-pointer transition-all duration-150 active:scale-95 ${
+            className={`h-full w-full min-h-[40px] sm:min-h-[64px] md:min-h-[78px] lg:min-h-[92px] xl:min-h-[105px] text-2xl sm:text-3xl md:text-4xl font-bold rounded-[16px] sm:rounded-[24px] md:rounded-[32px] sm:rounded-full m3-key m3-equals-key flex items-center justify-center gap-2 border border-[var(--m3-primary)] cursor-pointer transition-all duration-150 active:scale-95 ${
               isEqualsPressed ? 'scale-[0.93] brightness-125 shadow-[0_0_32px_6px_color-mix(in_srgb,var(--m3-primary)_85%,transparent)]' : ''
             }`}
             style={{
