@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shortcut_calculator_short">Calculator</string>
+    <string name="shortcut_calculator_long">Calculator</string>
+    <string name="shortcut_converter_short">Converter</string>
+    <string name="shortcut_converter_long">Unit Converter</string>
+    <string name="shortcut_finance_short">Finance</string>
+    <string name="shortcut_finance_long">Finance &amp; SIP</string>
+    <string name="shortcut_physics_short">Physics</string>
+    <string name="shortcut_physics_long">Physics Lab</string>
+</resources>

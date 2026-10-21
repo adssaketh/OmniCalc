@@ -1,11 +1,131 @@
-<div align="center">
+# OmniCalc
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+**A calculator suite for scientists, engineers, students and everyday money maths** — standard and scientific calculator, unit converter, finance tools, a physics lab and an optional function grapher, in one offline-capable app. Runs as a web app, an installable PWA, and a native Android app.
 
-  <h1>Built with AI Studio</h2>
+- **App ID:** `com.saketh.omnicalc`
+- **Stack:** React 19 · Vite · TypeScript · Tailwind CSS 4 · Capacitor (Android) · vite-plugin-pwa
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+---
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## Features
 
-</div>
+### Calculator (Standard & Scientific)
+- Expression evaluator with trigonometric, inverse trig, hyperbolic, `ln`, `log` and `sqrt` functions
+- Calculus and discrete functions: `diff`, `integrate`, `sum`, `prod`, `root`, `gcd`, `lcm`, `mod`
+- Combinatorics: `nCr` and `nPr`, including infix form (`10 nCr 3`, `17 mod 5`)
+- Degree / radian angle modes and configurable decimal precision
+- Persistent history tape
+
+### Unit Converter
+Length, Mass & Weight, Temperature, Area, Volume, Speed, Digital Data and Time (plus further categories in `src/engine/units.ts`).
+
+### Finance
+| Tab | What it does |
+| --- | --- |
+| Currency | Live exchange rates with a cached / offline fallback |
+| Loan / EMI | Monthly payment, total interest, full amortisation schedule |
+| SIP & Compound | SIP and compound growth with annual step-up and yearly breakdown |
+| Tip | Bill splitting and tip calculation |
+| ROI & CAGR | Return on investment and compound annual growth rate |
+
+### Physics Lab
+- **Constants:** fundamental constants grouped by Universal, Mechanics, Electromagnetism, Quantum & Atomic, Thermodynamics and Astrophysics
+- **Solvers:** Kinematics & Projectiles, Special Relativity, Quantum & Waves, Electromagnetism
+
+### Grapher (optional)
+Canvas-based function plotter with pan, zoom and reset. Disabled by default; enable it in **Settings**.
+
+### Experience
+- Material 3 Expressive theming: Iris, Oceanic, Botanical Sage, Sunset Terracotta and AMOLED
+- System / light / dark colour mode
+- Key-click sounds (generated with Web Audio) and haptic feedback
+- Swipeable tabs, responsive layout (bottom nav on phones, navigation rail on larger screens)
+- Settings and history saved locally in the browser
+
+---
+
+## Getting Started
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) 20+ (matches the CI workflow)
+- npm (or Bun — a `bun.lock` is included)
+
+### Run locally
+```bash
+git clone https://github.com/adssaketh/OmniCalc2.git
+cd OmniCalc2
+npm install
+npm run dev
+```
+The dev server starts on **http://localhost:3000**.
+
+### Scripts
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the Vite dev server (port 3000) |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Preview the production build |
+| `npm run lint` | Type-check with `tsc --noEmit` |
+| `npm run cap:sync` | Sync web assets into the Android project |
+| `npm run cap:build` | Build the web app, then sync to Android |
+| `npm run clean` | Remove `dist` and `server.js` |
+
+### Environment variables
+`.env.example` lists `GEMINI_API_KEY` and `APP_URL`, which are used by the Google AI Studio environment this project was created in. I could not find any Gemini calls in `src/`, so a local run should not need them.
+
+---
+
+## Android
+
+The native app is built with Capacitor.
+
+```bash
+npm install
+npm run build
+npx cap sync android
+cd android
+./gradlew assembleDebug
+# Output: android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Requirements: JDK 17 or 21, Android SDK 36, and `ANDROID_HOME` set. The project targets SDK 36 with a minimum of SDK 24.
+
+For release signing, Play Store publishing and the Trusted Web Activity setup, see [GOOGLE_PLAY_STORE_GUIDE.md](./GOOGLE_PLAY_STORE_GUIDE.md).
+
+### CI
+`.github/workflows/build-apk.yml` builds the web app and a debug APK on every push and pull request to `main`/`master`, uploads the APK as an artifact, and also attempts a release bundle (AAB).
+
+---
+
+## PWA
+OmniCalc is installable from the browser. The manifest defines home-screen shortcuts for **Calculator**, **Converter**, **Finance** and **Physics Lab**, and fonts and assets are cached for offline use.
+
+---
+
+## Project Structure
+```
+├── src/
+│   ├── App.tsx            # App shell, settings and history state
+│   ├── components/        # Screens (Calculator, Converter, Finance, Physics, Graph), modals, navigation
+│   ├── engine/            # evaluator, units, finance, physics, currency logic
+│   ├── hooks/             # PWA install, orientation
+│   ├── utils/audio.ts     # Key-click sounds
+│   └── types/             # Shared TypeScript types
+├── public/                # PWA manifest, icons, fonts, privacy policy
+├── android/               # Capacitor Android project
+├── assets/                # Icon and splash source images
+├── capacitor.config.json
+├── twa-manifest.json      # Bubblewrap / TWA configuration
+└── vite.config.ts
+```
+
+---
+
+## Privacy
+No microphone, camera, contacts or location access is requested. Currency rates are fetched from public exchange-rate APIs when online. See `public/privacy-policy.html`.
+
+## License
+Source files carry an Apache-2.0 SPDX header, but the repository has no `LICENSE` file. Add one if you want the license to be explicit.
+
+## Author
+Built by **Saketh** ([@adssaketh](https://github.com/adssaketh)).

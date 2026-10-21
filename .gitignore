@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+*.log
+.env*
+!.env.example
+android/.gradle/
+android/app/build/
+android/local.properties

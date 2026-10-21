@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="calculator"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_calculator"
+        android:shortcutShortLabel="@string/shortcut_calculator_short"
+        android:shortcutLongLabel="@string/shortcut_calculator_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="omnicalc://open/standard"
+            android:targetPackage="com.saketh.omnicalc"
+            android:targetClass="com.saketh.omnicalc.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="converter"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_converter"
+        android:shortcutShortLabel="@string/shortcut_converter_short"
+        android:shortcutLongLabel="@string/shortcut_converter_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="omnicalc://open/converter"
+            android:targetPackage="com.saketh.omnicalc"
+            android:targetClass="com.saketh.omnicalc.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="finance"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_finance"
+        android:shortcutShortLabel="@string/shortcut_finance_short"
+        android:shortcutLongLabel="@string/shortcut_finance_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="omnicalc://open/finance"
+            android:targetPackage="com.saketh.omnicalc"
+            android:targetClass="com.saketh.omnicalc.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="physics"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_physics"
+        android:shortcutShortLabel="@string/shortcut_physics_short"
+        android:shortcutLongLabel="@string/shortcut_physics_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="omnicalc://open/physics"
+            android:targetPackage="com.saketh.omnicalc"
+            android:targetClass="com.saketh.omnicalc.MainActivity" />
+    </shortcut>
+</shortcuts>
