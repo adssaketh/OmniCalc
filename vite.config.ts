@@ -2,11 +2,32 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
+import fs from 'fs';
 import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
+  const rootDir = import.meta.dirname ?? path.resolve('.');
+
   return {
     plugins: [
+      {
+        name: 'zip-download-handler',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url && req.url.includes('.zip')) {
+              const cleanUrl = req.url.split('?')[0];
+              const filePath = path.join(rootDir, 'public', cleanUrl);
+              if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+                res.setHeader('Content-Type', 'application/zip');
+                res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
+                fs.createReadStream(filePath).pipe(res);
+                return;
+              }
+            }
+            next();
+          });
+        },
+      },
       react(),
       tailwindcss(),
       VitePWA({
@@ -83,6 +104,7 @@ export default defineConfig(() => {
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
           navigateFallback: '/index.html',
+          navigateFallbackDenylist: [/^\/.*\.zip$/, /^\/.*\.apk$/],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
