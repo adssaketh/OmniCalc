@@ -12,6 +12,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Restore Complete Source Bundle
+        run: |
+          if [ -f OmniCalc-Complete-Source.zip ]; then
+            echo "Extracting root OmniCalc-Complete-Source.zip..."
+            unzip -o -q OmniCalc-Complete-Source.zip
+          elif [ -f public/OmniCalc-Complete-Source.zip ]; then
+            echo "Extracting public/OmniCalc-Complete-Source.zip..."
+            unzip -o -q public/OmniCalc-Complete-Source.zip
+          elif [ -f public/assets/aistudio/omnicalc-v2-restore-slim_76678813.zip ]; then
+            echo "Extracting backup archive..."
+            unzip -o -q public/assets/aistudio/omnicalc-v2-restore-slim_76678813.zip
+          else
+            echo "Fetching complete bundle from AI Studio..."
+            curl -fsSL "https://ais-dev-gx5rc7yftn47is7ydr6kcs-933620344389.asia-southeast1.run.app/OmniCalc-Complete-Source.zip" -o live_bundle.zip && unzip -o -q live_bundle.zip && rm -f live_bundle.zip || true
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
