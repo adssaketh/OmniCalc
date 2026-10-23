@@ -41,6 +41,41 @@ const DEFAULT_SETTINGS: AppSettings = {
   enableGrapher: false,
 };
 
+/** Page background per theme, used for the status bar and the root element. */
+const DARK_SURFACES: Record<string, string> = {
+  dynamic: '#111318',
+  'm3-iris': '#111318',
+  'm3-ocean': '#0e1417',
+  'm3-forest': '#101510',
+  'm3-sunset': '#171210',
+  'm3-amoled': '#000000',
+  'oled-midnight': '#000000',
+  'cyber-emerald': '#101510',
+  'dark-obsidian': '#111318',
+};
+
+const LIGHT_SURFACES: Record<string, string> = {
+  dynamic: '#f8f9fa',
+  'm3-iris': '#f8f9fa',
+  'm3-ocean': '#f5fbfa',
+  'm3-forest': '#f7fbf2',
+  'm3-sunset': '#fff8f6',
+  'm3-amoled': '#ffffff',
+  'oled-midnight': '#ffffff',
+  'cyber-emerald': '#f7fbf2',
+  'dark-obsidian': '#f8f9fa',
+};
+
+/** Value of the data-m3-theme attribute for each theme id (see index.css). */
+const THEME_DATA_ATTR: Record<string, string> = {
+  'm3-ocean': 'oceanic',
+  'm3-forest': 'forest',
+  'cyber-emerald': 'forest',
+  'm3-sunset': 'sunset',
+  'm3-amoled': 'amoled',
+  'oled-midnight': 'amoled',
+};
+
 export default function App() {
   const [currentMode, setCurrentMode] = useState<CalculatorMode>('standard');
   const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
@@ -179,27 +214,7 @@ export default function App() {
     };
   }, []);
 
-  // Theme styling wrapper
-  const getM3ThemeDataAttr = (): string => {
-    switch (settings.theme) {
-      case 'm3-ocean':
-        return 'oceanic';
-      case 'm3-forest':
-        return 'forest';
-      case 'm3-sunset':
-        return 'sunset';
-      case 'm3-amoled':
-      case 'oled-midnight':
-        return 'amoled';
-      case 'cyber-emerald':
-        return 'forest';
-      case 'dynamic':
-      case 'm3-iris':
-      case 'dark-obsidian':
-      default:
-        return 'iris';
-    }
-  };
+  const themeDataAttr = THEME_DATA_ATTR[settings.theme] ?? 'iris';
 
   // Live prefers-color-scheme listener (updates instantly with no reload)
   const [systemIsDark, setSystemIsDark] = useState<boolean>(() => {
@@ -234,32 +249,8 @@ export default function App() {
 
   // Dynamically synchronize Android status bar theme-color and root document background
   useEffect(() => {
-    const darkSurfaces: Record<string, string> = {
-      'dynamic': '#111318',
-      'm3-iris': '#111318',
-      'm3-ocean': '#0e1417',
-      'm3-forest': '#101510',
-      'm3-sunset': '#171210',
-      'm3-amoled': '#000000',
-      'oled-midnight': '#000000',
-      'cyber-emerald': '#101510',
-      'dark-obsidian': '#111318',
-    };
-
-    const lightSurfaces: Record<string, string> = {
-      'dynamic': '#f8f9fa',
-      'm3-iris': '#f8f9fa',
-      'm3-ocean': '#f5fbfa',
-      'm3-forest': '#f7fbf2',
-      'm3-sunset': '#fff8f6',
-      'm3-amoled': '#ffffff',
-      'oled-midnight': '#ffffff',
-      'cyber-emerald': '#f7fbf2',
-      'dark-obsidian': '#f8f9fa',
-    };
-
     let surfaceColor =
-      (isDarkMode ? darkSurfaces[settings.theme] : lightSurfaces[settings.theme]) ||
+      (isDarkMode ? DARK_SURFACES[settings.theme] : LIGHT_SURFACES[settings.theme]) ||
       (isDarkMode ? '#111318' : '#f8f9fa');
 
     // 1. Dynamic Wallpaper Colors from Android 12+ Monet
@@ -272,11 +263,10 @@ export default function App() {
       clearDynamicTokens();
     }
 
-    const dataAttr = getM3ThemeDataAttr();
-    const modeAttr = isDarkMode ? 'dark' : 'light';
+        const modeAttr = isDarkMode ? 'dark' : 'light';
 
     // 2. Set root HTML dataset and background colors
-    document.documentElement.setAttribute('data-m3-theme', dataAttr);
+    document.documentElement.setAttribute('data-m3-theme', themeDataAttr);
     document.documentElement.setAttribute('data-m3-mode', modeAttr);
     document.documentElement.style.backgroundColor = surfaceColor;
     document.documentElement.style.colorScheme = isDarkMode ? 'dark' : 'light';
@@ -285,11 +275,11 @@ export default function App() {
     // 3. Update Android/Browser system status bar meta tags per scheme
     const lightMeta = document.getElementById('theme-color-light');
     if (lightMeta) {
-      lightMeta.setAttribute('content', settings.theme === 'dynamic' ? surfaceColor : (lightSurfaces[settings.theme] || '#f8f9fa'));
+      lightMeta.setAttribute('content', settings.theme === 'dynamic' ? surfaceColor : (LIGHT_SURFACES[settings.theme] || '#f8f9fa'));
     }
     const darkMeta = document.getElementById('theme-color-dark');
     if (darkMeta) {
-      darkMeta.setAttribute('content', settings.theme === 'dynamic' ? surfaceColor : (darkSurfaces[settings.theme] || '#111318'));
+      darkMeta.setAttribute('content', settings.theme === 'dynamic' ? surfaceColor : (DARK_SURFACES[settings.theme] || '#111318'));
     }
 
     // Fallback general meta theme-color
@@ -303,7 +293,7 @@ export default function App() {
       StatusBar.setBackgroundColor({ color: surfaceColor }).catch(() => {});
       StatusBar.setStyle({ style: isDarkMode ? Style.Dark : Style.Light }).catch(() => {});
     }
-  }, [settings.theme, settings.colorMode, isDarkMode, systemColors]);
+  }, [settings.theme, settings.colorMode, isDarkMode, systemColors, themeDataAttr]);
 
   // Android Native Back Button: dismiss modals first, then exit application
   useEffect(() => {
@@ -392,7 +382,7 @@ export default function App() {
 
   return (
     <div
-      data-m3-theme={getM3ThemeDataAttr()}
+      data-m3-theme={themeDataAttr}
       className={`min-h-screen font-sans transition-colors duration-300 ${
         isLargeScreen ? 'flex flex-row' : 'flex flex-col'
       }`}
@@ -527,7 +517,6 @@ export default function App() {
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
         onUpdateSettings={handleUpdateSettings}
-        onClearHistory={handleClearHistory}
       />
     </div>
   );

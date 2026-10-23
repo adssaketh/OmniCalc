@@ -28,6 +28,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
   const [currencyTo, setCurrencyTo] = useState<string>('INR');
   const [amount, setAmount] = useState<string>('100');
   const [copied, setCopied] = useState<boolean>(false);
+  const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
   const loadRates = useCallback(async () => {
     setIsRefreshing(true);
@@ -38,12 +39,23 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
       // ignore
     } finally {
       setIsRefreshing(false);
+      setHasLoaded(true);
     }
   }, []);
 
   useEffect(() => {
     loadRates();
   }, [loadRates]);
+
+  // Retry automatically when the device regains connectivity.
+  useEffect(() => {
+    window.addEventListener('online', loadRates);
+    return () => window.removeEventListener('online', loadRates);
+  }, [loadRates]);
+
+  const statusColor = ratesData.isLive
+    ? currentTheme.isDark ? '#34d399' : '#047857'
+    : currentTheme.isDark ? '#fbbf24' : '#b45309';
 
   const handleSwap = () => {
     const prevFrom = currencyFrom;
@@ -96,16 +108,20 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
         <div className="flex items-center gap-2">
           <span className="relative flex h-2.5 w-2.5">
             <span
-              className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-              style={{ backgroundColor: currentTheme.isDark ? '#34d399' : '#047857' }}
+              className={`${ratesData.isLive ? 'animate-ping ' : ''}absolute inline-flex h-full w-full rounded-full opacity-75`}
+              style={{ backgroundColor: statusColor }}
             />
             <span
               className="relative inline-flex rounded-full h-2.5 w-2.5"
-              style={{ backgroundColor: currentTheme.isDark ? '#34d399' : '#047857' }}
+              style={{ backgroundColor: statusColor }}
             />
           </span>
           <span className="text-xs font-semibold tracking-wide uppercase" style={{ color: 'var(--m3-on-surface)' }}>
-            {ratesData.isLive ? 'Live Forex Exchange Rates' : 'Forex Rates (Cached)'}
+            {ratesData.isLive
+              ? 'Live Forex Exchange Rates'
+              : ratesData.status === 'builtin'
+                ? 'Forex Rates (Built-in)'
+                : 'Forex Rates (Cached)'}
           </span>
           <span className="text-[11px]" style={{ color: 'var(--m3-on-surface-variant)' }}>
             • Updated {ratesData.lastUpdatedStr}
@@ -116,10 +132,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
           type="button"
           onClick={loadRates}
           disabled={isRefreshing}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors disabled:opacity-50 cursor-pointer active:scale-95"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer active:scale-95"
           style={{
             backgroundColor: 'var(--m3-surface-container)',
-            borderColor: 'var(--m3-outline-variant)',
             color: 'var(--m3-on-surface)',
           }}
           title="Fetch latest forex exchange rates"
@@ -132,6 +147,22 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
         </button>
       </div>
 
+      {hasLoaded && !isRefreshing && !ratesData.isLive && (
+        <div
+          role="status"
+          className="mb-5 px-3 py-2 rounded-xl text-xs"
+          style={{
+            backgroundColor: 'var(--m3-surface-container)',
+            color: 'var(--m3-on-surface)',
+          }}
+          title={ratesData.error}
+        >
+          Couldn't reach a live rate provider, so these are{' '}
+          {ratesData.status === 'cached' ? 'your last saved rates' : 'built-in approximate rates'}.
+          Check your connection and tap Refresh Rates.
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-start">
         {/* =========================================================================
             INPUTS & SELECTION (md:col-span-6)
@@ -139,10 +170,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
         <div className="md:col-span-6 flex flex-col gap-4">
         {/* From Currency Input Card */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <div className="flex items-center justify-between mb-2">
@@ -152,10 +182,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
             <select
               value={currencyFrom}
               onChange={(e) => setCurrencyFrom(e.target.value)}
-              className="border text-xs font-medium rounded-xl px-2.5 py-1 focus:outline-none cursor-pointer"
+              className=" text-xs font-medium rounded-xl px-2.5 py-1 focus:outline-none cursor-pointer"
               style={{
                 backgroundColor: 'var(--m3-surface-container-high)',
-                borderColor: 'var(--m3-outline-variant)',
                 color: 'var(--m3-on-surface)',
               }}
             >
@@ -196,10 +225,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
                   key={val}
                   type="button"
                   onClick={() => setAmount(val.toString())}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl border transition-all cursor-pointer active:scale-95"
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer active:scale-95"
                   style={{
                     backgroundColor: isActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                    borderColor: isActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                     color: isActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                     fontWeight: isActive ? 700 : 500,
                   }}
@@ -216,10 +244,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
           <button
             type="button"
             onClick={handleSwap}
-            className="p-3 rounded-full border shadow-lg transition-transform active:scale-90 cursor-pointer"
+            className="p-3 rounded-full transition-transform active:scale-90 cursor-pointer"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
-              borderColor: 'var(--m3-outline-variant)',
               color: 'var(--m3-on-surface)',
             }}
             aria-label="Swap currencies"
@@ -231,10 +258,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
 
         {/* To Currency Selection */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <div className="flex items-center justify-between mb-2">
@@ -244,10 +270,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
             <select
               value={currencyTo}
               onChange={(e) => setCurrencyTo(e.target.value)}
-              className="border text-xs font-medium rounded-xl px-2.5 py-1 focus:outline-none cursor-pointer"
+              className=" text-xs font-medium rounded-xl px-2.5 py-1 focus:outline-none cursor-pointer"
               style={{
                 backgroundColor: 'var(--m3-surface-container-high)',
-                borderColor: 'var(--m3-outline-variant)',
                 color: 'var(--m3-on-surface)',
               }}
             >
@@ -269,18 +294,11 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
          ========================================================================= */}
       <div className="md:col-span-6 flex flex-col gap-4 sticky md:top-4">
         <div
-          className="relative rounded-3xl p-5 sm:p-6 border shadow-2xl overflow-hidden backdrop-blur-xl transition-colors"
+          className="relative rounded-3xl p-5 sm:p-6 overflow-hidden transition-colors"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
-        {/* Subtle Ambient Corner Glow */}
-        <div
-          className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20"
-          style={{ backgroundColor: currentTheme.accent }}
-        />
-
         {/* Converted Amount Metric */}
         <div className="flex items-start justify-between gap-3 mb-5">
           <div className="flex flex-col">
@@ -304,10 +322,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
           <button
             type="button"
             onClick={handleCopy}
-            className="p-2.5 rounded-xl border transition-colors cursor-pointer shrink-0 active:scale-95"
+            className="p-2.5 rounded-xl transition-colors cursor-pointer shrink-0 active:scale-95"
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
-              borderColor: 'var(--m3-outline-variant)',
               color: 'var(--m3-on-surface)',
             }}
             title="Copy converted value"
@@ -323,10 +340,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
         {/* Live Conversion Rate Badges */}
         <div className="flex flex-wrap gap-2 text-xs font-mono mb-5">
           <span
-            className="px-3 py-1 rounded-xl border"
+            className="px-3 py-1 rounded-xl "
             style={{
               backgroundColor: 'var(--m3-primary-container)',
-              borderColor: 'var(--m3-primary)',
               color: 'var(--m3-on-primary-container)',
               fontWeight: 600,
             }}
@@ -334,10 +350,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
             1 {currencyFrom} = {conversion.rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} {currencyTo}
           </span>
           <span
-            className="px-3 py-1 rounded-xl border"
+            className="px-3 py-1 rounded-xl "
             style={{
               backgroundColor: 'var(--m3-surface-container)',
-              borderColor: 'var(--m3-outline-variant)',
               color: 'var(--m3-on-surface-variant)',
             }}
           >
@@ -374,10 +389,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({ className 
                   key={code}
                   type="button"
                   onClick={() => setCurrencyTo(code)}
-                  className="p-3 rounded-2xl border flex flex-col items-start gap-1 transition-colors cursor-pointer text-left group active:scale-95"
+                  className="p-3 rounded-2xl flex flex-col items-start gap-1 transition-colors cursor-pointer text-left group active:scale-95"
                   style={{
                     backgroundColor: 'var(--m3-surface-container)',
-                    borderColor: 'var(--m3-outline-variant)',
                   }}
                 >
                   <div className="flex items-center justify-between w-full text-xs" style={{ color: 'var(--m3-on-surface-variant)' }}>

@@ -1,33 +1,11 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import path from 'path';
-import fs from 'fs';
 import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
-  const rootDir = import.meta.dirname ?? path.resolve('.');
-
   return {
     plugins: [
-      {
-        name: 'zip-download-handler',
-        configureServer(server) {
-          server.middlewares.use((req, res, next) => {
-            if (req.url && req.url.includes('.zip')) {
-              const cleanUrl = req.url.split('?')[0];
-              const filePath = path.join(rootDir, 'public', cleanUrl);
-              if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-                res.setHeader('Content-Type', 'application/zip');
-                res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
-                fs.createReadStream(filePath).pipe(res);
-                return;
-              }
-            }
-            next();
-          });
-        },
-      },
       react(),
       tailwindcss(),
       VitePWA({
@@ -36,7 +14,7 @@ export default defineConfig(() => {
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon.svg', 'fonts/*.ttf'],
         manifest: {
           id: '/',
-          name: 'OmniCalc By Saketh',
+          name: 'OmniCalc',
           short_name: 'OmniCalc',
           description: 'Comprehensive scientific, physics constants, unit converter, and financial SIP calculator suite with Material 3 Expressive dynamic theming.',
           theme_color: '#111318',
@@ -104,7 +82,7 @@ export default defineConfig(() => {
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
           navigateFallback: '/index.html',
-          navigateFallbackDenylist: [/^\/.*\.zip$/, /^\/.*\.apk$/],
+          navigateFallbackDenylist: [/^\/.*\.apk$/],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -142,17 +120,5 @@ export default defineConfig(() => {
         },
       }),
     ],
-    resolve: {
-      alias: {
-        '@': path.resolve(import.meta.dirname ?? '.', '.'),
-      },
-    },
-    server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
-      hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
-    },
   };
 });

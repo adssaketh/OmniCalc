@@ -102,10 +102,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
                 INPUT CARD (Adaptive M3 surface container)
                ========================================================================= */}
             <div
-              className="rounded-2xl border p-4 sm:p-5 flex flex-col justify-between transition-all"
+              className="rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-all"
               style={{
                 backgroundColor: 'var(--m3-surface-container-low)',
-                borderColor: 'var(--m3-outline-variant)',
               }}
             >
               <div>
@@ -122,10 +121,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
                       playSound('toggle');
                       setFromUnitId(e.target.value);
                     }}
-                    className="border text-xs font-medium rounded-xl px-2.5 py-1.5 focus:outline-none cursor-pointer"
+                    className=" text-xs font-medium rounded-xl px-2.5 py-1.5 focus:outline-none cursor-pointer"
                     style={{
                       backgroundColor: 'var(--m3-surface-container-high)',
-                      borderColor: 'var(--m3-outline-variant)',
                       color: 'var(--m3-on-surface)',
                     }}
                   >
@@ -185,10 +183,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
                         playSound('num');
                         setInputValue(p.toString());
                       }}
-                      className="px-3 py-1.5 text-xs font-medium rounded-xl border transition-all cursor-pointer active:scale-95"
+                      className="px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer active:scale-95"
                       style={{
                         backgroundColor: isActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                        borderColor: isActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                         color: isActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                         fontWeight: isActive ? 700 : 500,
                       }}
@@ -205,10 +202,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
               <button
                 type="button"
                 onClick={handleSwap}
-                className="p-3 rounded-full border shadow-xl transition-transform active:scale-90 cursor-pointer"
+                className="p-3 rounded-full transition-transform active:scale-90 cursor-pointer"
                 style={{
                   backgroundColor: 'var(--m3-surface-container-high)',
-                  borderColor: 'var(--m3-outline-variant)',
                   color: 'var(--m3-on-surface)',
                   transform: isSwapping ? 'rotate(180deg) scale(0.92)' : 'rotate(0deg) scale(1)',
                 }}
@@ -223,10 +219,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
               <button
                 type="button"
                 onClick={handleSwap}
-                className="p-3 rounded-full border shadow-lg transition-transform active:scale-90 cursor-pointer"
+                className="p-3 rounded-full transition-transform active:scale-90 cursor-pointer"
                 style={{
                   backgroundColor: 'var(--m3-surface-container-high)',
-                  borderColor: 'var(--m3-outline-variant)',
                   color: 'var(--m3-on-surface)',
                   transform: isSwapping ? 'rotate(180deg) scale(0.92)' : 'rotate(0deg) scale(1)',
                 }}
@@ -240,18 +235,11 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
                 RESULTS CARD (Adaptive M3 surface container)
                ========================================================================= */}
             <div
-              className="relative rounded-2xl sm:rounded-3xl p-5 sm:p-6 border shadow-2xl overflow-hidden backdrop-blur-xl flex flex-col justify-between transition-colors"
+              className="relative rounded-2xl sm:rounded-3xl p-5 sm:p-6 overflow-hidden flex flex-col justify-between transition-colors"
               style={{
                 backgroundColor: 'var(--m3-surface-container-low)',
-                borderColor: 'var(--m3-outline-variant)',
               }}
             >
-              {/* Subtle Ambient Corner Glow */}
-              <div
-                className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20"
-                style={{ backgroundColor: currentTheme.accent }}
-              />
-
               <div>
                 {/* Target Unit Picker */}
                 <div className="flex items-center justify-between mb-3">
@@ -267,10 +255,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
                       playSound('toggle');
                       setToUnitId(e.target.value);
                     }}
-                    className="border text-xs font-medium rounded-xl px-2.5 py-1.5 focus:outline-none cursor-pointer"
+                    className=" text-xs font-medium rounded-xl px-2.5 py-1.5 focus:outline-none cursor-pointer"
                     style={{
                       backgroundColor: 'var(--m3-surface-container-high)',
-                      borderColor: 'var(--m3-outline-variant)',
                       color: 'var(--m3-on-surface)',
                     }}
                   >
@@ -294,10 +281,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="p-2.5 rounded-xl border transition-colors cursor-pointer shrink-0 active:scale-95"
+                    className="p-2.5 rounded-xl transition-colors cursor-pointer shrink-0 active:scale-95"
                     style={{
                       backgroundColor: 'var(--m3-surface-container-high)',
-                      borderColor: 'var(--m3-outline-variant)',
                       color: 'var(--m3-on-surface)',
                     }}
                     title="Copy converted value"
@@ -314,10 +300,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
               {/* Formula / Relation Tag */}
               {conversion.formula && (
                 <div
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono self-start mt-2"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono self-start mt-2"
                   style={{
                     backgroundColor: 'var(--m3-surface-container)',
-                    borderColor: 'var(--m3-outline-variant)',
                     color: 'var(--m3-on-surface-variant)',
                   }}
                 >
@@ -330,10 +315,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
 
           {/* Other Units in Category Quick Comparison - Tablet Expanded Grid */}
           <div
-            className="rounded-2xl sm:rounded-3xl p-5 sm:p-6 border shadow-2xl backdrop-blur-xl transition-colors"
+            className="rounded-2xl sm:rounded-3xl p-5 sm:p-6 transition-colors"
             style={{
               backgroundColor: 'var(--m3-surface-container-low)',
-              borderColor: 'var(--m3-outline-variant)',
             }}
           >
             <span
@@ -356,10 +340,9 @@ export const ConverterScreen: React.FC<ConverterScreenProps> = ({
                     key={u.id}
                     type="button"
                     onClick={() => setToUnitId(u.id)}
-                    className="p-3 rounded-xl border text-left transition-colors cursor-pointer active:scale-95"
+                    className="p-3 rounded-xl text-left transition-colors cursor-pointer active:scale-95"
                     style={{
                       backgroundColor: isSelected ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                      borderColor: isSelected ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                       color: isSelected ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface)',
                     }}
                   >

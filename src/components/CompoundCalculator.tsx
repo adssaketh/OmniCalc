@@ -73,10 +73,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
         <div className="md:col-span-6 flex flex-col gap-4">
         {/* 1. Monthly SIP Amount */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <label className="block text-xs font-medium mb-1" style={{ color: 'var(--m3-on-surface-variant)' }}>
@@ -110,10 +109,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
                   key={p.value}
                   type="button"
                   onClick={() => setMonthlySIP(p.value)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl border transition-all cursor-pointer active:scale-95"
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer active:scale-95"
                   style={{
                     backgroundColor: isActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                    borderColor: isActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                     color: isActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                     fontWeight: isActive ? 700 : 500,
                   }}
@@ -127,10 +125,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
 
         {/* 2. Initial Lump Sum (Optional) */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <label className="block text-xs font-medium mb-1" style={{ color: 'var(--m3-on-surface-variant)' }}>
@@ -158,10 +155,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
 
         {/* 3. Expected Annual Return Rate */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <div className="flex items-center justify-between mb-1">
@@ -199,10 +195,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
                   key={preset.value}
                   type="button"
                   onClick={() => setRate(preset.value)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl border transition-all cursor-pointer active:scale-95"
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer active:scale-95"
                   style={{
                     backgroundColor: isActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                    borderColor: isActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                     color: isActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                     fontWeight: isActive ? 700 : 500,
                   }}
@@ -216,10 +211,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
 
         {/* 4. Duration (Years) */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <div className="flex items-center justify-between mb-1">
@@ -254,10 +248,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
                   key={y}
                   type="button"
                   onClick={() => setYears(y)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl border transition-all cursor-pointer active:scale-95"
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer active:scale-95"
                   style={{
                     backgroundColor: isActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                    borderColor: isActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                     color: isActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                     fontWeight: isActive ? 700 : 500,
                   }}
@@ -271,10 +264,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
 
         {/* 5. Annual Step-Up */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <div className="flex items-center justify-between mb-1">
@@ -309,10 +301,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
                   key={pct}
                   type="button"
                   onClick={() => setStepUp(pct)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl border transition-all cursor-pointer active:scale-95"
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer active:scale-95"
                   style={{
                     backgroundColor: isActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                    borderColor: isActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                     color: isActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                     fontWeight: isActive ? 700 : 500,
                   }}
@@ -330,19 +321,12 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
          ========================================================================= */}
       <div className="md:col-span-6 flex flex-col gap-4 sticky md:top-4">
         <div
-          className="relative rounded-3xl p-5 sm:p-6 border shadow-2xl overflow-hidden backdrop-blur-xl transition-colors"
+          className="relative rounded-3xl p-5 sm:p-6 overflow-hidden transition-colors"
           style={{
             backgroundColor: 'var(--m3-surface-container)',
-            borderColor: 'var(--m3-outline-variant)',
             color: 'var(--m3-on-surface)',
           }}
         >
-        {/* Subtle Ambient Corner Glow */}
-        <div
-          className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20"
-          style={{ backgroundColor: currentTheme.accent }}
-        />
-
         {/* Final Corpus Metric */}
         <div className="flex flex-col mb-5">
           <span className="text-[11px] font-semibold tracking-wider uppercase mb-1" style={{ color: 'var(--m3-on-surface-variant)' }}>
@@ -409,10 +393,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           {/* Tile 1: Total Invested (Neutral) */}
           <div
-            className="rounded-2xl p-4 border flex flex-col justify-between"
+            className="rounded-2xl p-4 flex flex-col justify-between"
             style={{
               backgroundColor: 'var(--m3-surface-container-low)',
-              borderColor: 'var(--m3-outline-variant)',
             }}
           >
             <span className="text-xs font-medium mb-1" style={{ color: 'var(--m3-on-surface-variant)' }}>
@@ -425,10 +408,9 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
 
           {/* Tile 2: Total Returns / Interest Earned (Accent-tinted) */}
           <div
-            className="rounded-2xl p-4 border flex flex-col justify-between"
+            className="rounded-2xl p-4 flex flex-col justify-between"
             style={{
               backgroundColor: `rgba(${currentTheme.accentRgb}, ${currentTheme.isDark ? '0.12' : '0.10'})`,
-              borderColor: `rgba(${currentTheme.accentRgb}, 0.28)`,
             }}
           >
             <span className="text-xs font-medium mb-1" style={{ color: 'var(--m3-on-surface-variant)' }}>
@@ -466,7 +448,7 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
             </button>
 
             {isTimelineOpen && (
-              <div className="mt-3 overflow-x-auto scrollbar-none animate-fadeIn">
+              <div className="mt-3 overflow-x-auto no-scrollbar animate-fadeIn">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
                     <tr className="border-b" style={{ borderColor: 'var(--m3-outline-variant)', color: 'var(--m3-on-surface-variant)' }}>

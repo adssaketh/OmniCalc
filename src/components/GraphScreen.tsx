@@ -143,7 +143,6 @@ export const GraphScreen: React.FC<GraphScreenProps> = ({
     // Crosshair for cursor if mouse over
     if (mouseCoord) {
       const mx = mouseCoord.x;
-      const my = mouseCoord.y;
       const cursorX = (mx - ox) / scale;
       const cursorY = MathEvaluator.evaluateFunction(activeExpr, cursorX, 'rad');
 
@@ -291,26 +290,18 @@ export const GraphScreen: React.FC<GraphScreenProps> = ({
   return (
     <div className="w-full max-w-5xl xl:max-w-6xl mx-auto flex flex-col items-center select-none pb-6">
       <div
-        className="w-full relative rounded-3xl p-5 sm:p-7 border shadow-2xl overflow-hidden backdrop-blur-xl flex flex-col gap-5 transition-colors"
+        className="w-full relative rounded-3xl p-5 sm:p-7 overflow-hidden flex flex-col gap-5 transition-colors"
         style={{
           backgroundColor: 'var(--m3-surface-container-low)',
-          borderColor: 'var(--m3-outline-variant)',
           color: 'var(--m3-on-surface)',
         }}
       >
-        {/* Subtle Ambient Corner Glow */}
-        <div
-          className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20"
-          style={{ backgroundColor: currentTheme.accent }}
-        />
-
         {/* Function Input Bar */}
         <form onSubmit={handlePlot} className="flex flex-col sm:flex-row items-center gap-2.5">
           <div
-            className="relative flex-1 w-full rounded-2xl border p-2.5 flex items-center transition-all"
+            className="relative flex-1 w-full rounded-2xl p-2.5 flex items-center transition-all"
             style={{
               backgroundColor: 'var(--m3-surface-container)',
-              borderColor: 'var(--m3-outline-variant)',
             }}
           >
             <span
@@ -332,7 +323,7 @@ export const GraphScreen: React.FC<GraphScreenProps> = ({
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="submit"
-              className="flex-1 sm:flex-none px-6 py-3 rounded-xl font-semibold text-xs transition-all shadow-md active:scale-95 whitespace-nowrap cursor-pointer"
+              className="flex-1 sm:flex-none px-6 py-3 rounded-xl font-semibold text-xs transition-all active:scale-95 whitespace-nowrap cursor-pointer"
               style={{
                 backgroundColor: 'var(--m3-primary)',
                 color: 'var(--m3-on-primary)',
@@ -343,10 +334,9 @@ export const GraphScreen: React.FC<GraphScreenProps> = ({
             <button
               type="button"
               onClick={handleReset}
-              className="w-11 h-11 rounded-xl flex items-center justify-center border transition-all active:scale-90 cursor-pointer"
+              className="w-11 h-11 rounded-xl flex items-center justify-center transition-all active:scale-90 cursor-pointer"
               style={{
                 backgroundColor: 'var(--m3-surface-container)',
-                borderColor: 'var(--m3-outline-variant)',
                 color: 'var(--m3-on-surface)',
               }}
               title="Reset View"
@@ -372,10 +362,9 @@ export const GraphScreen: React.FC<GraphScreenProps> = ({
                   setExpression(p.expr);
                   setActiveExpr(p.expr);
                 }}
-                className="px-3 py-1.5 rounded-xl font-mono text-xs border transition-all active:scale-95 cursor-pointer"
+                className="px-3 py-1.5 rounded-xl font-mono text-xs transition-all active:scale-95 cursor-pointer"
                 style={{
                   backgroundColor: isPresetActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                  borderColor: isPresetActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                   color: isPresetActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                   fontWeight: isPresetActive ? 700 : 500,
                 }}
@@ -388,10 +377,9 @@ export const GraphScreen: React.FC<GraphScreenProps> = ({
 
         {/* Canvas Plotter Container */}
         <div
-          className="relative w-full h-[360px] sm:h-[420px] md:h-[500px] lg:h-[560px] rounded-2xl overflow-hidden border select-none transition-colors"
+          className="relative w-full h-[360px] sm:h-[420px] md:h-[500px] lg:h-[560px] rounded-2xl overflow-hidden select-none transition-colors"
           style={{
             backgroundColor: 'var(--m3-surface-container-lowest)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <canvas
@@ -412,10 +400,9 @@ export const GraphScreen: React.FC<GraphScreenProps> = ({
 
           {/* Floating Controls Overlay */}
           <div
-            className="absolute bottom-3 right-3 flex items-center gap-1.5 p-1 rounded-full backdrop-blur border"
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 p-1 rounded-full backdrop-blur "
             style={{
               backgroundColor: 'var(--m3-surface-container-high)',
-              borderColor: 'var(--m3-outline-variant)',
             }}
           >
             <button
@@ -445,10 +432,9 @@ export const GraphScreen: React.FC<GraphScreenProps> = ({
           {/* Coordinates Tooltip */}
           {mouseCoord && canvasRef.current && (
             <div
-              className="absolute top-3 left-3 px-3 py-1.5 rounded-full backdrop-blur border font-mono text-xs flex items-center gap-2"
+              className="absolute top-3 left-3 px-3 py-1.5 rounded-full backdrop-blur font-mono text-xs flex items-center gap-2"
               style={{
                 backgroundColor: 'var(--m3-surface-container-high)',
-                borderColor: 'var(--m3-outline-variant)',
                 color: 'var(--m3-on-surface)',
               }}
             >

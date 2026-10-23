@@ -22,12 +22,12 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
   // Optional Bank Charges & GST
   const [showTaxes, setShowTaxes] = useState<boolean>(false);
   const [applyGstOnInterest, setApplyGstOnInterest] = useState<boolean>(false);
-  const [gstRateInterest, setGstRateInterest] = useState<number>(18);
+  const [gstRateInterest] = useState<number>(18);
   const [includeProcessingFee, setIncludeProcessingFee] = useState<boolean>(false);
-  const [processingFeeType, setProcessingFeeType] = useState<'percent' | 'flat'>('percent');
-  const [processingFeeValue, setProcessingFeeValue] = useState<number>(1.0);
-  const [applyGstOnProcessingFee, setApplyGstOnProcessingFee] = useState<boolean>(true);
-  const [gstRateProcessingFee, setGstRateProcessingFee] = useState<number>(18);
+  const [processingFeeType] = useState<'percent' | 'flat'>('percent');
+  const [processingFeeValue] = useState<number>(1.0);
+  const [applyGstOnProcessingFee] = useState<boolean>(true);
+  const [gstRateProcessingFee] = useState<number>(18);
 
   // Collapsible Amortization Schedule
   const [isScheduleOpen, setIsScheduleOpen] = useState<boolean>(false);
@@ -96,10 +96,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
         <div className="md:col-span-6 flex flex-col gap-4">
         {/* 1. Loan Principal */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <label className="block text-xs font-medium mb-1" style={{ color: 'var(--m3-on-surface-variant)' }}>
@@ -133,10 +132,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
                   key={p.value}
                   type="button"
                   onClick={() => setPrincipal(p.value)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl border transition-all cursor-pointer active:scale-95"
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer active:scale-95"
                   style={{
                     backgroundColor: isActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                    borderColor: isActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                     color: isActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                     fontWeight: isActive ? 700 : 500,
                   }}
@@ -150,10 +148,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
 
         {/* 2. Interest Rate */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <div className="flex items-center justify-between mb-1">
@@ -191,10 +188,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
                   key={preset.value}
                   type="button"
                   onClick={() => setRate(preset.value)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl border transition-all cursor-pointer active:scale-95"
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer active:scale-95"
                   style={{
                     backgroundColor: isActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                    borderColor: isActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                     color: isActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                     fontWeight: isActive ? 700 : 500,
                   }}
@@ -208,10 +204,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
 
         {/* 3. Loan Tenure */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <div className="flex items-center justify-between mb-1">
@@ -246,10 +241,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
                   key={y}
                   type="button"
                   onClick={() => setYears(y)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-xl border transition-all cursor-pointer active:scale-95"
+                  className="px-3 py-1.5 text-xs font-medium rounded-xl transition-all cursor-pointer active:scale-95"
                   style={{
                     backgroundColor: isActive ? 'var(--m3-primary-container)' : 'var(--m3-surface-container)',
-                    borderColor: isActive ? 'var(--m3-primary)' : 'var(--m3-outline-variant)',
                     color: isActive ? 'var(--m3-on-primary-container)' : 'var(--m3-on-surface-variant)',
                     fontWeight: isActive ? 700 : 500,
                   }}
@@ -263,10 +257,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
 
         {/* 4. Optional Bank Charges & GST Accordion */}
         <div
-          className="rounded-2xl border p-4 transition-all"
+          className="rounded-2xl p-4 transition-all"
           style={{
             backgroundColor: 'var(--m3-surface-container-low)',
-            borderColor: 'var(--m3-outline-variant)',
           }}
         >
           <button
@@ -341,19 +334,12 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
          ========================================================================= */}
       <div className="md:col-span-6 flex flex-col gap-4 sticky md:top-4">
         <div
-          className="relative rounded-3xl p-5 sm:p-6 border shadow-2xl overflow-hidden backdrop-blur-xl transition-colors"
+          className="relative rounded-3xl p-5 sm:p-6 overflow-hidden transition-colors"
           style={{
             backgroundColor: 'var(--m3-surface-container)',
-            borderColor: 'var(--m3-outline-variant)',
             color: 'var(--m3-on-surface)',
           }}
         >
-        {/* Subtle Ambient Corner Glow */}
-        <div
-          className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20"
-          style={{ backgroundColor: currentTheme.accent }}
-        />
-
         {/* Monthly EMI Metric */}
         <div className="flex flex-col mb-5">
           <span className="text-[11px] font-semibold tracking-wider uppercase mb-1" style={{ color: 'var(--m3-on-surface-variant)' }}>
@@ -443,10 +429,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           {/* Tile 1: Total Interest (Neutral) */}
           <div
-            className="rounded-2xl p-4 border flex flex-col justify-between"
+            className="rounded-2xl p-4 flex flex-col justify-between"
             style={{
               backgroundColor: 'var(--m3-surface-container-low)',
-              borderColor: 'var(--m3-outline-variant)',
             }}
           >
             <span className="text-xs font-medium mb-1" style={{ color: 'var(--m3-on-surface-variant)' }}>
@@ -459,10 +444,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
 
           {/* Tile 2: Total Loan Outflow (Accent-tinted) */}
           <div
-            className="rounded-2xl p-4 border flex flex-col justify-between"
+            className="rounded-2xl p-4 flex flex-col justify-between"
             style={{
               backgroundColor: `rgba(${currentTheme.accentRgb}, ${currentTheme.isDark ? '0.12' : '0.10'})`,
-              borderColor: `rgba(${currentTheme.accentRgb}, 0.28)`,
             }}
           >
             <span className="text-xs font-medium mb-1" style={{ color: 'var(--m3-on-surface-variant)' }}>
@@ -480,10 +464,9 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
         {/* Upfront Disbursement Breakdown if Fee enabled */}
         {includeProcessingFee && (
           <div
-            className="mb-5 p-3.5 rounded-2xl border flex items-center justify-between text-xs font-mono"
+            className="mb-5 p-3.5 rounded-2xl flex items-center justify-between text-xs font-mono"
             style={{
               backgroundColor: 'var(--m3-surface-container-low)',
-              borderColor: 'var(--m3-outline-variant)',
             }}
           >
             <span style={{ color: 'var(--m3-on-surface-variant)' }}>Net Loan Disbursed:</span>
@@ -516,7 +499,7 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
             </button>
 
             {isScheduleOpen && (
-              <div className="mt-3 overflow-x-auto scrollbar-none animate-fadeIn">
+              <div className="mt-3 overflow-x-auto no-scrollbar animate-fadeIn">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
                     <tr className="border-b" style={{ borderColor: 'var(--m3-outline-variant)', color: 'var(--m3-on-surface-variant)' }}>

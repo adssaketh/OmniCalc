@@ -68,10 +68,7 @@ The dev server starts on **http://localhost:3000**.
 | `npm run lint` | Type-check with `tsc --noEmit` |
 | `npm run cap:sync` | Sync web assets into the Android project |
 | `npm run cap:build` | Build the web app, then sync to Android |
-| `npm run clean` | Remove `dist` and `server.js` |
-
-### Environment variables
-`.env.example` lists `GEMINI_API_KEY` and `APP_URL`, which are used by the Google AI Studio environment this project was created in. I could not find any Gemini calls in `src/`, so a local run should not need them.
+| `npm run clean` | Remove `dist` |
 
 ---
 
@@ -106,7 +103,9 @@ OmniCalc is installable from the browser. The manifest defines home-screen short
 ```
 ├── src/
 │   ├── App.tsx            # App shell, settings and history state
-│   ├── components/        # Screens (Calculator, Converter, Finance, Physics, Graph), modals, navigation
+│   ├── navigation.ts      # Shared destinations for the bottom bar and the rail
+│   ├── motion.ts          # Shared spring / easing presets
+│   ├── components/        # Screens (Calculator, Converter, Finance, Physics, Graph), Sheet, settings, navigation
 │   ├── engine/            # evaluator, units, finance, physics, currency logic
 │   ├── hooks/             # PWA install, orientation
 │   ├── utils/audio.ts     # Key-click sounds
