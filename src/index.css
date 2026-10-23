@@ -500,9 +500,17 @@ body,
 }
 [data-bars="glass"] .bar-surface {
   background-color: color-mix(in srgb, var(--bar-tone, var(--m3-surface-container)) var(--glass-fill), transparent);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.10);
+}
+/* A soft light sheen on the answer display so it reads as glass / a real screen, not a flat grey block */
+.bar-surface.bar-surface-strong {
+  background-image: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--m3-on-surface) 7%, transparent) 0%,
+    transparent 55%
+  );
 }
 /* The answer display stays clearly more solid than the other bars so the numbers are easy to read */
 [data-bars="glass"] .bar-surface.bar-surface-strong {
