@@ -23,6 +23,8 @@ interface CalculatorScreenProps {
   externalSeq?: number;
   /** Element in the app's top bar where the display is pinned (phone portrait); the display flows inline without it */
   pinnedSlot?: HTMLElement | null;
+  /** The app header row (logo, name, guide, sound, settings), shown at the top of the display card on phones */
+  headerRow?: React.ReactNode;
   history?: HistoryItem[];
   onOpenHistory?: () => void;
   onSelectHistoryItem?: (expr: string) => void;
@@ -70,6 +72,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
   externalExpression,
   externalSeq = 0,
   pinnedSlot = null,
+  headerRow,
   history,
   onOpenHistory,
   onSelectHistoryItem,
@@ -1347,11 +1350,21 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
       className="bar-surface bar-surface-strong pointer-events-auto w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto rounded-[28px] sm:rounded-[32px] p-3.5 sm:p-5 flex flex-col"
       style={
         {
-          minHeight: 'clamp(172px, 26dvh, 290px)',
+          minHeight: 'clamp(214px, 30dvh, 330px)',
           '--bar-tone': 'var(--m3-surface-container-highest)',
         } as React.CSSProperties
       }
     >
+          {/* App header row, part of this card */}
+          {headerRow && (
+            <div
+              className="mb-2.5 pb-2 shrink-0"
+              style={{ borderBottom: '1px solid color-mix(in srgb, var(--m3-on-surface) 10%, transparent)' }}
+            >
+              {headerRow}
+            </div>
+          )}
+
           {/* Header Row of Screen: Angle mode badge, Open parens counter, History & Copy */}
           <div className="flex items-center justify-between mb-2 shrink-0">
             <div className="flex items-center gap-2">

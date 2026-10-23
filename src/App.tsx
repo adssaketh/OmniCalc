@@ -395,6 +395,8 @@ export default function App() {
 
   const { isLandscape, isTablet, width } = useOrientation();
   const isLargeScreen = width >= 960 || (isTablet && isLandscape) || (isTablet && width >= 720);
+  // Calculator (phone portrait): the header row is part of the answer display card
+  const mergeHeader = currentMode === 'standard' && !isLandscape;
 
   // Bar style + edge effect: published on <html> so the Settings preview (a portal) sees them too
   useEffect(() => {
@@ -428,7 +430,7 @@ export default function App() {
       offHeader();
       offBottom();
     };
-  }, [isLargeScreen]);
+  }, [isLargeScreen, mergeHeader]);
 
   // Scroll-aware edge fade: --ft (top) and --fb (bottom) go 0 -> 1 as content really slides under a bar.
   // At the top of a page, or at its very end, nothing is hidden, so nothing is faded.
@@ -457,6 +459,8 @@ export default function App() {
       const hc = target;
       if (headerEl && hc !== lastHc) {
         headerEl.style.setProperty('--hc', String(hc));
+        headerEl.style.setProperty('--hn', String(hc));
+        if (lastHc !== -1) headerEl.dataset.move = hc ? 'in' : 'out'; // restarts the rubber-band animation
         lastHc = hc;
       }
       const t = q(scroller.scrollTop / span);
@@ -558,9 +562,17 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [isSettingsOpen, isHistoryOpen, isGuideOpen, settings.enableGrapher]);
 
+  const headerProps = {
+    soundEnabled: settings.soundEnabled,
+    onToggleSound: () => handleUpdateSettings({ soundEnabled: !settings.soundEnabled }),
+    onOpenSettings: () => setIsSettingsOpen(true),
+    onOpenGuide: () => setIsGuideOpen(true),
+    onLogoTap: () => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' }),
+    theme: settings.theme,
+  };
   const fadePx = FADE_PX[settings.fadeHeight];
   // With the answer display pinned under the header the bars are tall: only its lower part is see-through.
-  const hasPinned = topH - headerH > 8;
+  const hasPinned = mergeHeader || topH - headerH > 8;
   const topEdge = topH - (hasPinned ? 8 : 4);
   const topGlow = hasPinned ? 34 : Math.max(26, headerH - 22);
   const edgeMask = buildEdgeMask(
@@ -640,6 +652,7 @@ export default function App() {
                     externalExpression={externalExpression}
                     externalSeq={externalSeq}
                     pinnedSlot={pinnedSlot}
+                    headerRow={mergeHeader ? <Header embedded {...headerProps} /> : undefined}
                     history={history}
                     onOpenHistory={() => setIsHistoryOpen(true)}
                     onSelectHistoryItem={(expr) => loadExpression(expr)}
@@ -717,15 +730,12 @@ export default function App() {
 
         {/* Top bars: header pill, plus the answer display pinned beneath it on the calculator */}
         <div ref={topStackRef} className="absolute top-0 inset-x-0 z-40 pointer-events-none">
-          <Header
-            soundEnabled={settings.soundEnabled}
-            onToggleSound={() => handleUpdateSettings({ soundEnabled: !settings.soundEnabled })}
-            onOpenSettings={() => setIsSettingsOpen(true)}
-            onOpenGuide={() => setIsGuideOpen(true)}
-            onLogoTap={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-            theme={settings.theme}
+          {!mergeHeader && <Header {...headerProps} />}
+          <div
+            ref={setPinnedSlot}
+            className="px-3 pb-2 empty:hidden"
+            style={{ paddingTop: mergeHeader ? 'max(env(safe-area-inset-top, 0px), 8px)' : undefined }}
           />
-          <div ref={setPinnedSlot} className="px-3 pb-2 empty:hidden" />
         </div>
 
         {/* 3. Mobile / Compact Floating Bottom Navigation Dock */}
