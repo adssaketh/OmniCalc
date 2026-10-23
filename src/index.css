@@ -400,8 +400,11 @@ body,
   pointer-events: none;
   transition: opacity 120ms ease;
 }
-.m3-key:hover::after {
-  opacity: 0.08;
+/* Hover tint only for a real mouse; on a touch screen it would stay on a key after you tap it */
+@media (hover: hover) and (pointer: fine) {
+  .m3-key:hover::after {
+    opacity: 0.08;
+  }
 }
 .m3-key:active {
   transform: scale(0.95);
@@ -577,6 +580,16 @@ body,
   border: none;
   border-radius: 9999px;
   background: var(--m3-primary);
+}
+
+/* --hc is a real number property so CSS can animate it: the header collapses over a fixed, eased time */
+@property --hc {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+.hdr-root {
+  transition: --hc 460ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ---- Collapsing header (see Header.tsx): --hc goes 0 (full pill) -> 1 (round logo + small action pill) ---- */

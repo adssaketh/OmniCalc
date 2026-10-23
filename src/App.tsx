@@ -444,12 +444,17 @@ export default function App() {
     // The header collapses on the screens that scroll; on the calculator it stays full next to the pinned display
     const headerEl = topStackRef.current?.firstElementChild as HTMLElement | null;
     const collapses = currentMode !== 'standard';
+    // Collapse / expand with a little hysteresis; the easing itself is a CSS transition on --hc (index.css),
+    // so the motion takes the same smooth time however fast you flick.
+    let target = 0;
     let lastHc = -1;
-    const easeInOut = (t: number) => 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, Math.max(0, t)));
 
     const update = () => {
       raf = 0;
-      const hc = collapses ? Math.round(easeInOut(scroller.scrollTop / 90) * 100) / 100 : 0;
+      if (!collapses) target = 0;
+      else if (scroller.scrollTop > 36) target = 1;
+      else if (scroller.scrollTop < 10) target = 0;
+      const hc = target;
       if (headerEl && hc !== lastHc) {
         headerEl.style.setProperty('--hc', String(hc));
         lastHc = hc;

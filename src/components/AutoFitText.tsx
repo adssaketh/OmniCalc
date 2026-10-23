@@ -25,15 +25,17 @@ export const AutoFitText: React.FC<AutoFitTextProps> = ({ text, max, min, classN
     if (!box || !span) return;
 
     const fit = () => {
-      const available = box.clientWidth;
+      const available = box.clientWidth - 2;
       if (available <= 0) return;
+      // No font-size transition on this element (a running transition made the measurement wrong and the
+      // text overflowed): measure at the largest size, then pick the size that fits.
       span.style.fontSize = `${max}px`;
-      const natural = span.offsetWidth;
+      const natural = span.getBoundingClientRect().width;
       const next = natural > available ? Math.max(min, Math.floor((max * available) / natural)) : max;
       span.style.fontSize = `${next}px`;
       setSize(next);
       // If it still does not fit at the smallest size, show the end of the line (the newest digits)
-      box.scrollLeft = box.scrollWidth;
+      box.scrollLeft = Math.max(0, box.scrollWidth - box.clientWidth);
     };
 
     fit();
@@ -47,7 +49,7 @@ export const AutoFitText: React.FC<AutoFitTextProps> = ({ text, max, min, classN
       <span
         ref={spanRef}
         className="inline-block tabular-nums"
-        style={{ fontSize: size, lineHeight: 1.12, transition: 'font-size 120ms var(--ease-emphasized)' }}
+        style={{ fontSize: size, lineHeight: 1.12 }}
       >
         {text}
       </span>

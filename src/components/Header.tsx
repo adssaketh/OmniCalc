@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header
-      className="px-3 pb-1 select-none pointer-events-none"
+      className="hdr-root px-3 pb-1 select-none pointer-events-none"
       style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 8px)' }}
     >
       <div className="relative w-full max-w-[1650px] mx-auto h-14">

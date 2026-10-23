@@ -116,6 +116,9 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
 
   const openParensCount = getOpenParensCount(expression);
 
+  // After pressing = the display holds either a number or an error message; messages are shown small and in full
+  const isErrorResult = hasEvaluated && !/^[−-]?(\d[\d.,]*(e[+-]?\d+)?|Infinity)$/i.test(expression.trim());
+
   // Insert token into expression
   const handleInput = useCallback((token: string) => {
     playSound('num');
@@ -1433,13 +1436,23 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
             {lastQuestion} =
           </div>
         )}
-        <AutoFitText
-          text={expression}
-          max={72}
-          min={26}
-          className={`font-bold tracking-tight py-1 select-all ${hasEvaluated ? 'animate-m3-result-update' : ''}`}
-          style={{ color: hasEvaluated ? 'var(--m3-primary)' : 'var(--m3-on-surface)' }}
-        />
+        {isErrorResult ? (
+          <div
+            className="text-base sm:text-lg font-semibold leading-snug break-words py-1 max-h-[7.5rem] overflow-y-auto animate-m3-result-update"
+            style={{ color: 'var(--m3-error)' }}
+            role="alert"
+          >
+            {expression}
+          </div>
+        ) : (
+          <AutoFitText
+            text={expression}
+            max={72}
+            min={26}
+            className={`font-bold tracking-tight py-1 select-all ${hasEvaluated ? 'animate-m3-result-update' : ''}`}
+            style={{ color: hasEvaluated ? 'var(--m3-primary)' : 'var(--m3-on-surface)' }}
+          />
+        )}
       </div>
     </motion.div>
   );
