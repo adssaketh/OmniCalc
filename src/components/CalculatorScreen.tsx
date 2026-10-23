@@ -1341,7 +1341,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={spring}
-      className="bar-surface pointer-events-auto w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto rounded-[28px] sm:rounded-[32px] p-3.5 sm:p-5 flex flex-col"
+      className="bar-surface bar-surface-strong pointer-events-auto w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto rounded-[28px] sm:rounded-[32px] p-3.5 sm:p-5 flex flex-col"
       style={
         {
           minHeight: 'clamp(172px, 26dvh, 290px)',

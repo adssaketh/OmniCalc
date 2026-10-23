@@ -58,7 +58,7 @@
   /* Bar style (Settings > Bars & scrolling); App.tsx updates these */
   --glass-fill: 28%;
   --glass-blur: 16px;
-  --edge-blur: 10px;
+  --glass-fill-strong: 66%;
 
   /* Motion tokens (Material 3 Expressive, shared with Ping) */
   --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
@@ -500,9 +500,13 @@ body,
 }
 [data-bars="glass"] .bar-surface {
   background-color: color-mix(in srgb, var(--bar-tone, var(--m3-surface-container)) var(--glass-fill), transparent);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.10);
+}
+/* The answer display stays clearly more solid than the other bars so the numbers are easy to read */
+[data-bars="glass"] .bar-surface.bar-surface-strong {
+  background-color: color-mix(in srgb, var(--bar-tone, var(--m3-surface-container)) var(--glass-fill-strong), transparent);
 }
 [data-bars="glass"][data-glass-edge="on"] .bar-surface {
   box-shadow:
@@ -574,8 +578,7 @@ body,
   right: 0;
   z-index: 30;
   pointer-events: none;
-  -webkit-backdrop-filter: blur(var(--edge-blur));
-  backdrop-filter: blur(var(--edge-blur));
+  /* blur strength and mask are set per layer in App.tsx */
 }
 
 /* ==========================================================================

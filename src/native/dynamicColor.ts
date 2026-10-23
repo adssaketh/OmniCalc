@@ -70,8 +70,9 @@ export function applyDynamicTokens(
         '--m3-surface': get('system_neutral1_900', '#111318'),
         '--m3-surface-dim': get('system_neutral1_900', '#0b0d12'),
         '--m3-surface-bright': get('system_neutral1_800', '#37393e'),
-        '--m3-surface-container-lowest': get('system_neutral1_1000', '#0c0e13'),
-        '--m3-surface-container-low': get('system_neutral1_900', '#191b20'),
+        '--m3-surface-container-lowest': 'color-mix(in srgb, var(--m3-surface) 82%, black)',
+        // Was the same colour as the page, so cards disappeared in dark mode. Now one clear step lighter.
+        '--m3-surface-container-low': 'color-mix(in srgb, var(--m3-surface) 93%, var(--m3-on-surface))',
         '--m3-surface-container': get('system_neutral1_800', '#1d2024'),
         '--m3-surface-container-high': get('system_neutral1_700', '#282a2f'),
         '--m3-surface-container-highest': get('system_neutral1_600', '#33353a'),

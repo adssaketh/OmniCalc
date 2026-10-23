@@ -19,7 +19,7 @@ import { GraphScreen } from './components/GraphScreen';
 import { HistoryTapeModal } from './components/HistoryTapeModal';
 import { SettingsModal } from './components/SettingsModal';
 import { GuideSheet } from './components/GuideSheet';
-import { FADE_PX, GLASS_BLUR_PX, EDGE_BLUR_PX, glassFillPercent, buildEdgeMask, buildBlurMask } from './edgeEffects';
+import { FADE_PX, GLASS_BLUR_PX, glassFillPercent, glassFillStrongPercent, buildEdgeMask, buildBlurLayers } from './edgeEffects';
 import { soundFx } from './utils/audio';
 import { useOrientation } from './hooks/useOrientation';
 import {
@@ -402,7 +402,7 @@ export default function App() {
     root.setAttribute('data-glass-edge', settings.glassEdge ? 'on' : 'off');
     root.style.setProperty('--glass-fill', `${glassFillPercent(settings.glassTransparency)}%`);
     root.style.setProperty('--glass-blur', `${GLASS_BLUR_PX[settings.glassBlur]}px`);
-    root.style.setProperty('--edge-blur', `${EDGE_BLUR_PX}px`);
+    root.style.setProperty('--glass-fill-strong', `${glassFillStrongPercent(settings.glassTransparency)}%`);
   }, [settings.barStyle, settings.edgeEffect, settings.glassEdge, settings.glassTransparency, settings.glassBlur]);
 
   // Measure the floating bars so the scroll area, the fade mask and the keypad all follow their real height
@@ -610,29 +610,38 @@ export default function App() {
           </div>
         </div>
 
-        {/* Soft blur that grows toward the edges ("Fade + blur") */}
+        {/* Progressive blur toward the edges ("Fade + blur") */}
         {settings.edgeEffect === 'blur' && (
           <>
-            <div
-              className="edge-blur"
-              style={{
-                top: 0,
-                height: topH + fadePx,
-                maskImage: buildBlurMask(topH, fadePx, 'top'),
-                WebkitMaskImage: buildBlurMask(topH, fadePx, 'top'),
-              }}
-            />
-            {!isLargeScreen && (
+            {buildBlurLayers(topH, fadePx, 'top').map((layer, i) => (
               <div
+                key={`blur-top-${i}`}
                 className="edge-blur"
                 style={{
-                  bottom: 0,
-                  height: bottomH + fadePx,
-                  maskImage: buildBlurMask(bottomH, fadePx, 'bottom'),
-                  WebkitMaskImage: buildBlurMask(bottomH, fadePx, 'bottom'),
+                  top: 0,
+                  height: layer.height,
+                  backdropFilter: `blur(${layer.blurPx}px)`,
+                  WebkitBackdropFilter: `blur(${layer.blurPx}px)`,
+                  maskImage: layer.mask,
+                  WebkitMaskImage: layer.mask,
                 }}
               />
-            )}
+            ))}
+            {!isLargeScreen &&
+              buildBlurLayers(bottomH, fadePx, 'bottom').map((layer, i) => (
+                <div
+                  key={`blur-bottom-${i}`}
+                  className="edge-blur"
+                  style={{
+                    bottom: 0,
+                    height: layer.height,
+                    backdropFilter: `blur(${layer.blurPx}px)`,
+                    WebkitBackdropFilter: `blur(${layer.blurPx}px)`,
+                    maskImage: layer.mask,
+                    WebkitMaskImage: layer.mask,
+                  }}
+                />
+              ))}
           </>
         )}
 
