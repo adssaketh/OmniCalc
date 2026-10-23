@@ -27,8 +27,8 @@ interface EdgeGeometry {
 
 /** How much of the content stays visible directly under / around a bar. */
 function underBarAlpha(effect: EdgeEffect, barStyle: BarStyle): number {
-  if (effect === 'blur') return barStyle === 'glass' ? 0.55 : 0.38;
-  return barStyle === 'glass' ? 0.3 : 0;
+  if (effect === 'blur') return barStyle === 'glass' ? 0.4 : 0.34;
+  return barStyle === 'glass' ? 0.2 : 0;
 }
 
 /**
@@ -37,39 +37,43 @@ function underBarAlpha(effect: EdgeEffect, barStyle: BarStyle): number {
  *  - It eases out over `fadePx` as it approaches a bar.
  *  - Around the bar it stays at `underBarAlpha`, but never in the first few pixels of the screen
  *    (the status bar strip), so nothing peeks out above the header.
+ *  - The whole top fade is multiplied by --ft and the bottom fade by --fb (0..1). App.tsx sets them
+ *    from the scroll position: no fade at the very top / very bottom of a page, where nothing is sliding
+ *    under a bar, and a smooth ease-in as soon as content really moves under it.
  */
 export function buildEdgeMask(g: EdgeGeometry, effect: EdgeEffect, barStyle: BarStyle): string | undefined {
   if (effect === 'off') return undefined;
   const under = underBarAlpha(effect, barStyle);
-  const a = (v: number) => v.toFixed(3);
-  const edgeClear = 10; // px at the very top / bottom that are always empty
+  const edgeClear = 10; // px at the very top / bottom that are always empty while a fade is active
+
+  /** alpha `a` when the fade is fully on, 1 (opaque) when it is off */
+  const top = (a: number) => `rgb(0 0 0 / calc(1 - ${(1 - a).toFixed(3)} * var(--ft, 0)))`;
+  const bottom = (a: number) => `rgb(0 0 0 / calc(1 - ${(1 - a).toFixed(3)} * var(--fb, 0)))`;
   const stops: string[] = [];
 
   // top edge
-  stops.push(`rgba(0,0,0,0) 0px`, `rgba(0,0,0,0) ${edgeClear}px`);
+  stops.push(`${top(0)} 0px`, `${top(0)} ${edgeClear}px`);
   for (let i = 1; i <= 4; i++) {
     const t = i / 4;
-    const y = edgeClear + (g.topH * 0.5 - edgeClear) * t;
-    stops.push(`rgba(0,0,0,${a(under * ease(t))}) ${y.toFixed(1)}px`);
+    stops.push(`${top(under * ease(t))} ${(edgeClear + (g.topH * 0.5 - edgeClear) * t).toFixed(1)}px`);
   }
-  stops.push(`rgba(0,0,0,${a(under)}) ${g.topH}px`);
+  stops.push(`${top(under)} ${g.topH}px`);
   for (let i = 1; i <= STEPS; i++) {
     const t = i / STEPS;
-    stops.push(`rgba(0,0,0,${a(under + (1 - under) * ease(t))}) ${(g.topH + g.fadePx * t).toFixed(1)}px`);
+    stops.push(`${top(under + (1 - under) * ease(t))} ${(g.topH + g.fadePx * t).toFixed(1)}px`);
   }
 
   // bottom edge (positions measured from the bottom of the scroll area)
   for (let i = STEPS - 1; i >= 0; i--) {
     const t = i / STEPS;
-    stops.push(`rgba(0,0,0,${a(under + (1 - under) * ease(t))}) calc(100% - ${(g.bottomH + g.fadePx * t).toFixed(1)}px)`);
+    stops.push(`${bottom(under + (1 - under) * ease(t))} calc(100% - ${(g.bottomH + g.fadePx * t).toFixed(1)}px)`);
   }
   if (g.bottomH > 0) {
     for (let i = 3; i >= 0; i--) {
       const t = i / 4;
-      const y = edgeClear + (g.bottomH * 0.5 - edgeClear) * t;
-      stops.push(`rgba(0,0,0,${a(under * ease(t))}) calc(100% - ${y.toFixed(1)}px)`);
+      stops.push(`${bottom(under * ease(t))} calc(100% - ${(edgeClear + (g.bottomH * 0.5 - edgeClear) * t).toFixed(1)}px)`);
     }
-    stops.push(`rgba(0,0,0,0) calc(100% - ${edgeClear}px)`, `rgba(0,0,0,0) 100%`);
+    stops.push(`${bottom(0)} calc(100% - ${edgeClear}px)`, `${bottom(0)} 100%`);
   }
   return `linear-gradient(to bottom, ${stops.join(', ')})`;
 }

@@ -97,6 +97,7 @@ export default function App() {
   const topStackRef = useRef<HTMLDivElement>(null);
   const bottomStackRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const columnRef = useRef<HTMLDivElement>(null);
   const [systemColors, setSystemColors] = useState<SystemColors | null>(null);
 
   // Persisted History
@@ -426,6 +427,47 @@ export default function App() {
     };
   }, [isLargeScreen]);
 
+  // Scroll-aware edge fade: --ft (top) and --fb (bottom) go 0 -> 1 as content really slides under a bar.
+  // At the top of a page, or at its very end, nothing is hidden, so nothing is faded.
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    const column = columnRef.current;
+    if (!scroller || !column) return;
+    const span = FADE_PX[settings.fadeHeight] * 0.9;
+    let raf = 0;
+    let lastTop = -1;
+    let lastBottom = -1;
+    const q = (v: number) => Math.round(Math.min(1, Math.max(0, v)) * 50) / 50;
+
+    const update = () => {
+      raf = 0;
+      const t = q(scroller.scrollTop / span);
+      const b = q((scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop) / span);
+      if (t !== lastTop) {
+        column.style.setProperty('--ft', String(t));
+        lastTop = t;
+      }
+      if (b !== lastBottom) {
+        column.style.setProperty('--fb', String(b));
+        lastBottom = b;
+      }
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+
+    update();
+    scroller.addEventListener('scroll', schedule, { passive: true });
+    const ro = new ResizeObserver(schedule); // content grows or shrinks (drawer, tables, screens)
+    ro.observe(scroller);
+    if (scroller.firstElementChild) ro.observe(scroller.firstElementChild);
+    return () => {
+      scroller.removeEventListener('scroll', schedule);
+      ro.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [settings.fadeHeight, settings.edgeEffect, currentMode, isLargeScreen]);
+
   // Each screen starts at the top
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -539,7 +581,7 @@ export default function App() {
       )}
 
       {/* 2. Content column: scroll area underneath, floating bars on top */}
-      <div className="relative flex-1 min-w-0 min-h-0">
+      <div ref={columnRef} className="relative flex-1 min-w-0 min-h-0">
         {/* Scroll area. The mask fades content out as it slides under the bars (Settings > Bars & scrolling). */}
         <div
           id="app-scroll"
@@ -620,6 +662,7 @@ export default function App() {
                 style={{
                   top: 0,
                   height: layer.height,
+                  opacity: 'var(--ft, 0)' as unknown as number,
                   backdropFilter: `blur(${layer.blurPx}px)`,
                   WebkitBackdropFilter: `blur(${layer.blurPx}px)`,
                   maskImage: layer.mask,
@@ -635,6 +678,7 @@ export default function App() {
                   style={{
                     bottom: 0,
                     height: layer.height,
+                    opacity: 'var(--fb, 0)' as unknown as number,
                     backdropFilter: `blur(${layer.blurPx}px)`,
                     WebkitBackdropFilter: `blur(${layer.blurPx}px)`,
                     maskImage: layer.mask,
