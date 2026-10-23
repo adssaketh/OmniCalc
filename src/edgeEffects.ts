@@ -1,8 +1,13 @@
 import { BarStyle, EdgeEffect, FadeHeight, GlassBlur } from './types';
 
-/** Same options as Ping's Settings > Message Organization. */
-export const FADE_PX: Record<FadeHeight, number> = { short: 56, medium: 96, tall: 140 };
-/** Glass blur is strong on purpose: whatever slides under a glass bar becomes soft colour, never readable ghost text. */
+/**
+ * Same options as Ping's Settings > Message Organization.
+ * Studying Ping on a device: content is crisp right up to the bars (nothing fades *outside* a bar), and it
+ * slides *under* the glass, where it is softly blurred, tinted and fades toward the screen edge. Fade height
+ * is therefore only the short softening right at the bar edge.
+ */
+export const FADE_PX: Record<FadeHeight, number> = { short: 8, medium: 16, tall: 28 };
+/** Glass blur: content under a glass bar becomes soft colour, never readable ghost text. */
 export const GLASS_BLUR_PX: Record<GlassBlur, number> = { soft: 14, medium: 22, strong: 32 };
 
 /** Glass transparency slider (0 = frosted ... 100 = clear) -> how opaque the bar colour is, in percent. */
@@ -18,67 +23,60 @@ export function glassFillStrongPercent(transparency: number): number {
 
 /** Cosine ease: starts and ends flat, so a fade has no visible "start line" or "end line". */
 const ease = (t: number) => 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, Math.max(0, t)));
-const STEPS = 16;
+const STEPS = 12;
 
 interface EdgeGeometry {
-  topH: number;
+  /** Where the top bars visually end (distance from the top of the screen) */
+  topEdge: number;
+  /** How far content stays visible *under* the top bars, measured up from their lower edge */
+  topGlow: number;
+  /** Height of the bottom bar stack (bar + padding) */
   bottomH: number;
   fadePx: number;
 }
 
-/** How much of the content stays visible *inside* the bar area (only matters for glass bars). */
-function underBarAlpha(effect: EdgeEffect, barStyle: BarStyle): number {
-  if (barStyle !== 'glass') return 0;
-  return effect === 'blur' ? 0.5 : 0.22;
-}
-
 /**
- * Mask for the scroll container, built the way Ping's fade behaves:
- *  1. Inside the bar area the content is hidden (solid bars) or only a soft colour hint (glass bars).
- *  2. Right where the bar ends the content is still completely hidden, for a short "hold". This is what
- *     removes half-cut, half-transparent ghost rows directly under a bar.
- *  3. After the hold it dissolves in with a long, smooth ease.
- *  4. Nothing ever shows in the first pixels of the screen (status bar strip).
- *  The whole top fade is multiplied by --ft and the bottom fade by --fb (0..1), set from the scroll position
- *  by App.tsx: no fade at the very top / bottom of a page, a smooth ease-in as soon as content slides under a bar.
+ * Mask for the scroll container, modelled on Ping:
+ *  - top: hidden at the very top of the screen, rising smoothly so the content is visible *through* the bar
+ *    (this is what the glass blurs and tints), and fully crisp right at / beyond the bar's lower edge.
+ *  - bottom: crisp right up to the nav bar's top edge, then softly fading under the bar toward the screen edge,
+ *    so a little colour shows through the glass.
+ *  Whole top fade is multiplied by --ft and the bottom fade by --fb (0..1), set from the scroll position by
+ *  App.tsx: nothing is faded at the very top / bottom of a page where nothing slides under a bar.
  */
 export function buildEdgeMask(g: EdgeGeometry, effect: EdgeEffect, barStyle: BarStyle): string | undefined {
   if (effect === 'off') return undefined;
-  const under = underBarAlpha(effect, barStyle);
+  const glass = barStyle === 'glass';
   const edgeClear = 10;
-  const gap = 16; // bar shadow / gap between the bar and the end of its stack
-  const hold = g.fadePx * 0.14;
-  const ramp = g.fadePx - hold;
-
   const top = (a: number) => `rgb(0 0 0 / calc(1 - ${(1 - a).toFixed(3)} * var(--ft, 0)))`;
   const bottom = (a: number) => `rgb(0 0 0 / calc(1 - ${(1 - a).toFixed(3)} * var(--fb, 0)))`;
   const stops: string[] = [];
 
-  // top edge
-  stops.push(`${top(0)} 0px`, `${top(0)} ${edgeClear}px`);
-  if (under > 0) {
-    stops.push(`${top(under)} ${Math.max(edgeClear + 8, g.topH * 0.45).toFixed(1)}px`);
-    stops.push(`${top(under)} ${Math.max(g.topH - gap - 6, edgeClear + 9).toFixed(1)}px`);
-  }
-  stops.push(`${top(0)} ${(g.topH - 2).toFixed(1)}px`, `${top(0)} ${(g.topH + hold).toFixed(1)}px`);
+  // ---- top: 0 at the screen edge -> 1 a little below the bar's lower edge
+  const rampStart = Math.max(edgeClear + 2, g.topEdge - g.topGlow);
+  const rampEnd = g.topEdge + g.fadePx;
+  stops.push(`${top(0)} 0px`, `${top(0)} ${rampStart.toFixed(1)}px`);
   for (let i = 1; i <= STEPS; i++) {
     const t = i / STEPS;
-    stops.push(`${top(ease(t))} ${(g.topH + hold + ramp * t).toFixed(1)}px`);
+    stops.push(`${top(ease(t))} ${(rampStart + (rampEnd - rampStart) * t).toFixed(1)}px`);
   }
 
-  // bottom edge (positions measured from the bottom of the scroll area)
-  for (let i = STEPS; i >= 1; i--) {
-    const t = i / STEPS;
-    stops.push(`${bottom(ease(t))} calc(100% - ${(g.bottomH + hold + ramp * t).toFixed(1)}px)`);
-  }
-  stops.push(`${bottom(0)} calc(100% - ${(g.bottomH + hold).toFixed(1)}px)`);
+  // ---- bottom (positions measured from the bottom of the scroll area)
   if (g.bottomH > 0) {
-    stops.push(`${bottom(0)} calc(100% - ${(g.bottomH - 2).toFixed(1)}px)`);
-    if (under > 0) {
-      stops.push(`${bottom(under)} calc(100% - ${Math.max(g.bottomH - gap - 6, edgeClear + 9).toFixed(1)}px)`);
-      stops.push(`${bottom(under)} calc(100% - ${Math.max(g.bottomH * 0.45, edgeClear + 8).toFixed(1)}px)`);
+    const pillTop = Math.max(g.bottomH - 4, 0);
+    const underBar = glass ? (effect === 'blur' ? 0.5 : 0.38) : 0;
+    const farEnd = pillTop + g.fadePx; // crisp above this
+    const start = Math.max(pillTop - 46, edgeClear + 10);
+    stops.push(`${bottom(1)} calc(100% - ${farEnd.toFixed(1)}px)`);
+    for (let i = 1; i <= STEPS; i++) {
+      const t = i / STEPS;
+      const d = farEnd - (farEnd - start) * t;
+      stops.push(`${bottom(1 - (1 - underBar) * ease(t))} calc(100% - ${d.toFixed(1)}px)`);
     }
+    stops.push(`${bottom(underBar)} calc(100% - ${Math.max(g.bottomH * 0.4, edgeClear + 9).toFixed(1)}px)`);
     stops.push(`${bottom(0)} calc(100% - ${edgeClear}px)`, `${bottom(0)} 100%`);
+  } else {
+    stops.push(`${bottom(1)} 100%`);
   }
   return `linear-gradient(to bottom, ${stops.join(', ')})`;
 }

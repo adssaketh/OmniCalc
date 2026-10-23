@@ -93,6 +93,7 @@ export default function App() {
   const [externalSeq, setExternalSeq] = useState<number>(0);
   const [pinnedSlot, setPinnedSlot] = useState<HTMLElement | null>(null);
   const [topH, setTopH] = useState<number>(84);
+  const [headerH, setHeaderH] = useState<number>(72);
   const [bottomH, setBottomH] = useState<number>(88);
   const topStackRef = useRef<HTMLDivElement>(null);
   const bottomStackRef = useRef<HTMLDivElement>(null);
@@ -420,9 +421,11 @@ export default function App() {
       return () => ro.disconnect();
     };
     const offTop = observe(topStackRef.current, setTopH);
+    const offHeader = observe(topStackRef.current?.firstElementChild as HTMLElement | null, setHeaderH);
     const offBottom = observe(isLargeScreen ? null : bottomStackRef.current, setBottomH);
     return () => {
       offTop();
+      offHeader();
       offBottom();
     };
   }, [isLargeScreen]);
@@ -433,7 +436,7 @@ export default function App() {
     const scroller = scrollRef.current;
     const column = columnRef.current;
     if (!scroller || !column) return;
-    const span = FADE_PX[settings.fadeHeight] * 0.9;
+    const span = 48; // px of scrolling over which the edge fade eases in
     let raf = 0;
     let lastTop = -1;
     let lastBottom = -1;
@@ -466,7 +469,7 @@ export default function App() {
       ro.disconnect();
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [settings.fadeHeight, settings.edgeEffect, currentMode, isLargeScreen]);
+  }, [settings.edgeEffect, currentMode, isLargeScreen]);
 
   // Each screen starts at the top
   useEffect(() => {
@@ -541,7 +544,15 @@ export default function App() {
   }, [isSettingsOpen, isHistoryOpen, isGuideOpen, settings.enableGrapher]);
 
   const fadePx = FADE_PX[settings.fadeHeight];
-  const edgeMask = buildEdgeMask({ topH, bottomH: isLargeScreen ? 0 : bottomH, fadePx }, settings.edgeEffect, settings.barStyle);
+  // With the answer display pinned under the header the bars are tall: only its lower part is see-through.
+  const hasPinned = topH - headerH > 8;
+  const topEdge = topH - (hasPinned ? 8 : 4);
+  const topGlow = hasPinned ? 34 : Math.max(26, headerH - 22);
+  const edgeMask = buildEdgeMask(
+    { topEdge, topGlow, bottomH: isLargeScreen ? 0 : bottomH, fadePx },
+    settings.edgeEffect,
+    settings.barStyle
+  );
   const bottomBars = isLargeScreen ? 0 : bottomH;
 
   return (
@@ -655,7 +666,7 @@ export default function App() {
         {/* Progressive blur toward the edges ("Fade + blur") */}
         {settings.edgeEffect === 'blur' && (
           <>
-            {buildBlurLayers(topH, fadePx, 'top').map((layer, i) => (
+            {buildBlurLayers(topEdge, 20, 'top').map((layer, i) => (
               <div
                 key={`blur-top-${i}`}
                 className="edge-blur"
@@ -671,7 +682,7 @@ export default function App() {
               />
             ))}
             {!isLargeScreen &&
-              buildBlurLayers(bottomH, fadePx, 'bottom').map((layer, i) => (
+              buildBlurLayers(bottomH, 8, 'bottom').map((layer, i) => (
                 <div
                   key={`blur-bottom-${i}`}
                   className="edge-blur"

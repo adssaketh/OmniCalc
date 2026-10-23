@@ -500,8 +500,8 @@ body,
 }
 [data-bars="glass"] .bar-surface {
   background-color: color-mix(in srgb, var(--bar-tone, var(--m3-surface-container)) var(--glass-fill), transparent);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.10);
 }
 /* A soft light sheen on the answer display so it reads as glass / a real screen, not a flat grey block */
