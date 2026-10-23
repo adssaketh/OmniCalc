@@ -1,28 +1,12 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/outfit-400.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('/fonts/outfit-600.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/outfit-700.ttf') format('truetype');
-}
+/* ==========================================================================
+   OmniCalc design system
+   Same language as Ping: Material 3 tonal roles, soft borderless surfaces,
+   pill / 28-32px shapes, emphasized easing and springy press feedback.
+   <html> carries data-m3-theme (iris | oceanic | forest | sunset | amoled) and
+   data-m3-mode (light | dark); see App.tsx and the pre-paint script in index.html.
+   ========================================================================== */
 
 @font-face {
   font-family: 'JetBrains Mono';
@@ -40,40 +24,7 @@
   src: url('/fonts/jetbrains-mono-600.ttf') format('truetype');
 }
 
-@font-face {
-  font-family: 'Material Symbols Rounded';
-  font-style: normal;
-  font-weight: 100 700;
-  font-display: block;
-  src: url('/fonts/material-symbols-rounded.ttf') format('truetype');
-}
-
-.material-symbols-rounded {
-  font-family: 'Material Symbols Rounded', sans-serif;
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-.material-symbols-rounded.filled {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-/* ==========================================================================
-   MATERIAL 3 EXPRESSIVE DESIGN SYSTEM ROLE-BASED TOKENS (LIGHT & DARK)
-   ========================================================================== */
-
-/* 1. DEFAULT DARK TOKENS (Iris / Android Flagship Monet) */
+/* ---- Colour roles: dark Iris is the default ---- */
 :root {
   color-scheme: dark;
 
@@ -112,60 +63,15 @@
   --m3-on-error-container: #ffdad6;
 
   --m3-scrim: rgba(0, 0, 0, 0.75);
-  --m3-shadow: rgba(0, 0, 0, 0.45);
-  --m3-glow-opacity: 0.55;
 
-  --m3-radius-xl: 28px;
-  --m3-radius-lg: 20px;
-  --m3-radius-full: 9999px;
+  /* Motion tokens (Material 3 Expressive, shared with Ping) */
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
-/* 2. AUTOMATIC SYSTEM LIGHT TOKENS (Iris Monet) */
-@media (prefers-color-scheme: light) {
-  :root:not([data-m3-mode="dark"]) {
-    color-scheme: light;
-
-    --m3-primary: #0b57d0;
-    --m3-on-primary: #ffffff;
-    --m3-primary-container: #d3e3fd;
-    --m3-on-primary-container: #041e49;
-
-    --m3-secondary: #4f607c;
-    --m3-on-secondary: #ffffff;
-    --m3-secondary-container: #d7e3ff;
-    --m3-on-secondary-container: #091b35;
-
-    --m3-tertiary: #6f5575;
-    --m3-on-tertiary: #ffffff;
-    --m3-tertiary-container: #f9d8fe;
-    --m3-on-tertiary-container: #28132e;
-
-    --m3-surface: #f8f9fa;
-    --m3-surface-dim: #dadce0;
-    --m3-surface-bright: #ffffff;
-    --m3-surface-container-lowest: #ffffff;
-    --m3-surface-container-low: #f0f4f9;
-    --m3-surface-container: #e9eef6;
-    --m3-surface-container-high: #e1e7f0;
-    --m3-surface-container-highest: #d8e0ec;
-
-    --m3-outline: #747775;
-    --m3-outline-variant: #c4c7c5;
-    --m3-on-surface: #1f1f1f;
-    --m3-on-surface-variant: #444746;
-
-    --m3-error: #ba1a1a;
-    --m3-on-error: #ffffff;
-    --m3-error-container: #ffdad6;
-    --m3-on-error-container: #410002;
-
-    --m3-scrim: rgba(0, 0, 0, 0.4);
-    --m3-shadow: rgba(0, 0, 0, 0.08);
-    --m3-glow-opacity: 0.28;
-  }
-}
-
-/* 3. EXPLICIT LIGHT MODE (Iris) */
+/* ---- Light Iris ---- */
 [data-m3-mode="light"] {
   color-scheme: light;
 
@@ -204,12 +110,10 @@
   --m3-on-error-container: #410002;
 
   --m3-scrim: rgba(0, 0, 0, 0.4);
-  --m3-shadow: rgba(0, 0, 0, 0.08);
-  --m3-glow-opacity: 0.28;
 }
 
-/* 4. THEME: OCEANIC (Dynamic Teal) */
-[data-m3-theme="oceanic"] {
+/* ---- Theme: Oceanic (teal) ---- */
+[data-m3-theme="oceanic"]:not([data-m3-mode="light"]) {
   --m3-primary: #7bd0ff;
   --m3-on-primary: #003549;
   --m3-primary-container: #004d67;
@@ -233,8 +137,6 @@
   --m3-outline: #899294;
   --m3-outline-variant: #3f484a;
 }
-
-/* Oceanic Light */
 [data-m3-mode="light"][data-m3-theme="oceanic"] {
   --m3-primary: #006874;
   --m3-on-primary: #ffffff;
@@ -256,31 +158,8 @@
   --m3-outline-variant: #bfc8ca;
 }
 
-@media (prefers-color-scheme: light) {
-  :root:not([data-m3-mode="dark"])[data-m3-theme="oceanic"] {
-    --m3-primary: #006874;
-    --m3-on-primary: #ffffff;
-    --m3-primary-container: #97f0ff;
-    --m3-on-primary-container: #001f24;
-    --m3-secondary-container: #cde7ec;
-    --m3-on-secondary-container: #051f23;
-    --m3-surface: #f5fbfa;
-    --m3-surface-dim: #d5dbda;
-    --m3-surface-bright: #ffffff;
-    --m3-surface-container-lowest: #ffffff;
-    --m3-surface-container-low: #ebf5f4;
-    --m3-surface-container: #e3efee;
-    --m3-surface-container-high: #dbe7e6;
-    --m3-surface-container-highest: #d2dedd;
-    --m3-on-surface: #161d1d;
-    --m3-on-surface-variant: #3f484a;
-    --m3-outline: #6f797a;
-    --m3-outline-variant: #bfc8ca;
-  }
-}
-
-/* 5. THEME: FOREST (Botanical Sage) */
-[data-m3-theme="forest"] {
+/* ---- Theme: Forest (botanical sage) ---- */
+[data-m3-theme="forest"]:not([data-m3-mode="light"]) {
   --m3-primary: #9cd67d;
   --m3-on-primary: #103800;
   --m3-primary-container: #23520e;
@@ -304,8 +183,6 @@
   --m3-outline: #8c9388;
   --m3-outline-variant: #424940;
 }
-
-/* Forest Light */
 [data-m3-mode="light"][data-m3-theme="forest"] {
   --m3-primary: #2e6a24;
   --m3-on-primary: #ffffff;
@@ -327,31 +204,8 @@
   --m3-outline-variant: #c2c9be;
 }
 
-@media (prefers-color-scheme: light) {
-  :root:not([data-m3-mode="dark"])[data-m3-theme="forest"] {
-    --m3-primary: #2e6a24;
-    --m3-on-primary: #ffffff;
-    --m3-primary-container: #aff39e;
-    --m3-on-primary-container: #002203;
-    --m3-secondary-container: #d6e7d0;
-    --m3-on-secondary-container: #121f10;
-    --m3-surface: #f7fbf2;
-    --m3-surface-dim: #d7dbd2;
-    --m3-surface-bright: #ffffff;
-    --m3-surface-container-lowest: #ffffff;
-    --m3-surface-container-low: #f0f5ec;
-    --m3-surface-container: #e8efe4;
-    --m3-surface-container-high: #e2e9de;
-    --m3-surface-container-highest: #dce3d8;
-    --m3-on-surface: #181d17;
-    --m3-on-surface-variant: #424940;
-    --m3-outline: #72796f;
-    --m3-outline-variant: #c2c9be;
-  }
-}
-
-/* 6. THEME: SUNSET (Terracotta Coral) */
-[data-m3-theme="sunset"] {
+/* ---- Theme: Sunset (terracotta) ---- */
+[data-m3-theme="sunset"]:not([data-m3-mode="light"]) {
   --m3-primary: #ffb59d;
   --m3-on-primary: #55200c;
   --m3-primary-container: #72351f;
@@ -375,8 +229,6 @@
   --m3-outline: #9e8d88;
   --m3-outline-variant: #51433f;
 }
-
-/* Sunset Light */
 [data-m3-mode="light"][data-m3-theme="sunset"] {
   --m3-primary: #9c4323;
   --m3-on-primary: #ffffff;
@@ -398,31 +250,8 @@
   --m3-outline-variant: #d7c2bc;
 }
 
-@media (prefers-color-scheme: light) {
-  :root:not([data-m3-mode="dark"])[data-m3-theme="sunset"] {
-    --m3-primary: #9c4323;
-    --m3-on-primary: #ffffff;
-    --m3-primary-container: #ffdbcf;
-    --m3-on-primary-container: #380d00;
-    --m3-secondary-container: #f5ded7;
-    --m3-on-secondary-container: #2b1611;
-    --m3-surface: #fff8f6;
-    --m3-surface-dim: #ded5d1;
-    --m3-surface-bright: #ffffff;
-    --m3-surface-container-lowest: #ffffff;
-    --m3-surface-container-low: #fcf1ed;
-    --m3-surface-container: #f6ebe5;
-    --m3-surface-container-high: #f0e5df;
-    --m3-surface-container-highest: #eadece;
-    --m3-on-surface: #221916;
-    --m3-on-surface-variant: #52433e;
-    --m3-outline: #84736e;
-    --m3-outline-variant: #d7c2bc;
-  }
-}
-
-/* 7. THEME: AMOLED / HIGH CONTRAST */
-[data-m3-theme="amoled"] {
+/* ---- Theme: AMOLED (pure contrast) ---- */
+[data-m3-theme="amoled"]:not([data-m3-mode="light"]) {
   --m3-primary: #c2c1ff;
   --m3-on-primary: #2b297b;
   --m3-primary-container: #424095;
@@ -446,8 +275,6 @@
   --m3-outline: #938f99;
   --m3-outline-variant: #49454f;
 }
-
-/* AMOLED Light */
 [data-m3-mode="light"][data-m3-theme="amoled"] {
   --m3-primary: #5548c8;
   --m3-on-primary: #ffffff;
@@ -469,31 +296,8 @@
   --m3-outline-variant: #c8c6d1;
 }
 
-@media (prefers-color-scheme: light) {
-  :root:not([data-m3-mode="dark"])[data-m3-theme="amoled"] {
-    --m3-primary: #5548c8;
-    --m3-on-primary: #ffffff;
-    --m3-primary-container: #e5deff;
-    --m3-on-primary-container: #140068;
-    --m3-secondary-container: #e3e0f2;
-    --m3-on-secondary-container: #1a1926;
-    --m3-surface: #ffffff;
-    --m3-surface-dim: #dadade;
-    --m3-surface-bright: #ffffff;
-    --m3-surface-container-lowest: #ffffff;
-    --m3-surface-container-low: #f7f7f9;
-    --m3-surface-container: #efeff3;
-    --m3-surface-container-high: #e6e6ec;
-    --m3-surface-container-highest: #dcdce4;
-    --m3-on-surface: #000000;
-    --m3-on-surface-variant: #38383e;
-    --m3-outline: #6e6d76;
-    --m3-outline-variant: #c8c6d1;
-  }
-}
-
 /* ==========================================================================
-   SMOOTH CROSS-FADE ANIMATION OF COLOR VARIABLES (120Hz OPTIMIZED)
+   Base
    ========================================================================== */
 html,
 body,
@@ -501,79 +305,74 @@ body,
   background-color: var(--m3-surface);
   color: var(--m3-on-surface);
   min-height: 100%;
-  transition: background-color 300ms cubic-bezier(0.2, 0, 0, 1),
-              color 300ms cubic-bezier(0.2, 0, 0, 1);
+  transition: background-color 300ms var(--ease-emphasized), color 300ms var(--ease-emphasized);
 }
 
 @layer base {
-  body {
-    font-family: 'Google Sans', 'Google Sans Text', 'Google Sans Flex', 'Roboto Flex', 'Roboto', 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
-  
-  .font-mono, .tabular-nums {
+
+  body {
+    touch-action: manipulation;
+    font-family: 'Google Sans', 'Google Sans Text', 'Roboto Flex', Roboto, system-ui, -apple-system,
+      'Segoe UI', sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  .font-mono,
+  .tabular-nums {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-variant-numeric: tabular-nums;
   }
+
+  /* Smooth, contained scrolling */
+  .overflow-y-auto,
+  .overflow-x-auto {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
-/* Material 3 State Layer (Hover & Press Elevation) */
-.m3-state-layer {
-  position: relative;
-  overflow: hidden;
-  transition: transform 140ms cubic-bezier(0.2, 0, 0, 1),
-              background-color 200ms cubic-bezier(0.2, 0, 0, 1),
-              color 200ms cubic-bezier(0.2, 0, 0, 1);
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--m3-outline) 30%, transparent);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--m3-outline) 50%, transparent);
 }
 
-.m3-state-layer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background-color: currentColor;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 120ms ease;
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-.m3-state-layer:hover::after {
-  opacity: 0.08;
-}
-
-.m3-state-layer:active {
-  transform: scale(0.94);
-}
-
-.m3-state-layer:active::after {
-  opacity: 0.16;
-}
-
-/* Material 3 Expressive Tactile Spring Button & Key Styles */
+/* ==========================================================================
+   Press feedback: every tappable surface springs in a little and shows a
+   tonal state layer, no glows (same feel as Ping's buttons).
+   ========================================================================== */
 .m3-key {
   position: relative;
   overflow: hidden;
   user-select: none;
   touch-action: manipulation;
   cursor: pointer;
-  transition: transform 120ms cubic-bezier(0.2, 0, 0, 1),
-              filter 140ms ease,
-              background-color 200ms cubic-bezier(0.2, 0, 0, 1),
-              color 200ms cubic-bezier(0.2, 0, 0, 1),
-              border-color 200ms cubic-bezier(0.2, 0, 0, 1),
-              box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
+  transition: transform 140ms var(--ease-spring), background-color 220ms var(--ease-emphasized),
+    color 220ms var(--ease-emphasized);
 }
-
-.m3-key:hover {
-  filter: brightness(1.05);
-}
-
-.m3-key:active {
-  transform: scale(0.92);
-  filter: brightness(1.12);
-}
-
 .m3-key::after {
   content: '';
   position: absolute;
@@ -584,133 +383,74 @@ body,
   pointer-events: none;
   transition: opacity 120ms ease;
 }
-
+.m3-key:hover::after {
+  opacity: 0.08;
+}
+.m3-key:active {
+  transform: scale(0.95);
+  transition-duration: 90ms;
+}
 .m3-key:active::after {
-  opacity: 0.12;
+  opacity: 0.14;
 }
 
-/* Material 3 Expressive Equals Key: Zero resting glow, vibrant tactile light-up on active press */
-.m3-equals-key {
-  box-shadow: none !important;
-  transition: transform 120ms cubic-bezier(0.2, 0, 0, 1),
-              box-shadow 140ms ease,
-              filter 140ms ease,
-              background-color 200ms ease;
-}
-
-.m3-equals-key:hover {
-  filter: brightness(1.06);
-}
-
-.m3-equals-key:active {
-  transform: scale(0.93);
-  filter: brightness(1.25);
-  box-shadow: 0 0 32px 6px color-mix(in srgb, var(--m3-primary) 85%, transparent),
-              0 2px 10px rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Material 3 Expressive Pop and Glow Effect (Press-only glow) */
-.m3-pop-glow {
-  box-shadow: none;
-  transition: transform 140ms cubic-bezier(0.34, 1.4, 0.64, 1),
-              box-shadow 180ms ease,
-              background-color 200ms cubic-bezier(0.2, 0, 0, 1);
-}
-
-.m3-pop-glow:hover {
-  filter: brightness(1.04);
-}
-
-.m3-pop-glow:active {
-  transform: scale(0.92);
-  box-shadow: 0 0 26px 4px color-mix(in srgb, var(--m3-primary) 75%, transparent);
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--m3-outline-variant);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--m3-outline);
-}
-
-/* Material 3 Expressive Screen Motion Animation (120Hz Display Optimized) */
+/* ==========================================================================
+   Entrance motion
+   ========================================================================== */
 @keyframes m3ScreenEnter {
-  0% {
+  from {
     opacity: 0;
-    transform: translate3d(0, 8px, 0) scale(0.992);
+    transform: translateY(12px);
   }
-  100% {
+  to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: none;
   }
 }
-
 .animate-m3-screen-enter {
-  animation: m3ScreenEnter 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
+  animation: m3ScreenEnter 380ms var(--ease-emphasized-decelerate) both;
 }
 
 @keyframes m3ResultUpdate {
   0% {
-    transform: scale3d(0.96, 0.96, 1);
+    transform: scale(0.96);
     opacity: 0.85;
   }
   60% {
-    transform: scale3d(1.02, 1.02, 1);
+    transform: scale(1.02);
     opacity: 1;
   }
   100% {
-    transform: scale3d(1, 1, 1);
+    transform: scale(1);
     opacity: 1;
   }
 }
-
 .animate-m3-result-update {
-  animation: m3ResultUpdate 220ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
-  will-change: transform, opacity;
+  animation: m3ResultUpdate 240ms var(--ease-spring) both;
 }
 
 @keyframes m3FadeIn {
   from {
     opacity: 0;
-    transform: translate3d(0, 4px, 0);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: none;
   }
 }
-
 .animate-fadeIn {
-  animation: m3FadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity;
+  animation: m3FadeIn 200ms var(--ease-emphasized-decelerate) forwards;
 }
 
-/* 120Hz GPU Promoted Classes */
-.gpu-accel {
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  will-change: transform;
-}
-
+/* Respect the phone's "remove animations" accessibility setting */
 @media (prefers-reduced-motion: reduce) {
-  .animate-m3-screen-enter,
-  .animate-m3-result-update,
-  .animate-fadeIn {
-    animation: none !important;
-  }
-  .m3-key,
-  button {
-    transition: none !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

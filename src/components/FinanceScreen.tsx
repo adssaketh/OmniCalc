@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { soundFx } from '../utils/audio';
 import {
   Globe,
-  TrendingUp,
   Wallet,
   Landmark,
   PiggyBank,

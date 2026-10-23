@@ -1,17 +1,9 @@
-# OmniCalc By Saketh — Android APK & Google Play Store Guide
+# OmniCalc — Android APK & Google Play Store Guide
 
 **App ID**: `com.saketh.omnicalc`  
 **App Name**: `OmniCalc`  
-**Architecture**: Capacitor 7 + React 19 + Vite 8 + Tailwind CSS  
+**Architecture**: Capacitor 8 + React 19 + Vite 8 + Tailwind CSS  
 **Offline Capability**: 100% Fully Offline (all JS, CSS, icons, and fonts bundled in APK)
-
----
-
-## 📦 Download the Complete Native Android Project
-
-A complete, pre-configured zip archive containing the built web app and the native Android project is included in this repository:
-- **Direct Web Download**: `/OmniCalc-Android-Capacitor.zip` (available from the app root)
-- Or extract directly if cloning this repo: the `./android` directory is already generated and synced.
 
 ---
 
