@@ -579,6 +579,24 @@ body,
   background: var(--m3-primary);
 }
 
+/* ---- Collapsing header (see Header.tsx): --hc goes 0 (full pill) -> 1 (round logo + small action pill) ---- */
+.hdr-pill {
+  width: calc(100% - (100% - 56px) * var(--hc, 0));
+}
+.hdr-title {
+  opacity: max(0, calc(1 - var(--hc, 0) * 2.4));
+  transform: translateX(calc(var(--hc, 0) * -14px));
+}
+.hdr-ctitle {
+  left: 72px;
+  right: 168px;
+  opacity: max(0, calc((var(--hc, 0) - 0.45) * 1.9));
+  transform: scale(calc(0.94 + 0.06 * var(--hc, 0)));
+}
+.hdr-icons-bg {
+  opacity: max(0, calc((var(--hc, 0) - 0.15) * 1.2));
+}
+
 /* Soft blur that grows toward the screen edge ("Fade + blur") */
 .edge-blur {
   position: absolute;

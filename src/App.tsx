@@ -441,9 +441,19 @@ export default function App() {
     let lastTop = -1;
     let lastBottom = -1;
     const q = (v: number) => Math.round(Math.min(1, Math.max(0, v)) * 50) / 50;
+    // The header collapses on the screens that scroll; on the calculator it stays full next to the pinned display
+    const headerEl = topStackRef.current?.firstElementChild as HTMLElement | null;
+    const collapses = currentMode !== 'standard';
+    let lastHc = -1;
+    const easeInOut = (t: number) => 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, Math.max(0, t)));
 
     const update = () => {
       raf = 0;
+      const hc = collapses ? Math.round(easeInOut(scroller.scrollTop / 90) * 100) / 100 : 0;
+      if (headerEl && hc !== lastHc) {
+        headerEl.style.setProperty('--hc', String(hc));
+        lastHc = hc;
+      }
       const t = q(scroller.scrollTop / span);
       const b = q((scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop) / span);
       if (t !== lastTop) {
@@ -707,6 +717,7 @@ export default function App() {
             onToggleSound={() => handleUpdateSettings({ soundEnabled: !settings.soundEnabled })}
             onOpenSettings={() => setIsSettingsOpen(true)}
             onOpenGuide={() => setIsGuideOpen(true)}
+            onLogoTap={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
             theme={settings.theme}
           />
           <div ref={setPinnedSlot} className="px-3 pb-2 empty:hidden" />
