@@ -448,29 +448,29 @@ export const CompoundCalculator: React.FC<CompoundCalculatorProps> = ({
             </button>
 
             {isTimelineOpen && (
-              <div className="mt-3 overflow-x-auto no-scrollbar animate-fadeIn">
-                <table className="w-full text-left text-xs font-mono">
+              <div className="mt-3 table-wrap no-scrollbar animate-fadeIn">
+                <table className="w-full text-left text-[11.5px] sm:text-xs font-mono">
                   <thead>
                     <tr className="border-b" style={{ borderColor: 'var(--m3-outline-variant)', color: 'var(--m3-on-surface-variant)' }}>
-                      <th className="py-2 px-2.5 font-semibold">Year</th>
-                      <th className="py-2 px-2.5 font-semibold">Monthly SIP</th>
-                      <th className="py-2 px-2.5 font-semibold">Invested</th>
-                      <th className="py-2 px-2.5 font-semibold">Growth</th>
-                      <th className="py-2 px-2.5 font-semibold text-right">Corpus</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Year</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Monthly SIP</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Invested</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Growth</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold text-right">Corpus</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y" style={{ borderColor: 'var(--m3-outline-variant)' }}>
                     {result.yearlyBreakdown.map((row) => (
                       <tr key={row.year} className="transition-colors hover:opacity-90">
-                        <td className="py-2 px-2.5" style={{ color: 'var(--m3-on-surface-variant)' }}>Yr {row.year}</td>
-                        <td className="py-2 px-2.5" style={{ color: 'var(--m3-on-surface)' }}>
+                        <td className="py-2 px-1.5 sm:px-2.5" style={{ color: 'var(--m3-on-surface-variant)' }}>Yr {row.year}</td>
+                        <td className="py-2 px-1.5 sm:px-2.5" style={{ color: 'var(--m3-on-surface)' }}>
                           {row.year === 0 ? '-' : `${currencySymbol}${formatMoney(row.monthlyContribution)}/m`}
                         </td>
-                        <td className="py-2 px-2.5" style={{ color: 'var(--m3-on-surface)' }}>{currencySymbol}{formatMoney(row.deposits)}</td>
-                        <td className="py-2 px-2.5 font-medium" style={{ color: currentTheme.isDark ? '#34d399' : '#047857' }}>
+                        <td className="py-2 px-1.5 sm:px-2.5" style={{ color: 'var(--m3-on-surface)' }}>{currencySymbol}{formatMoney(row.deposits)}</td>
+                        <td className="py-2 px-1.5 sm:px-2.5 font-medium" style={{ color: currentTheme.isDark ? '#34d399' : '#047857' }}>
                           +{currencySymbol}{formatMoney(row.interestAccrued)}
                         </td>
-                        <td className="py-2 px-2.5 text-right font-medium" style={{ color: 'var(--m3-on-surface)' }}>
+                        <td className="py-2 px-1.5 sm:px-2.5 text-right font-medium" style={{ color: 'var(--m3-on-surface)' }}>
                           {currencySymbol}{formatMoney(row.balance)}
                         </td>
                       </tr>

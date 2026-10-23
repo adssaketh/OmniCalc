@@ -13,6 +13,7 @@ interface NavigationRailProps {
   hapticEnabled: boolean;
   onToggleSound: () => void;
   onOpenSettings: () => void;
+  onOpenGuide: () => void;
   onOpenHistory: () => void;
   isHistoryOpen?: boolean;
   historyCount?: number;
@@ -28,6 +29,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({
   hapticEnabled,
   onToggleSound,
   onOpenSettings,
+  onOpenGuide,
   onOpenHistory,
   isHistoryOpen = false,
   historyCount = 0,
@@ -38,7 +40,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({
 
   return (
     <aside
-      className="sticky top-0 h-screen z-40 flex flex-col justify-between items-center py-3 select-none shrink-0"
+      className="h-full z-40 flex flex-col justify-between items-center py-3 select-none shrink-0"
       style={{
         width: 'calc(88px + env(safe-area-inset-left, 0px))',
         paddingLeft: 'max(env(safe-area-inset-left, 0px), 8px)',
@@ -105,6 +107,15 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({
       </div>
 
       <div className="flex flex-col items-center gap-2 shrink-0">
+        <button
+          onClick={onOpenGuide}
+          aria-label="How to use OmniCalc"
+          title="User guide"
+          className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
+          style={{ color: 'var(--m3-primary)' }}
+        >
+          <NavIcon id="guide" size={22} />
+        </button>
         <button
           onClick={onToggleSound}
           aria-label={soundEnabled ? 'Mute key clicks' : 'Enable key clicks'}

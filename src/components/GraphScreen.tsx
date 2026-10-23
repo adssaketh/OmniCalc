@@ -61,7 +61,7 @@ export const GraphScreen: React.FC<GraphScreenProps> = ({
     ctx.lineWidth = 1;
     ctx.strokeStyle = gridStroke;
     ctx.fillStyle = textFill;
-    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.font = '10px "Google Sans", "Roboto Flex", Roboto, system-ui, sans-serif';
 
     // Step size based on scale
     const step = scale;

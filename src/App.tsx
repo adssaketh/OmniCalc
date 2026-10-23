@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
-import { CalculatorMode, HistoryItem, AppSettings } from './types';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { CalculatorMode, HistoryItem, AppSettings, AngleMode } from './types';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { StatusBar, Style } from '@capacitor/status-bar';
@@ -18,6 +18,8 @@ import { PhysicsScreen } from './components/PhysicsScreen';
 import { GraphScreen } from './components/GraphScreen';
 import { HistoryTapeModal } from './components/HistoryTapeModal';
 import { SettingsModal } from './components/SettingsModal';
+import { GuideSheet } from './components/GuideSheet';
+import { FADE_PX, GLASS_BLUR_PX, EDGE_BLUR_PX, glassFillPercent, buildEdgeMask, buildBlurMask } from './edgeEffects';
 import { soundFx } from './utils/audio';
 import { useOrientation } from './hooks/useOrientation';
 import {
@@ -39,6 +41,12 @@ const DEFAULT_SETTINGS: AppSettings = {
   currencySymbol: '₹',
   currencyCode: 'INR',
   enableGrapher: false,
+  edgeEffect: 'fade',
+  fadeHeight: 'medium',
+  barStyle: 'solid',
+  glassTransparency: 70,
+  glassBlur: 'medium',
+  glassEdge: true,
 };
 
 /** Page background per theme, used for the status bar and the root element. */
@@ -80,7 +88,15 @@ export default function App() {
   const [currentMode, setCurrentMode] = useState<CalculatorMode>('standard');
   const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [externalExpression, setExternalExpression] = useState<string>('');
+  const [externalSeq, setExternalSeq] = useState<number>(0);
+  const [pinnedSlot, setPinnedSlot] = useState<HTMLElement | null>(null);
+  const [topH, setTopH] = useState<number>(84);
+  const [bottomH, setBottomH] = useState<number>(88);
+  const topStackRef = useRef<HTMLDivElement>(null);
+  const bottomStackRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [systemColors, setSystemColors] = useState<SystemColors | null>(null);
 
   // Persisted History
@@ -135,9 +151,23 @@ export default function App() {
     setHistory([]);
   };
 
+  /** Puts text into the calculator display; the sequence number makes loading the same text twice work */
+  const loadExpression = (expr: string) => {
+    setExternalExpression(expr);
+    setExternalSeq((n) => n + 1);
+  };
+
   const handleSelectResult = (val: string) => {
-    setExternalExpression(val);
+    loadExpression(val);
     setCurrentMode('standard');
+  };
+
+  const handleTryExample = (expr: string, angle?: AngleMode) => {
+    if (angle) handleUpdateSettings({ angleMode: angle });
+    setIsGuideOpen(false);
+    setIsHistoryOpen(false);
+    setCurrentMode('standard');
+    loadExpression(expr);
   };
 
   const handleUpdateSettings = (partial: Partial<AppSettings>) => {
@@ -295,33 +325,121 @@ export default function App() {
     }
   }, [settings.theme, settings.colorMode, isDarkMode, systemColors, themeDataAttr]);
 
-  // Android Native Back Button: dismiss modals first, then exit application
+  // Screens visited, so the back gesture returns to the previous screen instead of leaving the app
+  const modeTrailRef = useRef<CalculatorMode[]>([]);
+  const lastModeRef = useRef<CalculatorMode>(currentMode);
+  const goingBackRef = useRef<boolean>(false);
+  useEffect(() => {
+    if (goingBackRef.current) {
+      goingBackRef.current = false;
+    } else if (lastModeRef.current !== currentMode) {
+      const trail = modeTrailRef.current;
+      if (trail[trail.length - 1] !== lastModeRef.current) trail.push(lastModeRef.current);
+      if (trail.length > 20) trail.shift();
+    }
+    lastModeRef.current = currentMode;
+  }, [currentMode]);
+
+  const innerBackRef = useRef<(() => boolean) | null>(null); // Settings: closes its own sub-sheet first
+  const lastBackPressRef = useRef<number>(0);
+  const [exitHint, setExitHint] = useState<boolean>(false);
+
+  // Always read the latest state from the back handler, which is registered only once
+  const backStateRef = useRef({ isGuideOpen, isSettingsOpen, isHistoryOpen });
+  backStateRef.current = { isGuideOpen, isSettingsOpen, isHistoryOpen };
+
+  // Android back button / back gesture:
+  // close the top layer first (guide, settings sub-sheet, settings, history), then go back screen by
+  // screen. Only from the very first screen does it ask to press back twice to leave the app.
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
-    let listenerPromise = CapApp.addListener('backButton', () => {
-      if (isSettingsOpen) {
-        setIsSettingsOpen(false);
-      } else if (isHistoryOpen) {
-        setIsHistoryOpen(false);
-      } else {
-        CapApp.exitApp();
+    const listenerPromise = CapApp.addListener('backButton', () => {
+      const st = backStateRef.current;
+      if (st.isGuideOpen) {
+        setIsGuideOpen(false);
+        return;
       }
+      if (st.isSettingsOpen) {
+        if (!innerBackRef.current?.()) setIsSettingsOpen(false);
+        return;
+      }
+      if (st.isHistoryOpen) {
+        setIsHistoryOpen(false);
+        return;
+      }
+      const trail = modeTrailRef.current;
+      if (trail.length > 0) {
+        goingBackRef.current = true;
+        const previous = trail.pop()!;
+        setExternalExpression('');
+        setCurrentMode(previous);
+        return;
+      }
+      const now = Date.now();
+      if (now - lastBackPressRef.current < 2000) {
+        CapApp.exitApp();
+        return;
+      }
+      lastBackPressRef.current = now;
+      setExitHint(true);
+      setTimeout(() => setExitHint(false), 2000);
     });
 
     return () => {
-      listenerPromise.then((handle) => handle.remove()).catch(() => {});
+      listenerPromise.then((handle: { remove: () => Promise<void> }) => handle.remove()).catch(() => {});
     };
-  }, [isSettingsOpen, isHistoryOpen]);
+  }, []);
 
   const { isLandscape, isTablet, width } = useOrientation();
   const isLargeScreen = width >= 960 || (isTablet && isLandscape) || (isTablet && width >= 720);
+
+  // Bar style + edge effect: published on <html> so the Settings preview (a portal) sees them too
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-bars', settings.barStyle);
+    root.setAttribute('data-edge', settings.edgeEffect);
+    root.setAttribute('data-glass-edge', settings.glassEdge ? 'on' : 'off');
+    root.style.setProperty('--glass-fill', `${glassFillPercent(settings.glassTransparency)}%`);
+    root.style.setProperty('--glass-blur', `${GLASS_BLUR_PX[settings.glassBlur]}px`);
+    root.style.setProperty('--edge-blur', `${EDGE_BLUR_PX}px`);
+  }, [settings.barStyle, settings.edgeEffect, settings.glassEdge, settings.glassTransparency, settings.glassBlur]);
+
+  // Measure the floating bars so the scroll area, the fade mask and the keypad all follow their real height
+  useLayoutEffect(() => {
+    const observe = (el: HTMLElement | null, set: (h: number) => void) => {
+      if (!el) {
+        set(0);
+        return () => {};
+      }
+      const update = () => set(Math.round(el.getBoundingClientRect().height));
+      update();
+      const ro = new ResizeObserver(update);
+      ro.observe(el);
+      return () => ro.disconnect();
+    };
+    const offTop = observe(topStackRef.current, setTopH);
+    const offBottom = observe(isLargeScreen ? null : bottomStackRef.current, setBottomH);
+    return () => {
+      offTop();
+      offBottom();
+    };
+  }, [isLargeScreen]);
+
+  // Each screen starts at the top
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+  }, [currentMode]);
 
   // Global Keyboard Shortcuts for accessories and PC navigation
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       // If modal is open and user presses Escape, close modal
       if (e.key === 'Escape') {
+        if (isGuideOpen) {
+          setIsGuideOpen(false);
+          return;
+        }
         if (isSettingsOpen) {
           setIsSettingsOpen(false);
           return;
@@ -378,18 +496,25 @@ export default function App() {
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [isSettingsOpen, isHistoryOpen, settings.enableGrapher]);
+  }, [isSettingsOpen, isHistoryOpen, isGuideOpen, settings.enableGrapher]);
+
+  const fadePx = FADE_PX[settings.fadeHeight];
+  const edgeMask = buildEdgeMask({ topH, bottomH: isLargeScreen ? 0 : bottomH, fadePx }, settings.edgeEffect, settings.barStyle);
+  const bottomBars = isLargeScreen ? 0 : bottomH;
 
   return (
     <div
       data-m3-theme={themeDataAttr}
-      className={`min-h-screen font-sans transition-colors duration-300 ${
-        isLargeScreen ? 'flex flex-row' : 'flex flex-col'
-      }`}
-      style={{
-        backgroundColor: 'var(--m3-surface)',
-        color: 'var(--m3-on-surface)',
-      }}
+      className="app-shell font-sans flex"
+      style={
+        {
+          flexDirection: isLargeScreen ? 'row' : 'column',
+          backgroundColor: 'var(--m3-surface)',
+          color: 'var(--m3-on-surface)',
+          '--top-stack-h': `${topH}px`,
+          '--bottom-stack-h': `${bottomBars}px`,
+        } as React.CSSProperties
+      }
     >
       {/* 1. Large Screen Navigation Rail (Tablets in landscape & Desktop PCs) */}
       {isLargeScreen && (
@@ -404,6 +529,7 @@ export default function App() {
           hapticEnabled={settings.hapticEnabled}
           onToggleSound={() => handleUpdateSettings({ soundEnabled: !settings.soundEnabled })}
           onOpenSettings={() => setIsSettingsOpen(true)}
+          onOpenGuide={() => setIsGuideOpen(true)}
           onOpenHistory={() => setIsHistoryOpen((prev) => !prev)}
           isHistoryOpen={isHistoryOpen}
           historyCount={history.length}
@@ -412,89 +538,134 @@ export default function App() {
         />
       )}
 
-      {/* 2. Main Content Workspace */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <Header
-          soundEnabled={settings.soundEnabled}
-          onToggleSound={() => handleUpdateSettings({ soundEnabled: !settings.soundEnabled })}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-          theme={settings.theme}
-        />
-
-        {/* Main Workspace Area with adaptive responsive padding and viewport utilization */}
-        <main
-          className={`flex-1 w-full max-w-[1650px] mx-auto px-2 sm:px-6 lg:px-8 py-1.5 sm:py-3 flex flex-col min-h-0 ${
-            isLargeScreen ? 'pb-4 lg:pb-6' : 'pb-[76px] sm:pb-24'
-          }`}
+      {/* 2. Content column: scroll area underneath, floating bars on top */}
+      <div className="relative flex-1 min-w-0 min-h-0">
+        {/* Scroll area. The mask fades content out as it slides under the bars (Settings > Bars & scrolling). */}
+        <div
+          id="app-scroll"
+          ref={scrollRef}
+          style={{
+            maskImage: edgeMask,
+            WebkitMaskImage: edgeMask,
+          }}
         >
-          {/* Animated Screen Container */}
-          <div key={currentMode} className="w-full flex-1 flex flex-col h-full min-h-0 animate-m3-screen-enter">
-            {currentMode === 'standard' && (
-              <CalculatorScreen
-                angleMode={settings.angleMode}
-                onToggleAngleMode={() =>
-                  handleUpdateSettings({ angleMode: settings.angleMode === 'deg' ? 'rad' : 'deg' })
-                }
-                decimalPrecision={settings.decimalPrecision}
-                soundEnabled={settings.soundEnabled}
-                hapticEnabled={settings.hapticEnabled}
-                onAddHistory={handleAddHistory}
-                externalExpression={externalExpression}
-                history={history}
-                onOpenHistory={() => setIsHistoryOpen(true)}
-                onSelectHistoryItem={(expr) => setExternalExpression(expr)}
-              />
-            )}
+          <div
+            className="min-h-full flex flex-col"
+            style={{
+              paddingTop: 'calc(var(--top-stack-h) + 6px)',
+              paddingBottom: isLargeScreen ? '24px' : 'calc(var(--bottom-stack-h) + 12px)',
+            }}
+          >
+            <main className="flex-1 w-full max-w-[1650px] mx-auto px-2 sm:px-6 lg:px-8 py-1.5 sm:py-3 flex flex-col min-h-0">
+              {/* Animated Screen Container */}
+              <div key={currentMode} className="w-full flex-1 flex flex-col min-h-0 animate-m3-screen-enter">
+                {currentMode === 'standard' && (
+                  <CalculatorScreen
+                    angleMode={settings.angleMode}
+                    onToggleAngleMode={() =>
+                      handleUpdateSettings({ angleMode: settings.angleMode === 'deg' ? 'rad' : 'deg' })
+                    }
+                    decimalPrecision={settings.decimalPrecision}
+                    soundEnabled={settings.soundEnabled}
+                    hapticEnabled={settings.hapticEnabled}
+                    onAddHistory={handleAddHistory}
+                    externalExpression={externalExpression}
+                    externalSeq={externalSeq}
+                    pinnedSlot={pinnedSlot}
+                    history={history}
+                    onOpenHistory={() => setIsHistoryOpen(true)}
+                    onSelectHistoryItem={(expr) => loadExpression(expr)}
+                  />
+                )}
 
-            {currentMode === 'converter' && (
-              <ConverterScreen
-                soundEnabled={settings.soundEnabled}
-                hapticEnabled={settings.hapticEnabled}
-                decimalPrecision={settings.decimalPrecision}
-              />
-            )}
+                {currentMode === 'converter' && (
+                  <ConverterScreen
+                    soundEnabled={settings.soundEnabled}
+                    hapticEnabled={settings.hapticEnabled}
+                    decimalPrecision={settings.decimalPrecision}
+                  />
+                )}
 
-            {currentMode === 'finance' && (
-              <FinanceScreen
-                soundEnabled={settings.soundEnabled}
-                hapticEnabled={settings.hapticEnabled}
-                currencySymbol={settings.currencySymbol || '₹'}
-              />
-            )}
+                {currentMode === 'finance' && (
+                  <FinanceScreen
+                    soundEnabled={settings.soundEnabled}
+                    hapticEnabled={settings.hapticEnabled}
+                    currencySymbol={settings.currencySymbol || '₹'}
+                  />
+                )}
 
-            {currentMode === 'physics' && (
-              <PhysicsScreen
-                soundEnabled={settings.soundEnabled}
-                hapticEnabled={settings.hapticEnabled}
-                onInsertToCalculator={handleSelectResult}
-              />
-            )}
+                {currentMode === 'physics' && (
+                  <PhysicsScreen
+                    soundEnabled={settings.soundEnabled}
+                    hapticEnabled={settings.hapticEnabled}
+                    onInsertToCalculator={handleSelectResult}
+                  />
+                )}
 
-            {settings.enableGrapher && currentMode === 'grapher' && (
-              <GraphScreen
-                soundEnabled={settings.soundEnabled}
-                hapticEnabled={settings.hapticEnabled}
-              />
-            )}
+                {settings.enableGrapher && currentMode === 'grapher' && (
+                  <GraphScreen soundEnabled={settings.soundEnabled} hapticEnabled={settings.hapticEnabled} />
+                )}
+              </div>
+            </main>
           </div>
-        </main>
+        </div>
+
+        {/* Soft blur that grows toward the edges ("Fade + blur") */}
+        {settings.edgeEffect === 'blur' && (
+          <>
+            <div
+              className="edge-blur"
+              style={{
+                top: 0,
+                height: topH + fadePx,
+                maskImage: buildBlurMask(topH, fadePx, 'top'),
+                WebkitMaskImage: buildBlurMask(topH, fadePx, 'top'),
+              }}
+            />
+            {!isLargeScreen && (
+              <div
+                className="edge-blur"
+                style={{
+                  bottom: 0,
+                  height: bottomH + fadePx,
+                  maskImage: buildBlurMask(bottomH, fadePx, 'bottom'),
+                  WebkitMaskImage: buildBlurMask(bottomH, fadePx, 'bottom'),
+                }}
+              />
+            )}
+          </>
+        )}
+
+        {/* Top bars: header pill, plus the answer display pinned beneath it on the calculator */}
+        <div ref={topStackRef} className="absolute top-0 inset-x-0 z-40 pointer-events-none">
+          <Header
+            soundEnabled={settings.soundEnabled}
+            onToggleSound={() => handleUpdateSettings({ soundEnabled: !settings.soundEnabled })}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenGuide={() => setIsGuideOpen(true)}
+            theme={settings.theme}
+          />
+          <div ref={setPinnedSlot} className="px-3 pb-2 empty:hidden" />
+        </div>
 
         {/* 3. Mobile / Compact Floating Bottom Navigation Dock */}
         {!isLargeScreen && (
-          <BottomNavBar
-            currentMode={currentMode}
-            onSelectMode={(mode) => {
-              setIsHistoryOpen(false);
-              setCurrentMode(mode);
-              setExternalExpression('');
-            }}
-            soundEnabled={settings.soundEnabled}
-            hapticEnabled={settings.hapticEnabled}
-            onToggleHistory={() => setIsHistoryOpen((prev) => !prev)}
-            isHistoryOpen={isHistoryOpen}
-            historyCount={history.length}
-            enableGrapher={settings.enableGrapher}
-          />
+          <div ref={bottomStackRef} className="absolute bottom-0 inset-x-0 z-40 pointer-events-none">
+            <BottomNavBar
+              currentMode={currentMode}
+              onSelectMode={(mode) => {
+                setIsHistoryOpen(false);
+                setCurrentMode(mode);
+                setExternalExpression('');
+              }}
+              soundEnabled={settings.soundEnabled}
+              hapticEnabled={settings.hapticEnabled}
+              onToggleHistory={() => setIsHistoryOpen((prev) => !prev)}
+              isHistoryOpen={isHistoryOpen}
+              historyCount={history.length}
+              enableGrapher={settings.enableGrapher}
+            />
+          </div>
         )}
       </div>
 
@@ -505,7 +676,7 @@ export default function App() {
         history={history}
         onSelectResult={handleSelectResult}
         onSelectExpression={(expr) => {
-          setExternalExpression(expr);
+          loadExpression(expr);
           setCurrentMode('standard');
         }}
         onClearHistory={handleClearHistory}
@@ -517,6 +688,31 @@ export default function App() {
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
         onUpdateSettings={handleUpdateSettings}
+        onOpenGuide={() => setIsGuideOpen(true)}
+        innerBackRef={innerBackRef}
+      />
+
+      {/* "Press back again to exit" hint */}
+      {exitHint && (
+        <div
+          className="fixed left-0 right-0 z-[70] flex justify-center pointer-events-none animate-fadeIn"
+          style={{ bottom: 'calc(var(--bottom-stack-h) + 16px)' }}
+        >
+          <div
+            className="px-4 py-2.5 rounded-full text-xs font-semibold shadow-lg"
+            style={{ backgroundColor: 'var(--m3-inverse-surface, var(--m3-on-surface))', color: 'var(--m3-surface)' }}
+          >
+            Press back again to exit
+          </div>
+        </div>
+      )}
+
+      {/* User guide */}
+      <GuideSheet
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
+        angleMode={settings.angleMode}
+        onTryExample={handleTryExample}
       />
     </div>
   );

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import { AngleMode, HistoryItem } from '../types';
 import { MathEvaluator } from '../engine/evaluator';
 import { soundFx } from '../utils/audio';
@@ -6,6 +8,8 @@ import { Copy, Check, Delete, CornerDownLeft, ChevronUp, RotateCcw } from 'lucid
 import { OmniCalcLogo } from './OmniCalcLogo';
 import { useOrientation } from '../hooks/useOrientation';
 import { SwipeableTabContainer } from './SwipeableTabContainer';
+import { AutoFitText } from './AutoFitText';
+import { spring } from '../motion';
 
 interface CalculatorScreenProps {
   angleMode: AngleMode;
@@ -15,6 +19,10 @@ interface CalculatorScreenProps {
   hapticEnabled: boolean;
   onAddHistory: (item: Omit<HistoryItem, 'id' | 'timestamp'>) => void;
   externalExpression?: string;
+  /** Changes every time an expression is loaded from outside, so loading the same text twice still works */
+  externalSeq?: number;
+  /** Element in the app's top bar where the display is pinned (phone portrait); the display flows inline without it */
+  pinnedSlot?: HTMLElement | null;
   history?: HistoryItem[];
   onOpenHistory?: () => void;
   onSelectHistoryItem?: (expr: string) => void;
@@ -60,6 +68,8 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
   hapticEnabled,
   onAddHistory,
   externalExpression,
+  externalSeq = 0,
+  pinnedSlot = null,
   history,
   onOpenHistory,
   onSelectHistoryItem,
@@ -68,6 +78,8 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
   const [expression, setExpression] = useState<string>('0');
   const [lastQuestion, setLastQuestion] = useState<string>('');
   const [lastAnswer, setLastAnswer] = useState<string>('');
+  /** Equation saved with y = ... ; while it is set, typing a number and pressing = gives y at that x */
+  const [equation, setEquation] = useState<string | null>(MathEvaluator.getYDefinition());
   const [memory, setMemory] = useState<number>(0);
   const [isScientific, setIsScientific] = useState<boolean>(false);
   const [advancedTab, setAdvancedTab] = useState<AdvancedTab>('calculus');
@@ -90,7 +102,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
       setLastAnswer('');
       setHasEvaluated(false);
     }
-  }, [externalExpression]);
+  }, [externalExpression, externalSeq]);
 
   // Count unmatched open parentheses
   const getOpenParensCount = (expr: string): number => {
@@ -204,11 +216,16 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
   // Clear All
   const handleClear = useCallback(() => {
     playSound('clear');
+    // AC on an already empty display also forgets the saved y = ... equation
+    if (expression === '0' && !hasEvaluated && equation) {
+      MathEvaluator.setYDefinition(null);
+      setEquation(null);
+    }
     setExpression('0');
     setLastQuestion('');
     setLastAnswer('');
     setHasEvaluated(false);
-  }, [soundEnabled, hapticEnabled]);
+  }, [expression, hasEvaluated, equation, soundEnabled, hapticEnabled]);
 
   // Backspace
   const handleBackspace = useCallback(() => {
@@ -221,7 +238,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
       if (prev.length <= 1) return '0';
 
       const multiCharTokens = [
-        'integrate(', 'randInt(', 'diff(', 'sum(', 'prod(', 'nCr(', 'nPr(',
+        'integrate(', 'randInt(', 'diff(', 'limit(', 'y=', 'y(', 'sum(', 'prod(', 'nCr(', 'nPr(',
         'gcd(', 'lcm(', 'mod(', 'root(', 'logb(', 'rand()',
         'asinh(', 'acosh(', 'atanh(', 'sech(', 'csch(', 'coth(',
         'sinh(', 'cosh(', 'tanh(', 'asin(', 'acos(', 'atan(',
@@ -252,14 +269,41 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
         exprToEval = exprToEval + ')'.repeat(openCount - closeCount);
       }
 
+      // y = f(x): save the equation (nothing is calculated yet)
+      const defMatch = exprToEval.match(/^\s*y\s*=\s*(.+)$/i);
+      if (defMatch) {
+        const def = defMatch[1].trim();
+        if (/y/i.test(def.replace(/\b(asinh|acosh|atanh|sinh|cosh|tanh|sech|csch|coth|sqrt|cbrt|log2)\b/gi, ''))) {
+          throw new Error('Use only x on the right of y =');
+        }
+        const probes = [1, 2, 0.5, -1].map((x) => MathEvaluator.evaluateFunction(def, x, angleMode));
+        if (probes.every((v) => Number.isNaN(v))) {
+          throw new Error('Could not read that equation. Example: y=x^2−5x+6');
+        }
+        MathEvaluator.setYDefinition(def);
+        setEquation(def);
+        setLastQuestion('');
+        setLastAnswer('');
+        setExpression('0');
+        setHasEvaluated(false);
+        return;
+      }
+
+      // With an equation saved, a plain number means "give me y at this x"
+      let shown = expression;
+      if (equation && !hasEvaluated && /^[−-]?\d+(\.\d+)?$/.test(exprToEval.trim())) {
+        exprToEval = `y(${exprToEval.trim()})`;
+        shown = exprToEval;
+      }
+
       const result = MathEvaluator.evaluate(exprToEval, angleMode);
       const formatted = MathEvaluator.formatResult(result, decimalPrecision);
 
-      setLastQuestion(expression);
+      setLastQuestion(shown);
       setLastAnswer(formatted);
 
       onAddHistory({
-        expression,
+        expression: shown,
         result: formatted,
         mode: isScientific ? 'scientific' : 'standard',
       });
@@ -273,7 +317,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
       setExpression(msg);
       setHasEvaluated(true);
     }
-  }, [expression, angleMode, decimalPrecision, isScientific, onAddHistory, soundEnabled, hapticEnabled]);
+  }, [expression, equation, hasEvaluated, angleMode, decimalPrecision, isScientific, onAddHistory, soundEnabled, hapticEnabled]);
 
   // Memory operations
   const handleMemory = useCallback((action: 'MC' | 'MR' | 'M+' | 'M-' | 'MS') => {
@@ -593,8 +637,8 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
   // Render Advanced Tab Content for portrait & landscape
   const renderAdvancedTabContent = (isLandscapeMode: boolean = false) => {
     const gridClass = isLandscapeMode
-      ? "grid grid-cols-4 grid-rows-5 gap-1.5 sm:gap-2 h-full w-full"
-      : "grid grid-cols-4 sm:grid-cols-6 gap-1.5 sm:gap-2";
+      ? "adv-grid grid grid-cols-4 grid-rows-5 gap-1.5 sm:gap-2 h-full w-full"
+      : "adv-grid grid grid-cols-4 sm:grid-cols-6 gap-1.5 sm:gap-2";
 
     const btnClass = isLandscapeMode
       ? "h-full w-full min-h-[48px] sm:min-h-[54px] md:min-h-[62px] text-xs sm:text-sm font-semibold rounded-[22px] sm:rounded-[26px] m3-key bg-[var(--m3-surface-container)] text-[var(--m3-on-surface)] transition-all cursor-pointer flex flex-col items-center justify-center p-1.5 select-none active:scale-95"
@@ -646,9 +690,13 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
                 <span className="font-mono font-bold text-sm text-[var(--m3-primary)]">x</span>
                 <span className="text-[10px] opacity-70">var x</span>
               </button>
-              <button onClick={() => handleInput('y')} className={btnClass} title="Variable y">
+              <button
+                onClick={() => (expression === '0' || hasEvaluated ? handleInsertTemplate('y=') : handleInsertTemplate('y('))}
+                className={btnClass}
+                title="Equation: tap on an empty display to write y = f(x), then type x and press =. Later, y(4) gives y at x = 4"
+              >
                 <span className="font-mono font-bold text-sm text-[var(--m3-tertiary)]">y</span>
-                <span className="text-[10px] opacity-70">var y</span>
+                <span className="text-[10px] opacity-70">y = f(x)</span>
               </button>
               <button onClick={() => handleInput(', ')} className={btnClass} title="Argument Separator (Comma)">
                 <span className="font-bold text-sm">,</span>
@@ -1149,7 +1197,13 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
               </div>
             )}
 
-            {lastQuestion && (
+            {equation && (
+              <div className="text-xs sm:text-sm font-semibold truncate mb-0.5" style={{ color: 'var(--m3-tertiary)' }}>
+                y = {equation}{' '}
+                <span className="font-normal opacity-80">{lastQuestion || expression !== '0' ? '' : '· type x, then ='}</span>
+              </div>
+            )}
+                        {lastQuestion && (
               <div
                 className="font-mono text-sm tracking-wide truncate mb-1 opacity-70"
                 style={{ color: 'var(--m3-outline)' }}
@@ -1222,7 +1276,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
                 className="w-full h-full flex-1 flex flex-col justify-between min-h-0"
               >
                 <div className="w-full h-full flex-1 flex flex-col min-h-0">
-                  {renderAdvancedTabContent(true)}
+                  <div key={advancedTab} className="h-full w-full">{renderAdvancedTabContent(true)}</div>
                 </div>
               </SwipeableTabContainer>
             </div>
@@ -1280,22 +1334,21 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
   // =========================================================================
   // PORTRAIT LAYOUT (Google Pixel Portrait & Tablet Expressive Grid)
   // =========================================================================
-  return (
-    <div className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto flex-1 flex flex-col justify-between select-none h-full min-h-0">
-      {/* Outer Calculator Shell - M3 Expressive Card with adaptive height and tonal surface */}
-      <div
-        className="w-full flex-1 flex flex-col justify-between rounded-[28px] sm:rounded-[36px] md:rounded-[44px] p-2.5 sm:p-5 md:p-6 lg:p-7 transition-colors min-h-0"
-        style={{
-          backgroundColor: 'color-mix(in srgb, var(--m3-surface-container-low) 96%, transparent)',
-        }}
-      >
-        {/* Sticky Number Screen - Always visible with large responsive typography */}
-        <div
-          className="w-full rounded-[26px] sm:rounded-[28px] md:rounded-[32px] p-3 sm:p-5 md:p-6 mb-2 sm:mb-3 md:mb-4 flex flex-col justify-between min-h-[96px] sm:min-h-[140px] md:min-h-[190px] lg:min-h-[220px] transition-all shrink-0"
-          style={{
-            backgroundColor: 'var(--m3-surface-container-highest)',
-          }}
-        >
+  // Phone portrait: the answer display is pinned under the header (App puts it in its top bar), so the
+  // advanced keys and the keypad scroll underneath it and the answer never leaves the screen.
+  const portraitDisplay = (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={spring}
+      className="bar-surface pointer-events-auto w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto rounded-[28px] sm:rounded-[32px] p-3.5 sm:p-5 flex flex-col"
+      style={
+        {
+          minHeight: 'clamp(172px, 26dvh, 290px)',
+          '--bar-tone': 'var(--m3-surface-container-highest)',
+        } as React.CSSProperties
+      }
+    >
           {/* Header Row of Screen: Angle mode badge, Open parens counter, History & Copy */}
           <div className="flex items-center justify-between mb-2 shrink-0">
             <div className="flex items-center gap-2">
@@ -1363,41 +1416,45 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
             </div>
           </div>
 
-          {/* Expressions & Answers - Tabular Digits & Fluid Autoscaling */}
-          <div className="flex flex-col justify-end text-right my-auto py-1 overflow-hidden">
-            {lastQuestion && (
-              <div
-                className="font-mono text-xs sm:text-sm md:text-base tracking-wide truncate mb-1 opacity-70"
-                style={{ color: 'var(--m3-outline)' }}
-              >
-                {lastQuestion} =
-              </div>
-            )}
-            <div
-              className={`font-mono font-bold tracking-tight overflow-x-auto whitespace-nowrap no-scrollbar py-1 select-all ${
- expression.length > 14
- ? 'text-2xl sm:text-3xl md:text-4xl'
- : expression.length > 8
- ? 'text-3xl sm:text-4xl md:text-5xl lg:text-6xl'
- : 'text-4xl sm:text-5xl md:text-6xl lg:text-7xl'
- }`}
-              style={{ color: 'var(--m3-on-surface)' }}
-            >
-              {expression}
-            </div>
 
-            {/* Live Evaluated Result Line */}
-            {lastAnswer && hasEvaluated && (
-              <div
-                className="font-mono font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-1 tracking-tight truncate animate-m3-result-update"
-                style={{ color: 'var(--m3-primary)' }}
-              >
-                = {lastAnswer}
-              </div>
-            )}
+      {/* Expression and answer: big, and it shrinks smoothly instead of getting cut off */}
+      <div className="flex-1 flex flex-col justify-end text-right min-h-0 pt-2">
+        {equation && (
+          <div className="text-xs sm:text-sm font-semibold truncate mb-0.5" style={{ color: 'var(--m3-tertiary)' }}>
+            y = {equation}{' '}
+            <span className="font-normal opacity-80">{lastQuestion || expression !== '0' ? '' : '· type x, then ='}</span>
           </div>
-        </div>
+        )}
+        {lastQuestion && (
+          <div
+            className="text-sm sm:text-base tracking-wide truncate mb-0.5 opacity-70"
+            style={{ color: 'var(--m3-outline)' }}
+          >
+            {lastQuestion} =
+          </div>
+        )}
+        <AutoFitText
+          text={expression}
+          max={72}
+          min={26}
+          className={`font-bold tracking-tight py-1 select-all ${hasEvaluated ? 'animate-m3-result-update' : ''}`}
+          style={{ color: hasEvaluated ? 'var(--m3-primary)' : 'var(--m3-on-surface)' }}
+        />
+      </div>
+    </motion.div>
+  );
 
+  return (
+    <div className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto flex-1 flex flex-col select-none min-h-0">
+      {pinnedSlot ? createPortal(portraitDisplay, pinnedSlot) : portraitDisplay}
+
+      {/* Keys card: scrolls under the pinned display */}
+      <div
+        className="w-full flex-1 flex flex-col rounded-[28px] sm:rounded-[36px] md:rounded-[44px] p-2.5 sm:p-5 md:p-6 lg:p-7 transition-colors min-h-0"
+        style={{
+          backgroundColor: 'color-mix(in srgb, var(--m3-surface-container-low) 96%, transparent)',
+        }}
+      >
         {/* M3 Expressive Quick Memory Ribbon Bar */}
         <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-2 sm:mb-3 shrink-0">
           {(['MC', 'MR', 'M+', 'M-'] as const).map((mAct) => (
@@ -1415,9 +1472,24 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
           ))}
         </div>
 
-        {/* Scientific Advanced Drawer with Dedicated Category Tabs */}
-        {isScientific && (
-          <div className="mb-2.5 sm:mb-3.5 p-3 sm:p-4 rounded-[28px] shadow-inner transition-all animate-fadeIn shrink-0" style={{ backgroundColor: 'var(--m3-surface-container)' }}>
+        {/* Scientific Advanced Drawer: slides open and the keys pop in one after another */}
+        <AnimatePresence initial={false}>
+          {isScientific && (
+            <motion.div
+              key="advanced-drawer"
+              className="shrink-0"
+              initial={{ height: 0, opacity: 0, marginBottom: 0, scale: 0.97 }}
+              animate={{ height: 'auto', opacity: 1, marginBottom: 12, scale: 1 }}
+              exit={{ height: 0, opacity: 0, marginBottom: 0, scale: 0.97 }}
+              transition={{
+                height: spring,
+                marginBottom: spring,
+                scale: spring,
+                opacity: { duration: 0.22 },
+              }}
+              style={{ overflow: 'hidden', transformOrigin: 'top center' }}
+            >
+              <div className="p-3 sm:p-4 rounded-[28px]" style={{ backgroundColor: 'var(--m3-surface-container)' }}>
             {/* Drawer Sub-Header */}
             <div className="flex items-center justify-between pb-2 mb-2 border-b border-[var(--m3-outline-variant)]/40">
               <div className="flex items-center gap-2">
@@ -1456,15 +1528,23 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
               tabPillClassName="bg-[var(--m3-surface-container-high)]"
               className="w-full"
             >
-              <div className="w-full">
+              <div key={advancedTab} className="w-full">
                 {renderAdvancedTabContent(false)}
               </div>
             </SwipeableTabContainer>
-          </div>
-        )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Primary Calculator Keypad: Full-Height Proportional Tablet & Mobile Squircle Keypad */}
-        <div className="flex-1 grid grid-cols-4 grid-rows-5 gap-1.5 sm:gap-2.5 md:gap-3.5 lg:gap-4 h-full min-h-0">
+        <div
+          className="flex-1 grid grid-cols-4 gap-1.5 sm:gap-2.5 md:gap-3.5 lg:gap-4"
+          style={{
+            gridTemplateRows: `repeat(5, minmax(${isScientific ? 58 : 44}px, 1fr))`,
+            minHeight: `${5 * (isScientific ? 58 : 44) + 32}px`,
+          }}
+        >
           {/* Row 1: Function / Clear Row */}
           <button
             onClick={handleClear}
@@ -1651,7 +1731,7 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
             }}
             title={isScientific ? 'Hide advanced symbols keys' : 'Show advanced symbols keys (calculus, trig, powers, prob, constants)'}
           >
-            <OmniCalcLogo className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+            <OmniCalcLogo key={String(isScientific)} className="fx-turn w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
             <span className="font-mono font-bold tracking-tight">{isScientific ? 'fx ON' : 'fx ADV'}</span>
           </button>
 

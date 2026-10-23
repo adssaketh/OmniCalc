@@ -499,25 +499,25 @@ export const LoanCalculator: React.FC<LoanCalculatorProps> = ({
             </button>
 
             {isScheduleOpen && (
-              <div className="mt-3 overflow-x-auto no-scrollbar animate-fadeIn">
-                <table className="w-full text-left text-xs font-mono">
+              <div className="mt-3 table-wrap no-scrollbar animate-fadeIn">
+                <table className="w-full text-left text-[11.5px] sm:text-xs font-mono">
                   <thead>
                     <tr className="border-b" style={{ borderColor: 'var(--m3-outline-variant)', color: 'var(--m3-on-surface-variant)' }}>
-                      <th className="py-2 px-2.5 font-semibold">Year</th>
-                      <th className="py-2 px-2.5 font-semibold">Principal</th>
-                      <th className="py-2 px-2.5 font-semibold">Interest</th>
-                      <th className="py-2 px-2.5 font-semibold text-right">Balance</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Year</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Principal</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Interest</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold text-right">Balance</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y" style={{ borderColor: 'var(--m3-outline-variant)' }}>
                     {result.schedule.map((row) => (
                       <tr key={row.period} className="transition-colors hover:opacity-90">
-                        <td className="py-2 px-2.5" style={{ color: 'var(--m3-on-surface-variant)' }}>Yr {row.period}</td>
-                        <td className="py-2 px-2.5" style={{ color: 'var(--m3-on-surface)' }}>{currencySymbol}{formatMoney(row.principal)}</td>
-                        <td className="py-2 px-2.5 font-medium" style={{ color: currentTheme.isDark ? '#fbbf24' : '#b45309' }}>
+                        <td className="py-2 px-1.5 sm:px-2.5" style={{ color: 'var(--m3-on-surface-variant)' }}>Yr {row.period}</td>
+                        <td className="py-2 px-1.5 sm:px-2.5" style={{ color: 'var(--m3-on-surface)' }}>{currencySymbol}{formatMoney(row.principal)}</td>
+                        <td className="py-2 px-1.5 sm:px-2.5 font-medium" style={{ color: currentTheme.isDark ? '#fbbf24' : '#b45309' }}>
                           {currencySymbol}{formatMoney(row.interest)}
                         </td>
-                        <td className="py-2 px-2.5 text-right font-medium" style={{ color: 'var(--m3-on-surface)' }}>
+                        <td className="py-2 px-1.5 sm:px-2.5 text-right font-medium" style={{ color: 'var(--m3-on-surface)' }}>
                           {currencySymbol}{formatMoney(row.balance)}
                         </td>
                       </tr>

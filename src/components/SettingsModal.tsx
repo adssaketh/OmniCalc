@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AppSettings, ThemeId, AngleMode, ColorMode, VibrationIntensity } from '../types';
+import { AppSettings, ThemeId, AngleMode, ColorMode, VibrationIntensity, EdgeEffect, FadeHeight, BarStyle, GlassBlur } from '../types';
 import { soundFx } from '../utils/audio';
 import {
   ArrowLeft,
@@ -13,22 +13,26 @@ import {
   Smartphone,
   LineChart,
   ShieldCheck,
-  Info,
   RotateCcw,
   ChevronRight,
   Check,
   ExternalLink,
   Sparkles,
 } from 'lucide-react';
-import { PWAInstallButton } from './PWAInstallButton';
 import { OmniCalcLogo } from './OmniCalcLogo';
+import { NavIcon } from './NavIcons';
 import { Sheet } from './Sheet';
+import { AnimatePresence, motion } from 'motion/react';
+import { spring } from '../motion';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   settings: AppSettings;
   onUpdateSettings: (newSettings: Partial<AppSettings>) => void;
+  onOpenGuide: () => void;
+  /** App's back gesture asks this first: closes an open sub-sheet and returns true, or returns false */
+  innerBackRef?: React.MutableRefObject<(() => boolean) | null>;
 }
 
 type ActiveSheet =
@@ -215,6 +219,100 @@ const Switch: React.FC<{ on: boolean }> = ({ on }) => (
   </div>
 );
 
+interface SegmentedProps<T extends string> {
+  options: { id: T; label: string }[];
+  value: T;
+  onChange: (id: T) => void;
+  disabled?: boolean;
+  label: string;
+}
+
+/** Row of pill choices (Off / Fade / Fade + blur ...), same look as Ping's Message Organization options. */
+function Segmented<T extends string>({ options, value, onChange, disabled = false, label }: SegmentedProps<T>) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={`flex flex-wrap gap-2 transition-opacity duration-200 ${disabled ? 'opacity-45 pointer-events-none' : ''}`}
+    >
+      {options.map((o) => {
+        const selected = o.id === value;
+        return (
+          <button
+            key={o.id}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            onClick={() => onChange(o.id)}
+            className="px-4 h-10 rounded-full text-[13px] cursor-pointer active:scale-95 transition-all duration-200"
+            style={
+              selected
+                ? { backgroundColor: 'var(--m3-primary-container)', color: 'var(--m3-on-primary-container)', fontWeight: 700 }
+                : { backgroundColor: 'var(--m3-surface-container-high)', color: 'var(--m3-on-surface-variant)', fontWeight: 500 }
+            }
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+const OptionBlock: React.FC<{ title: string; desc: string; dimmed?: boolean; children: React.ReactNode }> = ({ title, desc, dimmed, children }) => (
+  <div className={`space-y-2 transition-opacity duration-200 ${dimmed ? 'opacity-45' : ''}`}>
+    <div>
+      <div className="font-medium text-sm leading-snug">{title}</div>
+      <div className="text-xs leading-snug" style={{ color: 'var(--m3-on-surface-variant)' }}>
+        {desc}
+      </div>
+    </div>
+    {children}
+  </div>
+);
+
+const EDGE_OPTIONS: { id: EdgeEffect; label: string }[] = [
+  { id: 'off', label: 'Off' },
+  { id: 'fade', label: 'Fade' },
+  { id: 'blur', label: 'Fade + blur' },
+];
+const FADE_OPTIONS: { id: FadeHeight; label: string }[] = [
+  { id: 'short', label: 'Short' },
+  { id: 'medium', label: 'Medium' },
+  { id: 'tall', label: 'Tall' },
+];
+const BAR_OPTIONS: { id: BarStyle; label: string }[] = [
+  { id: 'solid', label: 'Solid' },
+  { id: 'glass', label: 'Glass' },
+];
+const GLASS_BLUR_OPTIONS: { id: GlassBlur; label: string }[] = [
+  { id: 'soft', label: 'Soft' },
+  { id: 'medium', label: 'Medium' },
+  { id: 'strong', label: 'Strong' },
+];
+
+/** Small live preview: colourful content behind a top and a bottom bar, using the real bar styles. */
+const BarPreview: React.FC = () => (
+  <div className="relative h-32 rounded-[24px] overflow-hidden" aria-hidden="true">
+    <div
+      className="absolute inset-0"
+      style={{
+        background:
+          'linear-gradient(115deg, var(--m3-primary) 0%, var(--m3-tertiary) 38%, var(--m3-secondary) 62%, var(--m3-primary-container) 100%)',
+      }}
+    />
+    <div className="absolute -left-4 top-8 w-24 h-24 rounded-full" style={{ backgroundColor: 'var(--m3-tertiary-container)' }} />
+    <div className="absolute right-6 top-3 w-20 h-20 rounded-[28px] rotate-12" style={{ backgroundColor: 'var(--m3-primary-container)' }} />
+    <div className="absolute left-1/3 bottom-1 w-28 h-14 rounded-full" style={{ backgroundColor: 'var(--m3-secondary-container)' }} />
+    <div className="bar-surface absolute left-3 right-3 top-3 h-10 rounded-full flex items-center px-4 text-xs font-semibold">
+      Top bar
+    </div>
+    <div className="bar-surface absolute left-3 right-3 bottom-3 h-10 rounded-full flex items-center px-4 text-xs font-semibold">
+      Bottom bar
+    </div>
+  </div>
+);
+
 interface ChoiceOption<T> {
   id: T;
   title: string;
@@ -300,11 +398,18 @@ function ChoiceSheet<T extends string | number>({
 
 /* ------------------------------------------------------------------------- */
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onUpdateSettings }) => {
+export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onUpdateSettings, onOpenGuide, innerBackRef }) => {
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>('none');
   const [showResetToast, setShowResetToast] = useState(false);
 
   const closeSheet = () => setActiveSheet('none');
+  if (innerBackRef) {
+    innerBackRef.current = () => {
+      if (activeSheet === 'none') return false;
+      setActiveSheet('none');
+      return true;
+    };
+  }
   const currentThemeObj = THEME_OPTIONS.find((t) => t.id === settings.theme) || THEME_OPTIONS[1];
   const vibration = settings.vibrationIntensity || 'medium';
 
@@ -318,6 +423,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
       theme: 'dynamic',
       colorMode: 'system',
       enableGrapher: false,
+      edgeEffect: 'fade',
+      fadeHeight: 'medium',
+      barStyle: 'solid',
+      glassTransparency: 70,
+      glassBlur: 'medium',
+      glassEdge: true,
     });
     closeSheet();
     setShowResetToast(true);
@@ -383,6 +494,100 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                   : onUpdateSettings({ theme: 'm3-amoled', colorMode: 'dark' })
               }
             />
+          </Section>
+
+          <Section title="Bars & scrolling">
+            <div className="px-3.5 py-3.5 space-y-5">
+              <BarPreview />
+
+              <OptionBlock
+                title="Scroll edge effect"
+                desc="What happens to content as it slides under the top bar and the bottom bar. Fade is clean and light; Fade + blur adds a soft blur while it fades."
+              >
+                <Segmented label="Scroll edge effect" options={EDGE_OPTIONS} value={settings.edgeEffect} onChange={(edgeEffect) => onUpdateSettings({ edgeEffect })} />
+              </OptionBlock>
+
+              <OptionBlock title="Fade height" desc="How far from the bars content starts to fade away." dimmed={settings.edgeEffect === 'off'}>
+                <Segmented
+                  label="Fade height"
+                  options={FADE_OPTIONS}
+                  value={settings.fadeHeight}
+                  disabled={settings.edgeEffect === 'off'}
+                  onChange={(fadeHeight) => onUpdateSettings({ fadeHeight })}
+                />
+              </OptionBlock>
+
+              <OptionBlock title="Bar style" desc="Solid colour, or frosted glass that lets content show through (uses a little more battery).">
+                <Segmented label="Bar style" options={BAR_OPTIONS} value={settings.barStyle} onChange={(barStyle) => onUpdateSettings({ barStyle })} />
+              </OptionBlock>
+
+              <AnimatePresence initial={false}>
+                {settings.barStyle === 'glass' && (
+                  <motion.div
+                    key="glass-options"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ height: spring, opacity: { duration: 0.2 } }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div className="rounded-[24px] p-4 space-y-5" style={{ backgroundColor: 'var(--m3-surface-container-high)' }}>
+                      <div>
+                        <div className="flex items-baseline justify-between">
+                          <label htmlFor="glass-transparency" className="font-medium text-sm">
+                            Glass transparency
+                          </label>
+                          <span className="text-sm font-bold" style={{ color: 'var(--m3-primary)' }}>
+                            {settings.glassTransparency}%
+                          </span>
+                        </div>
+                        <input
+                          id="glass-transparency"
+                          type="range"
+                          min={0}
+                          max={100}
+                          step={1}
+                          value={settings.glassTransparency}
+                          onChange={(e) => onUpdateSettings({ glassTransparency: Number(e.target.value) })}
+                          className="m3-slider mt-2"
+                          style={{ ['--pct' as string]: `${settings.glassTransparency}%` } as React.CSSProperties}
+                        />
+                        <div className="flex justify-between text-[11px]" style={{ color: 'var(--m3-on-surface-variant)' }}>
+                          <span>Frosted</span>
+                          <span>Clear</span>
+                        </div>
+                      </div>
+
+                      <OptionBlock title="Glass blur" desc="How strongly the glass blurs what is behind it.">
+                        <Segmented label="Glass blur" options={GLASS_BLUR_OPTIONS} value={settings.glassBlur} onChange={(glassBlur) => onUpdateSettings({ glassBlur })} />
+                      </OptionBlock>
+
+                      <div
+                        role="switch"
+                        aria-checked={settings.glassEdge}
+                        tabIndex={0}
+                        onClick={() => onUpdateSettings({ glassEdge: !settings.glassEdge })}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onUpdateSettings({ glassEdge: !settings.glassEdge });
+                          }
+                        }}
+                        className="flex items-center gap-4 cursor-pointer active:scale-[0.99] transition-transform"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="font-medium text-sm leading-snug">Glass edge</div>
+                          <div className="text-xs" style={{ color: 'var(--m3-on-surface-variant)' }}>
+                            A thin light rim around the bars.
+                          </div>
+                        </div>
+                        <Switch on={settings.glassEdge} />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </Section>
 
           <Section title="Calculator">
@@ -462,17 +667,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
               subtitle="Version 1.0 (Build 1) • By Saketh"
             />
             <Row
+              leading={
+                <div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: 'var(--m3-surface-container-high)', color: 'var(--m3-primary)' }}
+                >
+                  <NavIcon id="guide" size={22} />
+                </div>
+              }
+              title="User guide"
+              subtitle="How to use differentiation, integration, limits and more"
+              chevron
+              onClick={() => {
+                onClose();
+                onOpenGuide();
+              }}
+            />
+            <Row
               icon={ShieldCheck}
               title="Privacy policy"
               subtitle="100% on-device • Zero telemetry • No permissions"
               chevron
               onClick={() => setActiveSheet('privacy')}
-            />
-            <Row
-              icon={Info}
-              title="Web & PWA install"
-              subtitle="Add to home screen for browser access"
-              trailing={<PWAInstallButton variant="button" />}
             />
             <Row
               icon={RotateCcw}

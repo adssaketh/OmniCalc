@@ -16,7 +16,10 @@ interface BottomNavBarProps {
   enableGrapher?: boolean;
 }
 
-/** Material 3 navigation bar floating at the bottom, easy to reach with your thumb (same look as Ping's tabs). */
+/**
+ * Material 3 navigation bar floating at the bottom, easy to reach with your thumb (same look as Ping's tabs).
+ * App.tsx positions it; its surface (solid or glass) comes from the `bar-surface` class.
+ */
 export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   currentMode,
   onSelectMode,
@@ -32,15 +35,14 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   return (
     <motion.nav
       aria-label="Bottom Navigation Bar"
-      className="fixed bottom-0 left-0 right-0 z-40 select-none pointer-events-none px-3 pt-1"
+      className="select-none pointer-events-none px-3 pt-1"
       style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 8px)' }}
       initial={{ y: 90, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={spring}
     >
       <div
-        className="pointer-events-auto flex items-stretch justify-between gap-1 max-w-xl sm:max-w-2xl mx-auto rounded-[32px] px-1.5 py-1.5 shadow-md shadow-black/5"
-        style={{ backgroundColor: 'var(--m3-surface-container)' }}
+        className="bar-surface pointer-events-auto flex items-stretch justify-between gap-1 max-w-xl sm:max-w-2xl mx-auto rounded-[32px] px-1.5 py-1.5"
       >
         {items.map((item) => {
           const active = isNavItemActive(item, currentMode, isHistoryOpen);

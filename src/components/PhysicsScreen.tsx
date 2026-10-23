@@ -158,7 +158,7 @@ export const PhysicsScreen: React.FC<PhysicsScreenProps> = ({
 
             {/* Constants List */}
             <div
-              className="overflow-x-auto max-h-[500px] scrollbar-thin rounded-[22px] transition-colors"
+              className="table-wrap no-scrollbar rounded-[22px] transition-colors"
               style={{
                 backgroundColor: 'var(--m3-surface-container-lowest)',
               }}

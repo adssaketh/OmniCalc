@@ -1,8 +1,20 @@
 import { AngleMode } from '../types';
 
 export class MathEvaluator {
+  /** The equation saved with `y = ...` (written in x). `y(4)` then gives its value at x = 4. */
+  private static yDefinition: string | null = null;
+
+  public static setYDefinition(def: string | null): void {
+    this.yDefinition = def;
+  }
+
+  public static getYDefinition(): string | null {
+    return this.yDefinition;
+  }
+
   private static sanitizeExpression(expr: string): string {
     return expr
+      .replace(/\bsgn\s*\(/gi, 'sign(')
       .replace(/×/g, '*')
       .replace(/÷/g, '/')
       .replace(/−/g, '-')
@@ -23,10 +35,60 @@ export class MathEvaluator {
       .replace(/\beps0\b|ε₀|ε0/g, ' 8.8541878128e-12 ')
       .replace(/\bmu0\b|μ₀|μ0/g, ' 1.256637062e-6 ')
       .replace(/\bke\b/g, ' 8.9875517923e9 ')
+      .replace(/\bmn\b|\bm_n\b/g, ' 1.67492749804e-27 ')
+      .replace(/\bR\b/g, ' 8.314462618 ')
+      .replace(/\bsigma\b|σ/g, ' 5.670374419e-8 ')
+      .replace(/\batm\b/g, ' 101325 ')
+      .replace(/\bau\b/g, ' 1.495978707e11 ')
       .replace(/\bg\b/g, ' 9.80665 ')
       .replace(/\be\b/g, ' E ')
       .replace(/φ/g, ' PHI ')
       .trim();
+  }
+
+  /**
+   * Percent, the way phone calculators do it:
+   *   50%          -> 0.5          200×15%  -> 30
+   *   200+10%      -> 220          200−10%  -> 180   (adds / takes off a percentage of everything before it)
+   * Remainder is no longer `%`; use `mod(17, 5)` or `17 mod 5`.
+   */
+  private static applyPercent(expr: string): string {
+    if (!expr.includes('%')) return expr;
+    let current = expr.trim();
+
+    // Trailing "+ N%" or "− N%": N percent of the whole left-hand side
+    const trailing = current.match(/^(.*[^+\-−×÷*\/^(,\s])\s*([+\-−])\s*(\d+(?:\.\d+)?)%$/);
+    if (trailing) {
+      const sign = trailing[2] === '+' ? '+' : '-';
+      return this.applyPercent(`(${trailing[1]})×(1${sign}${trailing[3]}÷100)`);
+    }
+
+    // Any other "x%" means x / 100. A bracketed group is divided as a whole.
+    for (let guard = 0; guard < 50; guard++) {
+      const idx = current.indexOf('%');
+      if (idx === -1) break;
+      let start = idx;
+      if (current[idx - 1] === ')') {
+        let depth = 0;
+        for (let i = idx - 1; i >= 0; i--) {
+          if (current[i] === ')') depth++;
+          else if (current[i] === '(') {
+            depth--;
+            if (depth === 0) {
+              start = i;
+              break;
+            }
+          }
+        }
+        if (start === idx) throw new Error('Mismatched parentheses');
+      } else {
+        const m = current.slice(0, idx).match(/(\d+(?:\.\d+)?|π|\be)$/);
+        if (!m) throw new Error('Invalid syntax: % needs a number before it');
+        start = idx - m[0].length;
+      }
+      current = `${current.slice(0, start)}(${current.slice(start, idx)}÷100)${current.slice(idx + 1)}`;
+    }
+    return current;
   }
 
   // Preprocess implicit multiplications like "2(3)" -> "2*(3)", "5sin(30)" -> "5*sin(30)"
@@ -60,7 +122,7 @@ export class MathEvaluator {
   private static tokenize(expr: string): string[] {
     const raw = this.sanitizeExpression(expr);
     const regex =
-      /\d+(\.\d+)?([eE][+-]?\d+)?|PI|E|PHI|asinh|acosh|atanh|sech|csch|coth|sinh|cosh|tanh|asin|acos|atan|sec|csc|cot|sin|cos|tan|log2|log|ln|exp|cbrt|sqrt|round|floor|ceil|sign|abs|\+|-|\*|\/|\^|%|!|\(|\)/gi;
+      /\d+(\.\d+)?([eE][+-]?\d+)?|exp|PI|E|PHI|asinh|acosh|atanh|sech|csch|coth|sinh|cosh|tanh|asin|acos|atan|sec|csc|cot|sin|cos|tan|log2|log|ln|exp|cbrt|sqrt|round|floor|ceil|sign|abs|\+|-|\*|\/|\^|%|!|\(|\)/gi;
     const matches = raw.match(regex);
     if (!matches) return [];
     return this.addImplicitMultiplication(matches);
@@ -123,7 +185,10 @@ export class MathEvaluator {
     xVal: number,
     angleMode: AngleMode = 'rad'
   ): number {
-    const h = Math.max(1e-5, 1e-5 * Math.abs(xVal));
+    // 1e-3 keeps round-off small (diff(x^2, 3) gives 6, not 6.00000000005); near zero the step shrinks
+    // so points like x = 0.002 stay inside the domain of ln(x), sqrt(x) ...
+    let h = 1e-3 * Math.max(1, Math.abs(xVal));
+    if (xVal !== 0 && Math.abs(xVal) < 4 * h) h = Math.max(Math.abs(xVal) / 4, 1e-6);
     const f = (x: number) => this.evaluateFunction(funcExpr, x, angleMode);
 
     const f_plus_2h = f(xVal + 2 * h);
@@ -141,7 +206,7 @@ export class MathEvaluator {
     return (-f_plus_2h + 8 * f_plus_h - 8 * f_minus_h + f_minus_2h) / (12 * h);
   }
 
-  // Definite numerical integration using composite Simpson's 1/3 rule (N = 200)
+  // Definite numerical integration using composite Simpson's 1/3 rule (N = 1000)
   public static numericalIntegration(
     funcExpr: string,
     a: number,
@@ -153,7 +218,7 @@ export class MathEvaluator {
     const start = isReversed ? b : a;
     const end = isReversed ? a : b;
 
-    const N = 200; // Must be even
+    const N = 1000; // Must be even
     const h = (end - start) / N;
     const f = (x: number) => this.evaluateFunction(funcExpr, x, angleMode);
 
@@ -167,6 +232,36 @@ export class MathEvaluator {
 
     const result = (h / 3) * sum;
     return isReversed ? -result : result;
+  }
+
+  // Limit of f(x) as x -> a (two-sided). Looks at both sides at two distances: for a real limit the two
+  // sides close in on each other and the average settles; a jump or a pole keeps them apart.
+  public static numericalLimit(funcExpr: string, a: number, angleMode: AngleMode = 'rad'): number {
+    const f = (x: number) => this.evaluateFunction(funcExpr, x, angleMode);
+    const sides = (h: number) => [f(a - h), f(a + h)] as const;
+
+    const [l1, r1] = sides(2e-3);
+    const [l2, r2] = sides(1e-3);
+    if (![l1, r1, l2, r2].every((v) => Number.isFinite(v))) {
+      throw new Error('Limit does not exist (function is undefined near this point)');
+    }
+
+    const g1 = (l1 + r1) / 2;
+    const g2 = (l2 + r2) / 2;
+    const scale = Math.max(1, Math.abs(g2));
+    const closing = Math.abs(l2 - r2) <= 0.75 * Math.abs(l1 - r1) + 1e-9 * scale;
+    const settled = Math.abs(g2 - g1) <= 1e-3 * scale;
+
+    if (closing && settled) {
+      return (4 * g2 - g1) / 3; // Richardson extrapolation removes the O(h^2) error
+    }
+
+    // Not settling: both sides may run off to the same infinity (like 1/x^2 at 0)
+    const [lb, rb] = sides(1e-7);
+    if (Number.isFinite(lb) && Number.isFinite(rb) && Math.abs(lb) > 1e5 && Math.abs(rb) > 1e5 && Math.sign(lb) === Math.sign(rb)) {
+      throw new Error(lb > 0 ? 'Limit is +∞ (grows without bound)' : 'Limit is −∞ (falls without bound)');
+    }
+    throw new Error('Limit does not exist (left and right values differ)');
   }
 
   // Finite series summation sum(f(x), a, b)
@@ -236,6 +331,12 @@ export class MathEvaluator {
       'root',
       'logb',
       'randInt',
+      'y',
+      'limit',
+      'min',
+      'max',
+      'mean',
+      'avg',
     ];
 
     let safety = 0;
@@ -356,6 +457,23 @@ export class MathEvaluator {
         const base = this.evaluate(args[0], angleMode);
         const val = this.evaluate(args[1], angleMode);
         result = Math.log(val) / Math.log(base);
+      } else if (fName === 'y') {
+        if (!this.yDefinition) throw new Error('No equation saved yet. Write one first, like y=x^2−5x+6, then press =');
+        if (args.length < 1) throw new Error('y needs an x value: y(4)');
+        const xVal = this.evaluate(args[0], angleMode);
+        result = this.evaluateFunction(this.yDefinition, xVal, angleMode);
+        if (Number.isNaN(result)) throw new Error(`y is not defined at x = ${xVal}`);
+      } else if (fName === 'limit') {
+        if (args.length < 3) throw new Error('limit requires: limit(function, x, approach_value)');
+        // args[1] is the variable name (kept so the call reads naturally); args[2] is the point x approaches
+        const aVal = this.evaluate(args[2], angleMode);
+        result = this.numericalLimit(args[0], aVal, angleMode);
+      } else if (fName === 'min' || fName === 'max' || fName === 'mean' || fName === 'avg') {
+        if (args.length < 1) throw new Error(`${fName} needs at least one value`);
+        const vals = args.map((a) => this.evaluate(a, angleMode));
+        if (fName === 'min') result = Math.min(...vals);
+        else if (fName === 'max') result = Math.max(...vals);
+        else result = vals.reduce((sum, v) => sum + v, 0) / vals.length;
       } else if (fName === 'randint') {
         if (args.length < 2) throw new Error('randInt requires: randInt(min, max)');
         const min = Math.round(this.evaluate(args[0], angleMode));
@@ -673,7 +791,7 @@ export class MathEvaluator {
 
   // Public evaluation method with multi-argument calculus preprocessor
   public static evaluate(expr: string, angleMode: AngleMode = 'deg'): number {
-    const clean = expr.trim();
+    const clean = this.applyPercent(expr.trim());
     if (!clean) return 0;
 
     // 1. Process multi-argument calculus and discrete functions (diff, integrate, sum, prod, nCr, nPr, gcd, lcm, mod, root)
@@ -714,7 +832,8 @@ export class MathEvaluator {
     try {
       // Replace independent variable x safely without breaking function names e.g. "exp", "floor"
       const formattedX = `(${xVal})`;
-      const replaced = expr.replace(/(^|[^a-zA-Z0-9_])x([^a-zA-Z0-9_]|$)/gi, `$1${formattedX}$2`);
+      // (lookahead, so "x*x" and "2x" both work; a digit before x means implicit multiplication)
+      const replaced = expr.replace(/(^|[^a-zA-Z_])x(?![a-zA-Z0-9_])/gi, `$1${formattedX}`);
       return this.evaluate(replaced, angleMode);
     } catch {
       return NaN;

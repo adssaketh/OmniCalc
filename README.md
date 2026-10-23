@@ -1,9 +1,9 @@
 # OmniCalc
 
-**A calculator suite for scientists, engineers, students and everyday money maths** — standard and scientific calculator, unit converter, finance tools, a physics lab and an optional function grapher, in one offline-capable app. Runs as a web app, an installable PWA, and a native Android app.
+**A calculator suite for scientists, engineers, students and everyday money maths** — standard and scientific calculator, unit converter, finance tools, a physics lab and an optional function grapher, in one offline-capable app. Ships as a native Android app (Capacitor) and also runs in a browser.
 
 - **App ID:** `com.saketh.omnicalc`
-- **Stack:** React 19 · Vite · TypeScript · Tailwind CSS 4 · Capacitor (Android) · vite-plugin-pwa
+- **Stack:** React 19 · Vite · TypeScript · Tailwind CSS 4 · Capacitor (Android)
 
 ---
 
@@ -87,15 +87,16 @@ cd android
 
 Requirements: JDK 17 or 21, Android SDK 36, and `ANDROID_HOME` set. The project targets SDK 36 with a minimum of SDK 24.
 
-For release signing, Play Store publishing and the Trusted Web Activity setup, see [GOOGLE_PLAY_STORE_GUIDE.md](./GOOGLE_PLAY_STORE_GUIDE.md).
+For release signing, Play Store publishing see [GOOGLE_PLAY_STORE_GUIDE.md](./GOOGLE_PLAY_STORE_GUIDE.md).
 
 ### CI
 `.github/workflows/build-apk.yml` builds the web app and a debug APK on every push and pull request to `main`/`master`, uploads the APK as an artifact, and also attempts a release bundle (AAB).
 
 ---
 
-## PWA
-OmniCalc is installable from the browser. The manifest defines home-screen shortcuts for **Calculator**, **Converter**, **Finance** and **Physics Lab**, and fonts and assets are cached for offline use.
+## Bars, scrolling and the user guide
+- **Settings → Bars & scrolling:** scroll edge effect (Off / Fade / Fade + blur), fade height, solid or glass bars, glass transparency, glass blur and glass edge.
+- **User guide:** the book icon next to the sound icon explains differentiation, integration, sum/product, limits, trig, powers, combinations and constants, with a *Try* button on every example.
 
 ---
 
@@ -107,14 +108,13 @@ OmniCalc is installable from the browser. The manifest defines home-screen short
 │   ├── motion.ts          # Shared spring / easing presets
 │   ├── components/        # Screens (Calculator, Converter, Finance, Physics, Graph), Sheet, settings, navigation
 │   ├── engine/            # evaluator, units, finance, physics, currency logic
-│   ├── hooks/             # PWA install, orientation
+│   ├── hooks/             # theme, orientation
 │   ├── utils/audio.ts     # Key-click sounds
 │   └── types/             # Shared TypeScript types
-├── public/                # PWA manifest, icons, fonts, privacy policy
+├── public/                # icons, privacy policy
 ├── android/               # Capacitor Android project
 ├── assets/                # Icon and splash source images
 ├── capacitor.config.json
-├── twa-manifest.json      # Bubblewrap / TWA configuration
 └── vite.config.ts
 ```
 

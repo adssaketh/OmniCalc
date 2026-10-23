@@ -434,25 +434,25 @@ export const SWPCalculator: React.FC<SWPCalculatorProps> = ({ className = '' }) 
             </button>
 
             {isTimelineOpen && (
-              <div className="mt-3 overflow-x-auto no-scrollbar animate-fadeIn">
-                <table className="w-full text-left text-xs font-mono">
+              <div className="mt-3 table-wrap no-scrollbar animate-fadeIn">
+                <table className="w-full text-left text-[11.5px] sm:text-xs font-mono">
                   <thead>
                     <tr className="border-b" style={{ borderColor: 'var(--m3-outline-variant)', color: 'var(--m3-on-surface-variant)' }}>
-                      <th className="py-2 px-2.5 font-semibold">Year</th>
-                      <th className="py-2 px-2.5 font-semibold">Withdrawn</th>
-                      <th className="py-2 px-2.5 font-semibold">Returns</th>
-                      <th className="py-2 px-2.5 font-semibold text-right">Balance</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Year</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Withdrawn</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold">Returns</th>
+                      <th className="py-2 px-1.5 sm:px-2.5 font-semibold text-right">Balance</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y" style={{ borderColor: 'var(--m3-outline-variant)', color: 'var(--m3-on-surface)' }}>
                     {result.yearlyRows.map((row) => (
                       <tr key={row.year} className="hover:opacity-80 transition-opacity">
-                        <td className="py-2 px-2.5" style={{ color: 'var(--m3-on-surface-variant)' }}>Yr {row.year}</td>
-                        <td className="py-2 px-2.5" style={{ color: 'var(--m3-on-surface)' }}>₹{formatINR(row.withdrawn)}</td>
-                        <td className="py-2 px-2.5" style={{ color: currentTheme.isDark ? '#34d399' : '#047857' }}>
+                        <td className="py-2 px-1.5 sm:px-2.5" style={{ color: 'var(--m3-on-surface-variant)' }}>Yr {row.year}</td>
+                        <td className="py-2 px-1.5 sm:px-2.5" style={{ color: 'var(--m3-on-surface)' }}>₹{formatINR(row.withdrawn)}</td>
+                        <td className="py-2 px-1.5 sm:px-2.5" style={{ color: currentTheme.isDark ? '#34d399' : '#047857' }}>
                           +{formatINR(row.returns)}
                         </td>
-                        <td className="py-2 px-2.5 text-right font-medium" style={{ color: 'var(--m3-on-surface)' }}>
+                        <td className="py-2 px-1.5 sm:px-2.5 text-right font-medium" style={{ color: 'var(--m3-on-surface)' }}>
                           ₹{formatINR(row.balance)}
                         </td>
                       </tr>

@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* One typeface for the whole app. Numbers use the same UI font as the labels (like the "8.5% Home" chip),
+   with tabular digits so columns still line up. `font-mono` is mapped to it so every existing class follows. */
+@theme {
+  --font-sans: 'Google Sans', 'Google Sans Text', 'Roboto Flex', Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Google Sans', 'Google Sans Text', 'Roboto Flex', Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
 /* ==========================================================================
    OmniCalc design system
    Same language as Ping: Material 3 tonal roles, soft borderless surfaces,
@@ -7,22 +14,6 @@
    <html> carries data-m3-theme (iris | oceanic | forest | sunset | amoled) and
    data-m3-mode (light | dark); see App.tsx and the pre-paint script in index.html.
    ========================================================================== */
-
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('/fonts/jetbrains-mono-500.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('/fonts/jetbrains-mono-600.ttf') format('truetype');
-}
 
 /* ---- Colour roles: dark Iris is the default ---- */
 :root {
@@ -63,6 +54,11 @@
   --m3-on-error-container: #ffdad6;
 
   --m3-scrim: rgba(0, 0, 0, 0.75);
+
+  /* Bar style (Settings > Bars & scrolling); App.tsx updates these */
+  --glass-fill: 28%;
+  --glass-blur: 16px;
+  --edge-blur: 10px;
 
   /* Motion tokens (Material 3 Expressive, shared with Ping) */
   --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
@@ -304,7 +300,8 @@ body,
 #root {
   background-color: var(--m3-surface);
   color: var(--m3-on-surface);
-  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
   transition: background-color 300ms var(--ease-emphasized), color 300ms var(--ease-emphasized);
 }
 
@@ -323,17 +320,37 @@ body,
   }
 
   .font-mono,
-  .tabular-nums {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  .tabular-nums,
+  input,
+  textarea {
     font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
   }
 
-  /* Smooth, contained scrolling */
-  .overflow-y-auto,
-  .overflow-x-auto {
-    overscroll-behavior: contain;
+  /* Smooth, contained scrolling.
+     Vertical scrollers keep their scroll to themselves; horizontal ones (tables, chip rows) only contain
+     sideways overscroll. Letting vertical scroll chain to the page is what stopped the page from moving
+     when a finger landed on the year-by-year tables. */
+  .overflow-y-auto {
+    overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
   }
+  .overflow-x-auto {
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Wide tables: scroll sideways only. A finger on the table must still scroll the page up and down,
+   so the vertical axis is never a scroller here (this is what stopped the year-by-year timelines). */
+.table-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Subtle scrollbar */
@@ -408,7 +425,7 @@ body,
   }
 }
 .animate-m3-screen-enter {
-  animation: m3ScreenEnter 380ms var(--ease-emphasized-decelerate) both;
+  animation: m3ScreenEnter 380ms var(--ease-emphasized-decelerate) backwards;
 }
 
 @keyframes m3ResultUpdate {
@@ -441,6 +458,196 @@ body,
 }
 .animate-fadeIn {
   animation: m3FadeIn 200ms var(--ease-emphasized-decelerate) forwards;
+}
+
+
+/* ==========================================================================
+   App shell, floating bars and scroll-edge effects (same idea as Ping's
+   Settings > Message Organization). The page never scrolls; #app-scroll does,
+   and it is masked so content fades out as it slides under the bars.
+   Driven by data attributes / variables that App.tsx puts on .app-shell:
+     data-edge="off|fade|blur"   data-bars="solid|glass"   data-glass-edge="on|off"
+     --glass-fill (bar opacity)  --glass-blur (backdrop blur)  --edge-blur
+   ========================================================================== */
+.app-shell {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  --top-stack-h: 84px;
+  --bottom-stack-h: 88px;
+}
+
+#app-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* The mask itself is set from App.tsx because it depends on the measured bar heights. */
+}
+#app-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Floating surfaces: header pill, display card, bottom bar.
+   --bar-tone lets a bar use a different tonal role (the display card is one step stronger). */
+.bar-surface {
+  background-color: var(--bar-tone, var(--m3-surface-container));
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 4px 14px rgb(0 0 0 / 0.05);
+  transition: background-color 260ms var(--ease-emphasized), box-shadow 260ms var(--ease-emphasized);
+}
+[data-bars="glass"] .bar-surface {
+  background-color: color-mix(in srgb, var(--bar-tone, var(--m3-surface-container)) var(--glass-fill), transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.10);
+}
+[data-bars="glass"][data-glass-edge="on"] .bar-surface {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--m3-on-surface) 13%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 28%, transparent),
+    0 8px 24px rgb(0 0 0 / 0.10);
+}
+
+/* Slider with a thick track and a big thumb (Glass transparency) */
+.m3-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+  --pct: 50%;
+}
+.m3-slider:focus-visible {
+  outline: 2px solid var(--m3-primary);
+  outline-offset: 4px;
+  border-radius: 9999px;
+}
+.m3-slider::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, var(--m3-primary) var(--pct), var(--m3-surface-container-highest) var(--pct));
+}
+.m3-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: -8px;
+  border: none;
+  border-radius: 9999px;
+  background: var(--m3-primary);
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.35);
+  transition: transform 120ms var(--ease-spring);
+}
+.m3-slider:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+.m3-slider::-moz-range-track {
+  height: 10px;
+  border-radius: 9999px;
+  background: var(--m3-surface-container-highest);
+}
+.m3-slider::-moz-range-progress {
+  height: 10px;
+  border-radius: 9999px;
+  background: var(--m3-primary);
+}
+.m3-slider::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 9999px;
+  background: var(--m3-primary);
+}
+
+/* Soft blur that grows toward the screen edge ("Fade + blur") */
+.edge-blur {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(var(--edge-blur));
+  backdrop-filter: blur(var(--edge-blur));
+}
+
+/* ==========================================================================
+   Advanced drawer: keys pop in one after another, tab changes replay it
+   ========================================================================== */
+@keyframes advKeyIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.adv-grid > * {
+  animation: advKeyIn 340ms var(--ease-emphasized-decelerate) backwards;
+}
+.adv-grid > *:nth-child(1) { animation-delay: 16ms; }
+.adv-grid > *:nth-child(2) { animation-delay: 32ms; }
+.adv-grid > *:nth-child(3) { animation-delay: 48ms; }
+.adv-grid > *:nth-child(4) { animation-delay: 64ms; }
+.adv-grid > *:nth-child(5) { animation-delay: 80ms; }
+.adv-grid > *:nth-child(6) { animation-delay: 96ms; }
+.adv-grid > *:nth-child(7) { animation-delay: 112ms; }
+.adv-grid > *:nth-child(8) { animation-delay: 128ms; }
+.adv-grid > *:nth-child(9) { animation-delay: 144ms; }
+.adv-grid > *:nth-child(10) { animation-delay: 160ms; }
+.adv-grid > *:nth-child(11) { animation-delay: 176ms; }
+.adv-grid > *:nth-child(12) { animation-delay: 192ms; }
+.adv-grid > *:nth-child(13) { animation-delay: 208ms; }
+.adv-grid > *:nth-child(14) { animation-delay: 224ms; }
+.adv-grid > *:nth-child(15) { animation-delay: 240ms; }
+.adv-grid > *:nth-child(16) { animation-delay: 256ms; }
+.adv-grid > *:nth-child(17) { animation-delay: 272ms; }
+.adv-grid > *:nth-child(18) { animation-delay: 288ms; }
+.adv-grid > *:nth-child(19) { animation-delay: 304ms; }
+.adv-grid > *:nth-child(20) { animation-delay: 320ms; }
+.adv-grid > *:nth-child(21) { animation-delay: 336ms; }
+.adv-grid > *:nth-child(22) { animation-delay: 352ms; }
+.adv-grid > *:nth-child(23) { animation-delay: 368ms; }
+.adv-grid > *:nth-child(24) { animation-delay: 384ms; }
+.adv-grid > *:nth-child(25) { animation-delay: 384ms; }
+.adv-grid > *:nth-child(26) { animation-delay: 384ms; }
+.adv-grid > *:nth-child(27) { animation-delay: 384ms; }
+.adv-grid > *:nth-child(28) { animation-delay: 384ms; }
+
+@keyframes guideStepIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.guide-step {
+  animation: guideStepIn 320ms var(--ease-emphasized-decelerate) backwards;
+}
+
+/* Spin for the fx ADV key when the drawer opens */
+@keyframes fxTurn {
+  from {
+    transform: rotate(-90deg) scale(0.7);
+  }
+  to {
+    transform: none;
+  }
+}
+.fx-turn {
+  animation: fxTurn 360ms var(--ease-spring) backwards;
 }
 
 /* Respect the phone's "remove animations" accessibility setting */

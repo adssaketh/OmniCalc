@@ -1,7 +1,7 @@
 import React from 'react';
 import { CalculatorMode } from '../types';
 
-export type NavIconId = CalculatorMode | 'recents' | 'settings' | 'sound';
+export type NavIconId = CalculatorMode | 'recents' | 'settings' | 'sound' | 'guide';
 
 interface NavIconProps {
   id: NavIconId;
@@ -20,6 +20,7 @@ interface NavIconProps {
  * - Finance: scalloped rosette medallion badge with dollar currency symbol ($)
  * - Recents: counter-clockwise circular rewind arrow with clock hands at center
  * - Settings: authentic Google Material 3 rounded gear cog with circular center
+ * - Guide: open book with a small spark (how-to-use help)
  */
 export const NavIcon: React.FC<NavIconProps> = ({
   id,
@@ -252,6 +253,26 @@ export const NavIcon: React.FC<NavIconProps> = ({
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
+          />
+        </svg>
+      );
+
+    case 'guide':
+      // User guide: open book with a spark above the spine
+      return (
+        <svg {...commonProps}>
+          <path
+            d="M 12 8.2 C 10.3 6.9 7.7 6.5 4.7 6.8 C 4.35 6.85 4.1 7.1 4.1 7.45 V 18.2 C 4.1 18.55 4.4 18.8 4.75 18.75 C 7.7 18.45 10.3 18.9 12 20.2 C 13.7 18.9 16.3 18.45 19.25 18.75 C 19.6 18.8 19.9 18.55 19.9 18.2 V 7.45 C 19.9 7.1 19.65 6.85 19.3 6.8 C 16.3 6.5 13.7 6.9 12 8.2 Z"
+            stroke="currentColor"
+            strokeWidth={active ? 2 : 1.8}
+            strokeLinejoin="round"
+            fill={active ? 'currentColor' : 'none'}
+            fillOpacity={active ? 0.18 : 0}
+          />
+          <path d="M 12 8.4 V 20" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" />
+          <path
+            d="M 12 1.8 L 12.9 3.9 L 15 4.8 L 12.9 5.7 L 12 7.8 L 11.1 5.7 L 9 4.8 L 11.1 3.9 Z"
+            fill="currentColor"
           />
         </svg>
       );

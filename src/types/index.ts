@@ -78,6 +78,12 @@ export type ThemeId =
 
 export type ColorMode = 'system' | 'light' | 'dark';
 
+/** How content behaves as it slides under the floating bars. */
+export type EdgeEffect = 'off' | 'fade' | 'blur';
+export type FadeHeight = 'short' | 'medium' | 'tall';
+export type BarStyle = 'solid' | 'glass';
+export type GlassBlur = 'soft' | 'medium' | 'strong';
+
 export interface AppSettings {
   soundEnabled: boolean;
   hapticEnabled: boolean;
@@ -89,4 +95,15 @@ export interface AppSettings {
   currencySymbol: string;
   currencyCode: string;
   enableGrapher: boolean;
+  /** Scroll edge effect: Off / Fade / Fade + blur */
+  edgeEffect: EdgeEffect;
+  /** How far from the bars content starts to fade */
+  fadeHeight: FadeHeight;
+  /** Solid colour bars or frosted glass */
+  barStyle: BarStyle;
+  /** Glass transparency, 0 = frosted ... 100 = clear */
+  glassTransparency: number;
+  glassBlur: GlassBlur;
+  /** Thin light rim around the glass bars */
+  glassEdge: boolean;
 }

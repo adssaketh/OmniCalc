@@ -229,22 +229,8 @@ async function main() {
   await renderSvgToPng(backgroundSvg, iconBackgroundPngPath, 1024, false);
   console.log('[build-icon-assets] Created assets/icon-background.png (1024x1024, solid)');
 
-  // Maskable icon (artwork within center 66%)
-  const maskableSvg = getIconSvg({ isMaskable: true });
-  const tmpMaskable1024 = '/tmp/maskable_1024.png';
-  await renderSvgToPng(maskableSvg, tmpMaskable1024, 1024, false);
-
-  // 3. Resize with ImageMagick for PWA, Apple Touch Icon, and Favicon
-  console.log('[build-icon-assets] Generating PWA and Web icons with ImageMagick convert...');
-
-  // public/pwa-512x512.png
-  execSync(`convert "${iconPngPath}" -resize 512x512 "${path.join(ROOT_DIR, 'public/pwa-512x512.png')}"`);
-
-  // public/pwa-192x192.png
-  execSync(`convert "${iconPngPath}" -resize 192x192 "${path.join(ROOT_DIR, 'public/pwa-192x192.png')}"`);
-
-  // public/pwa-maskable-512x512.png (from 66% centered artwork)
-  execSync(`convert "${tmpMaskable1024}" -resize 512x512 "${path.join(ROOT_DIR, 'public/pwa-maskable-512x512.png')}"`);
+  // 3. Resize with ImageMagick for the Apple Touch Icon and Favicon
+  console.log('[build-icon-assets] Generating web icons with ImageMagick convert...');
 
   // public/apple-touch-icon.png (180x180)
   execSync(`convert "${iconPngPath}" -resize 180x180 "${path.join(ROOT_DIR, 'public/apple-touch-icon.png')}"`);
@@ -252,8 +238,7 @@ async function main() {
   // public/favicon.ico (multisize 16, 32, 48)
   execSync(`convert "${iconPngPath}" -define icon:auto-resize=48,32,16 "${path.join(ROOT_DIR, 'public/favicon.ico')}"`);
 
-  fs.unlinkSync(tmpMaskable1024);
-  console.log('[build-icon-assets] Web and PWA icons generated successfully.');
+  console.log('[build-icon-assets] Web icons generated successfully.');
 
   // 4. Generate Android Adaptive Icons via @capacitor/assets
   console.log('[build-icon-assets] Running @capacitor/assets to generate Android mipmap icons...');

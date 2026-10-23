@@ -100,10 +100,10 @@ Whenever you push to `main` or trigger a `workflow_dispatch` on GitHub:
 
 ## 📱 3. Android Polish & WebView Adaptations Summary
 
-1. **Service Worker Guard**:
-   - In native Android (`Capacitor.isNativePlatform()`), service workers are automatically unregistered and registration is safely bypassed. All assets load locally from `android/app/src/main/assets/public/` via Android's local asset loader.
+1. **No service worker / PWA**:
+   - The app is native-only. All assets load locally from `android/app/src/main/assets/public/`; any service worker left by older builds is unregistered on start.
 2. **Local Fonts & Icons**:
-   - Remote Google Fonts dependencies have been replaced with local `@font-face` definitions pointing to offline TTF files in `/fonts/` (`Outfit` & `JetBrains Mono`). Zero external network requests are needed for styling.
+   - The app uses the phone's own UI font for text and numbers (no font files are bundled, no network requests for styling).
 3. **Adaptive Launcher Icons & Splash**:
    - Generated 105 adaptive icon and splash screen assets across all densities (`ldpi`, `mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`) matching the Material 3 Expressive theme `#111318`.
 4. **Android Back Button Handling**:
@@ -117,9 +117,6 @@ Whenever you push to `main` or trigger a `workflow_dispatch` on GitHub:
 
 ---
 
-## 🔗 4. Guidance on `assetlinks.json` (Capacitor vs TWA)
+## 🔗 4. `assetlinks.json` / TWA
 
-- **For this Capacitor build**:
-  `public/.well-known/assetlinks.json` is **NOT required**. Capacitor runs a self-contained WebView that loads local app assets directly (`capacitor://localhost/` or `https://localhost/`). There is no hosted web domain ownership verification required.
-- **When is `assetlinks.json` needed?**:
-  Only if you later decide to deploy a **Trusted Web Activity (TWA)** instead of Capacitor. In a TWA, Android verifies domain ownership between your hosted URL (e.g. `https://your-domain.com/.well-known/assetlinks.json`) and your app's SHA-256 certificate fingerprint to hide the browser address bar.
+Not used. This Capacitor build is self-contained, so no hosted domain verification file is needed (the old TWA files were removed with the PWA).
