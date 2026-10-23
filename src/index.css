@@ -582,8 +582,16 @@ body,
   background: var(--m3-primary);
 }
 
-/* --hc is a real number property so CSS can animate it: the header collapses over a fixed, eased time */
+/* ---- Collapsing header (see Header.tsx) ----
+   Three animated numbers, each with its own timing, so the collapse is choreographed instead of everything
+   moving at once:  --hc pill shrinks first (smooth ease-out)  --hi the action pill fades in a beat later
+                    --hn the name glides to the middle with an overshoot (the rubber band)             */
 @property --hc {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --hi {
   syntax: '<number>';
   inherits: true;
   initial-value: 0;
@@ -593,32 +601,38 @@ body,
   inherits: true;
   initial-value: 0;
 }
-/* --hc: pill shrink and fades (smooth ease-out). --hn: the name's travel, with overshoot = the rubber-band feel. */
 .hdr-root {
-  transition: --hc 460ms cubic-bezier(0.22, 1, 0.36, 1), --hn 820ms cubic-bezier(0.34, 1.9, 0.64, 1);
+  transition:
+    --hc 560ms cubic-bezier(0.25, 0.8, 0.25, 1),
+    --hi 420ms 90ms cubic-bezier(0.2, 0, 0, 1),
+    --hn 900ms 60ms cubic-bezier(0.34, 1.7, 0.64, 1);
 }
-
-/* ---- Collapsing header (see Header.tsx): --hc goes 0 (full pill) -> 1 (round logo + small action pill) ---- */
+.hdr-inner {
+  container-type: inline-size; /* lets the name's travel be measured in cqw (header width) */
+}
 .hdr-pill {
   width: calc(100% - (100% - 56px) * var(--hc, 0));
+  will-change: width;
 }
 .hdr-name {
-  /* from just right of the logo (58px) to the middle of the space between the round logo and the action pill */
-  left: calc(58px + (72px + (100% - 240px) / 2 - 58px) * var(--hn, 0));
-  transform: translateX(calc(-50% * var(--hn, 0)));
-  font-size: calc(18px + 2px * var(--hn, 0));
+  left: 58px;
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  /* Only transform + colour change: from just right of the logo to the middle of the space between the
+     round logo and the action pill (72px .. 100% - 168px). Moves on the compositor, no layout. */
+  transform: translateX(calc((14px + (100cqw - 240px) / 2 - 50%) * var(--hn, 0)));
   color: color-mix(in srgb, var(--m3-primary) clamp(0%, calc(var(--hn, 0) * 100%), 100%), var(--m3-on-surface));
+  will-change: transform;
   z-index: 2;
 }
 /* The stretch and squash: it stretches along its travel, squashes as it overshoots the middle, then settles */
 @keyframes nameRubber {
   0% { transform: translateX(0) scale(1, 1); }
-  18% { transform: translateX(calc(var(--dir, 1) * -4px)) scale(1.4, 0.84); }
-  42% { transform: translateX(calc(var(--dir, 1) * 9px)) scale(0.86, 1.12); }
-  62% { transform: translateX(calc(var(--dir, 1) * -4px)) scale(1.07, 0.96); }
-  80% { transform: translateX(calc(var(--dir, 1) * 2px)) scale(0.99, 1.02); }
+  18% { transform: translateX(calc(var(--dir, 1) * -4px)) scale(1.38, 0.85); }
+  42% { transform: translateX(calc(var(--dir, 1) * 8px)) scale(0.87, 1.11); }
+  62% { transform: translateX(calc(var(--dir, 1) * -3px)) scale(1.06, 0.97); }
+  80% { transform: translateX(calc(var(--dir, 1) * 1.5px)) scale(0.99, 1.02); }
   100% { transform: translateX(0) scale(1, 1); }
 }
 .hdr-root[data-move='in'] {
@@ -629,24 +643,27 @@ body,
 }
 .hdr-root[data-move='in'] .hdr-name-in {
   transform-origin: 0% 50%;
-  animation: nameRubber 820ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
+  animation: nameRubber 860ms 60ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
 .hdr-root[data-move='out'] .hdr-name-in {
   transform-origin: 100% 50%;
-  animation: nameRubber 820ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
+  animation: nameRubber 860ms 60ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
-/* The round logo gives a small pop when the pill closes around it */
+/* The round logo gives a small pop when the pill closes around it (scale only: it is centred with flexbox) */
 @keyframes logoPop {
-  0% { transform: translateY(-50%) scale(1); }
-  35% { transform: translateY(-50%) scale(0.86); }
-  70% { transform: translateY(-50%) scale(1.1); }
-  100% { transform: translateY(-50%) scale(1); }
+  0% { transform: scale(1); }
+  35% { transform: scale(0.86); }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 .hdr-root[data-move='in'] .hdr-logo {
-  animation: logoPop 620ms 220ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
+  animation: logoPop 560ms 260ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
 .hdr-icons-bg {
-  opacity: max(0, calc((var(--hc, 0) - 0.15) * 1.2));
+  opacity: clamp(0, var(--hi, 0), 1);
+}
+.hdr-icons {
+  will-change: transform;
 }
 
 /* Soft blur that grows toward the screen edge ("Fade + blur") */
@@ -739,6 +756,8 @@ body,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    animation-delay: 0ms !important;
     scroll-behavior: auto !important;
   }
 }

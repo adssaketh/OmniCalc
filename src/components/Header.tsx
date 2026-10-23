@@ -90,14 +90,14 @@ export const Header: React.FC<HeaderProps> = ({
       className="hdr-root px-3 pb-1 select-none pointer-events-none"
       style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 8px)' }}
     >
-      <div className="relative w-full max-w-[1650px] mx-auto h-14">
+      <div className="hdr-inner relative w-full max-w-[1650px] mx-auto h-14">
         {/* The big pill: shrinks to a circle that holds the logo */}
         <div className="bar-surface hdr-pill pointer-events-auto absolute left-0 top-0 h-14 rounded-full overflow-hidden">
           <button
             type="button"
             onClick={onLogoTap}
             aria-label="OmniCalc, back to top"
-            className="hdr-logo absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
+            className="hdr-logo absolute left-2.5 top-0 w-9 h-14 flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
           >
             <OmniCalcLogo key={theme} theme={theme} className="w-9 h-9 shrink-0" />
           </button>
