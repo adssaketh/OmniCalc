@@ -7,3 +7,10 @@ build/
 android/.gradle/
 android/app/build/
 android/local.properties
+
+# Signing keys: never commit these
+*.jks
+*.keystore
+*.b64
+keystore*
+keys/

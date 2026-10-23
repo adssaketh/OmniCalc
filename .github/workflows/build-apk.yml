@@ -48,6 +48,13 @@ jobs:
       - name: Make Gradlew Executable
         run: chmod +x android/gradlew
 
+      # Each build gets a higher versionCode (the run number), so a newer APK can always be installed
+      # over an older one signed with the same key.
+      - name: Set versionCode from run number
+        run: |
+          sed -i -E "s/versionCode [0-9]+/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          grep -n "versionCode" android/app/build.gradle
+
       - name: Build Debug APK
         run: |
           cd android
@@ -60,3 +67,68 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+
+      # ---------------------------------------------------------------------------------------------
+      # Signed release APK. Needs these four repository secrets (Settings > Secrets and variables >
+      # Actions); without them the steps below are skipped and the debug APK is still built.
+      #   OMNI_KEYSTORE_B64       the keystore file, base64 encoded
+      #   OMNI_KEY_ALIAS          key alias inside the keystore
+      #   OMNI_KEYSTORE_PASSWORD  keystore password
+      #   OMNI_KEY_PASSWORD       key password (same as the keystore password for a PKCS12 keystore)
+      # ---------------------------------------------------------------------------------------------
+      - name: Check for signing secrets
+        id: signing
+        env:
+          KEYSTORE_B64: ${{ secrets.OMNI_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Signing secrets not set, skipping the signed release APK."
+          fi
+
+      - name: Build Release APK (unsigned)
+        if: steps.signing.outputs.enabled == 'true'
+        run: |
+          cd android
+          ./gradlew assembleRelease --stacktrace
+
+      - name: Align and sign Release APK
+        if: steps.signing.outputs.enabled == 'true'
+        env:
+          KEYSTORE_B64: ${{ secrets.OMNI_KEYSTORE_B64 }}
+          KEY_ALIAS: ${{ secrets.OMNI_KEY_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.OMNI_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.OMNI_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KS="$RUNNER_TEMP/omnicalc-release.jks"
+          echo "$KEYSTORE_B64" | base64 -d > "$KS"
+
+          BT="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
+          echo "Using build-tools: $BT"
+          UNSIGNED="$(ls android/app/build/outputs/apk/release/*.apk | head -1)"
+          echo "Unsigned APK: $UNSIGNED"
+
+          "$BT/zipalign" -p -f 4 "$UNSIGNED" "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" sign \
+            --ks "$KS" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --key-pass env:KEY_PASSWORD \
+            --out OmniCalc-release-signed.apk \
+            "$RUNNER_TEMP/aligned.apk"
+
+          # Prints the signing certificate (SHA-256): keep a copy, store listings may ask for it
+          "$BT/apksigner" verify --verbose --print-certs OmniCalc-release-signed.apk
+          rm -f "$KS"
+
+      - name: Upload signed Release APK
+        if: steps.signing.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: OmniCalc-Release-Signed-APK
+          path: OmniCalc-release-signed.apk
+          if-no-files-found: error
+          retention-days: 90
