@@ -863,8 +863,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
         </div>
         <div className="overflow-y-auto min-h-0 px-5 py-4 space-y-2 text-xs leading-relaxed">
           {[
-            ['Zero Tracking & Telemetry:', 'OmniCalc runs 100% on your device. We do not track, profile, collect, or transmit user activity or calculations.'],
-            ['Local Storage Only:', 'All calculations and user preferences stay on your device and are never sent to remote databases.'],
+            ['Zero Tracking & Telemetry:', 'OmniCalc has no ads, analytics or tracking. We do not track, profile, collect, or transmit your activity or calculations.'],
+            ['Local Storage Only:', 'Your calculations, history and preferences stay on your device. The only internet use is the currency converter downloading public exchange rates, which sends none of your data.'],
             ['No Dangerous Permissions:', 'No microphone, camera, contacts, or storage permissions are required. Sound effects are generated mathematically in real time via Web Audio oscillators'],
             ['Open source:', `The full source code is public at ${REPO_LABEL}, so these claims can be checked.`],
             ['Developer Contact:', 'Developed by Saketh (adsaketh@gmail.com).'],
