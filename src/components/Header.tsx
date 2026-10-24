@@ -91,25 +91,36 @@ export const Header: React.FC<HeaderProps> = ({
       style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 8px)' }}
     >
       <div className="hdr-inner relative w-full max-w-[1650px] mx-auto h-14">
-        {/* The big pill: shrinks to a circle that holds the logo */}
-        <div className="bar-surface hdr-pill pointer-events-auto absolute left-0 top-0 h-14 rounded-full overflow-hidden">
-          <button
-            type="button"
-            onClick={onLogoTap}
-            aria-label="OmniCalc, back to top"
-            className="hdr-logo absolute left-2.5 top-0 w-9 h-14 flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
-          >
-            <OmniCalcLogo key={theme} theme={theme} className="w-9 h-9 shrink-0" />
-          </button>
-        </div>
+        {/* Piece 1: the logo's own round glass, hidden inside the pill until the header splits */}
+        <span
+          className="bar-surface hdr-left absolute left-0 top-0 w-14 h-14 rounded-full pointer-events-none"
+          aria-hidden="true"
+        />
+
+        {/* Piece 2: the main pill, full width at rest and a snug pill around the name when collapsed */}
+        <div className="bar-surface hdr-pill pointer-events-auto absolute top-0 h-14 rounded-full" />
+
+        {/* The logo button sits above both pieces */}
+        <button
+          type="button"
+          onClick={onLogoTap}
+          aria-label="OmniCalc, back to top"
+          className="hdr-logo pointer-events-auto absolute left-0 top-0 w-14 h-14 flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
+          style={{ zIndex: 3 }}
+        >
+          <OmniCalcLogo key={theme} theme={theme} className="w-9 h-9 shrink-0" />
+        </button>
 
         {/* The name: glides from the left to the middle of the collapsed header, rubber-band style */}
         <span className="hdr-name absolute top-0 h-14 flex items-center pointer-events-none whitespace-nowrap">
           <span className="hdr-name-in inline-block">OmniCalc</span>
         </span>
 
-        {/* Actions: transparent inside the big pill, their own small glass pill when collapsed */}
-        <div className="hdr-icons pointer-events-auto absolute right-0 top-0 h-14 flex items-center gap-0.5 pl-1.5 pr-1.5">
+        {/* Piece 3: actions. Transparent inside the big pill, their own glass pill when collapsed */}
+        <div
+          className="hdr-icons pointer-events-auto absolute right-0 top-0 h-14 flex items-center gap-0.5 pl-1.5 pr-1.5"
+          style={{ zIndex: 3 }}
+        >
           <span className="bar-surface hdr-icons-bg absolute inset-0 rounded-full" aria-hidden="true" />
           {buttons}
         </div>

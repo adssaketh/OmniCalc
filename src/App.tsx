@@ -459,7 +459,8 @@ export default function App() {
       const hc = target;
       if (headerEl && hc !== lastHc) {
         headerEl.style.setProperty('--hc', String(hc));
-        headerEl.style.setProperty('--hi', String(hc));
+        headerEl.style.setProperty('--hl', String(hc));
+        headerEl.style.setProperty('--hr', String(hc));
         headerEl.style.setProperty('--hn', String(hc));
         if (lastHc !== -1) headerEl.dataset.move = hc ? 'in' : 'out'; // restarts the rubber-band animation
         lastHc = hc;

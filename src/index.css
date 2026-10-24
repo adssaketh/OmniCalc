@@ -501,11 +501,16 @@ body,
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 4px 14px rgb(0 0 0 / 0.05);
   transition: background-color 260ms var(--ease-emphasized), box-shadow 260ms var(--ease-emphasized);
 }
+/* Liquid glass: deep blur with the colours behind it glowing through, a light sheen along the top, and a
+   bright thin rim (see the glass edge switch in Settings) */
 [data-bars="glass"] .bar-surface {
   background-color: color-mix(in srgb, var(--bar-tone, var(--m3-surface-container)) var(--glass-fill), transparent);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.10);
+  background-image:
+    radial-gradient(120% 130% at 22% -25%, color-mix(in srgb, #ffffff 34%, transparent), transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, #ffffff 12%, transparent), transparent 46%, color-mix(in srgb, #000000 7%, transparent));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.9) brightness(1.05);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.9) brightness(1.05);
+  box-shadow: 0 10px 28px rgb(0 0 0 / 0.16);
 }
 /* A soft light sheen on the answer display so it reads as glass / a real screen, not a flat grey block */
 .bar-surface.bar-surface-strong {
@@ -518,12 +523,18 @@ body,
 /* The answer display stays clearly more solid than the other bars so the numbers are easy to read */
 [data-bars="glass"] .bar-surface.bar-surface-strong {
   background-color: color-mix(in srgb, var(--bar-tone, var(--m3-surface-container)) var(--glass-fill-strong), transparent);
+  background-image:
+    radial-gradient(120% 130% at 22% -25%, color-mix(in srgb, #ffffff 30%, transparent), transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, #ffffff 10%, transparent), transparent 46%, color-mix(in srgb, #000000 7%, transparent)),
+    linear-gradient(155deg, color-mix(in srgb, var(--m3-on-surface) 7%, transparent) 0%, transparent 55%);
 }
 [data-bars="glass"][data-glass-edge="on"] .bar-surface {
   box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--m3-on-surface) 13%, transparent),
-    inset 0 1px 0 color-mix(in srgb, #ffffff 28%, transparent),
-    0 8px 24px rgb(0 0 0 / 0.10);
+    inset 0 0 0 1px color-mix(in srgb, #ffffff 24%, transparent),
+    inset 1px 1.5px 0 color-mix(in srgb, #ffffff 55%, transparent),
+    inset -1px -1.5px 0 color-mix(in srgb, #ffffff 14%, transparent),
+    inset 0 0 22px color-mix(in srgb, #ffffff 9%, transparent),
+    0 10px 28px rgb(0 0 0 / 0.18);
 }
 
 /* Slider with a thick track and a big thumb (Glass transparency) */
@@ -582,16 +593,24 @@ body,
   background: var(--m3-primary);
 }
 
-/* ---- Collapsing header (see Header.tsx) ----
-   Three animated numbers, each with its own timing, so the collapse is choreographed instead of everything
-   moving at once:  --hc pill shrinks first (smooth ease-out)  --hi the action pill fades in a beat later
-                    --hn the name glides to the middle with an overshoot (the rubber band)             */
+/* ---- Collapsing header (see Header.tsx): the pill SPLITS, like Apple's Liquid Glass ----
+   Expanded:  [ logo   OmniCalc                      guide sound settings ]
+   Collapsed: ( logo )   [ OmniCalc ]   [ guide sound settings ]
+   The round logo piece and the action pill pop out of the ends of the big pill like droplets (they overshoot
+   a little and settle) while the middle pill contracts around the name. Each part has its own number and timing:
+     --hc  the middle pill contracts (smooth ease-out)     --hl  the logo circle pops out of the left end
+     --hr  the action pill pops out of the right end       --hn  the name glides to the centre (rubber band)   */
 @property --hc {
   syntax: '<number>';
   inherits: true;
   initial-value: 0;
 }
-@property --hi {
+@property --hl {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --hr {
   syntax: '<number>';
   inherits: true;
   initial-value: 0;
@@ -604,24 +623,50 @@ body,
 .hdr-root {
   transition:
     --hc 560ms cubic-bezier(0.25, 0.8, 0.25, 1),
-    --hi 420ms 90ms cubic-bezier(0.2, 0, 0, 1),
+    --hl 780ms 30ms cubic-bezier(0.34, 1.75, 0.64, 1),
+    --hr 780ms 90ms cubic-bezier(0.34, 1.75, 0.64, 1),
     --hn 900ms 60ms cubic-bezier(0.34, 1.7, 0.64, 1);
 }
 .hdr-inner {
-  container-type: inline-size; /* lets the name's travel be measured in cqw (header width) */
+  container-type: inline-size; /* lets the pieces be placed in cqw (header width) */
 }
+/* Middle pill: full width at rest, a snug pill centred between the logo circle and the action pill when collapsed */
 .hdr-pill {
-  width: calc(100% - (100% - 56px) * var(--hc, 0));
-  will-change: width;
+  --cw: 140px; /* collapsed width: a fixed size per header width (no nested cqw maths, which some engines get wrong) */
+  left: calc((64px + (100cqw - 226px - var(--cw)) / 2) * var(--hc, 0));
+  width: calc(100cqw - (100cqw - var(--cw)) * var(--hc, 0));
+  will-change: width, left;
+}
+@container (max-width: 365px) {
+  .hdr-pill {
+    --cw: 120px;
+  }
+}
+@container (max-width: 340px) {
+  .hdr-pill {
+    --cw: 100px;
+  }
+}
+/* Logo circle: grows out from behind the left end of the pill */
+.hdr-left {
+  opacity: clamp(0, calc(var(--hl, 0) * 3), 1);
+  transform: translateX(calc((1 - var(--hl, 0)) * 30px)) scale(calc(0.45 + 0.55 * var(--hl, 0)));
+  will-change: transform, opacity;
+}
+/* Action pill: grows out from behind the right end of the pill (the buttons themselves never move) */
+.hdr-icons-bg {
+  opacity: clamp(0, calc(var(--hr, 0) * 3), 1);
+  transform: scale(calc(0.55 + 0.45 * var(--hr, 0)));
+  transform-origin: 100% 50%;
+  will-change: transform, opacity;
 }
 .hdr-name {
   left: 58px;
   font-size: 19px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  /* Only transform + colour change: from just right of the logo to the middle of the space between the
-     round logo and the action pill (72px .. 100% - 168px). Moves on the compositor, no layout. */
-  transform: translateX(calc((14px + (100cqw - 240px) / 2 - 50%) * var(--hn, 0)));
+  /* Only transform + colour change: from just right of the logo to the middle of the header (compositor only) */
+  transform: translateX(calc((50cqw - 107px - 50%) * var(--hn, 0)));
   color: color-mix(in srgb, var(--m3-primary) clamp(0%, calc(var(--hn, 0) * 100%), 100%), var(--m3-on-surface));
   will-change: transform;
   z-index: 2;
@@ -629,8 +674,8 @@ body,
 /* The stretch and squash: it stretches along its travel, squashes as it overshoots the middle, then settles */
 @keyframes nameRubber {
   0% { transform: translateX(0) scale(1, 1); }
-  18% { transform: translateX(calc(var(--dir, 1) * -4px)) scale(1.38, 0.85); }
-  42% { transform: translateX(calc(var(--dir, 1) * 8px)) scale(0.87, 1.11); }
+  18% { transform: translateX(calc(var(--dir, 1) * -4px)) scale(1.34, 0.86); }
+  42% { transform: translateX(calc(var(--dir, 1) * 7px)) scale(0.88, 1.1); }
   62% { transform: translateX(calc(var(--dir, 1) * -3px)) scale(1.06, 0.97); }
   80% { transform: translateX(calc(var(--dir, 1) * 1.5px)) scale(0.99, 1.02); }
   100% { transform: translateX(0) scale(1, 1); }
@@ -649,21 +694,15 @@ body,
   transform-origin: 100% 50%;
   animation: nameRubber 860ms 60ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
-/* The round logo gives a small pop when the pill closes around it (scale only: it is centred with flexbox) */
+/* The logo gives a small pop as its own glass circle forms around it (scale only: it is centred with flexbox) */
 @keyframes logoPop {
   0% { transform: scale(1); }
-  35% { transform: scale(0.86); }
+  35% { transform: scale(0.88); }
   70% { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
 .hdr-root[data-move='in'] .hdr-logo {
-  animation: logoPop 560ms 260ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
-}
-.hdr-icons-bg {
-  opacity: clamp(0, var(--hi, 0), 1);
-}
-.hdr-icons {
-  will-change: transform;
+  animation: logoPop 560ms 240ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
 
 /* Soft blur that grows toward the screen edge ("Fade + blur") */
