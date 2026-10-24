@@ -867,7 +867,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
             ['Local Storage Only:', 'All calculations and user preferences stay on your device and are never sent to remote databases.'],
             ['No Dangerous Permissions:', 'No microphone, camera, contacts, or storage permissions are required. Sound effects are generated mathematically in real time via Web Audio oscillators'],
             ['Open source:', `The full source code is public at ${REPO_LABEL}, so these claims can be checked.`],
-            ['Developer Contact:', 'Developed by Saketh (saketh.adhikarla@gmail.com).'],
+            ['Developer Contact:', 'Developed by Saketh (adsaketh@gmail.com).'],
           ].map(([lead, text]) => (
             <div key={lead} className="p-4 rounded-[20px]" style={{ backgroundColor: 'var(--m3-surface-container)' }}>
               <strong>{lead}</strong> {text}
