@@ -22,6 +22,7 @@ import {
 import { OmniCalcLogo } from './OmniCalcLogo';
 import { NavIcon } from './NavIcons';
 import { Sheet } from './Sheet';
+import { APP_VERSION, REPO_URL, REPO_LABEL } from '../version';
 import { AnimatePresence, motion } from 'motion/react';
 import { spring } from '../motion';
 
@@ -166,6 +167,8 @@ interface RowProps {
   title: string;
   subtitle?: React.ReactNode;
   onClick?: () => void;
+  /** Opens this web address in the browser */
+  href?: string;
   trailing?: React.ReactNode;
   /** Chevron on the right (a row that opens a sheet) */
   chevron?: boolean;
@@ -174,11 +177,16 @@ interface RowProps {
   leading?: React.ReactNode;
 }
 
-const Row: React.FC<RowProps> = ({ icon: Icon, title, subtitle, onClick, trailing, chevron, dimmed, leading }) => (
-  <div
+const Row: React.FC<RowProps> = ({ icon: Icon, title, subtitle, onClick, href, trailing, chevron, dimmed, leading }) => {
+  // With an href the whole row is a real link: Android hands it to the browser and the app stays open
+  const Tag = (href ? 'a' : 'div') as React.ElementType;
+  const linkProps = href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {};
+  return (
+  <Tag
+    {...linkProps}
     onClick={onClick}
     className={`min-h-[64px] px-4 py-3 flex items-center gap-4 rounded-[24px] transition-colors ${
-      onClick ? 'cursor-pointer hover:bg-[var(--m3-surface-container-high)] active:scale-[0.985]' : ''
+      onClick || href ? 'cursor-pointer hover:bg-[var(--m3-surface-container-high)] active:scale-[0.985]' : ''
     } ${dimmed ? 'opacity-60' : ''}`}
   >
     {leading ?? (
@@ -199,8 +207,9 @@ const Row: React.FC<RowProps> = ({ icon: Icon, title, subtitle, onClick, trailin
     </div>
     {trailing}
     {chevron && <ChevronRight className="w-5 h-5 shrink-0" style={{ color: 'var(--m3-on-surface-variant)' }} />}
-  </div>
-);
+  </Tag>
+  );
+};
 
 /** Material 3 switch */
 const Switch: React.FC<{ on: boolean }> = ({ on }) => (
@@ -664,7 +673,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                 </div>
               }
               title="OmniCalc"
-              subtitle="Version 1.0 (Build 1) • By Saketh"
+              subtitle={`Version ${APP_VERSION} • By Saketh`}
             />
             <Row
               leading={
@@ -682,6 +691,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                 onClose();
                 onOpenGuide();
               }}
+            />
+            <Row
+              leading={
+                <div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: 'var(--m3-surface-container-high)', color: 'var(--m3-primary)' }}
+                >
+                  <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor" aria-hidden="true">
+                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                  </svg>
+                </div>
+              }
+              title="Source code on GitHub"
+              subtitle={`${REPO_LABEL} • Open source (Apache-2.0)`}
+              href={REPO_URL}
+              trailing={<ExternalLink className="w-4 h-4 shrink-0" style={{ color: 'var(--m3-on-surface-variant)' }} />}
             />
             <Row
               icon={ShieldCheck}
@@ -841,6 +866,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
             ['Zero Tracking & Telemetry:', 'OmniCalc runs 100% on your device. We do not track, profile, collect, or transmit user activity or calculations.'],
             ['Local Storage Only:', 'All calculations and user preferences stay on your device and are never sent to remote databases.'],
             ['No Dangerous Permissions:', 'No microphone, camera, contacts, or storage permissions are required. Sound effects are generated mathematically in real time via Web Audio oscillators'],
+            ['Open source:', `The full source code is public at ${REPO_LABEL}, so these claims can be checked.`],
             ['Developer Contact:', 'Developed by Saketh (saketh.adhikarla@gmail.com).'],
           ].map(([lead, text]) => (
             <div key={lead} className="p-4 rounded-[20px]" style={{ backgroundColor: 'var(--m3-surface-container)' }}>
