@@ -7,6 +7,25 @@
 
 ---
 
+## Screenshots
+
+<!-- Placeholder renders of the app's screens. To use real ones, take screenshots on your phone and replace the files in docs/screenshots/ (same names). -->
+<p align="center">
+  <img src="docs/screenshots/01-calculator.png" width="23%" alt="Calculator with the header inside the answer display" />
+  <img src="docs/screenshots/02-advanced.png" width="23%" alt="Advanced operations drawer with calculus keys, dark theme" />
+  <img src="docs/screenshots/03-equation-y.png" width="23%" alt="Equation y = x^2 - 5x + 6 evaluated at x = 4" />
+  <img src="docs/screenshots/04-converter.png" width="23%" alt="Unit converter with the collapsed, split header" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/05-finance.png" width="23%" alt="Loan / EMI calculator, dark theme" />
+  <img src="docs/screenshots/06-user-guide.png" width="23%" alt="In-app user guide with Try buttons" />
+  <img src="docs/screenshots/07-settings.png" width="23%" alt="Settings: bars and scrolling, glass options" />
+</p>
+
+*Calculator with the answer display pinned at the top, advanced calculus keys, `y = f(x)` equations, the unit converter with its collapsing header, the Loan / EMI calculator, the built-in user guide, and the glass and scroll-edge settings.*
+
+---
+
 ## Features
 
 ### Calculator (Standard & Scientific)
