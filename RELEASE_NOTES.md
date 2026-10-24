@@ -17,7 +17,7 @@ A big update to the look and feel of OmniCalc, plus a built-in guide for the adv
 - The back gesture steps back through your screens and closes open sheets first. From the first screen, press back twice to leave the app.
 - One font for every number in the app, in lighter and bolder weights, with aligned digits.
 - Error messages are shown small and in full, in the error colour, instead of as a giant answer.
-- **Open source.** Settings → About now links to the source code on GitHub (github.com/adssaketh/OmniCalc), and OmniCalc is licensed under Apache-2.0.
+- **Open source.** Settings → About now links to the source code on GitHub (github.com/adssaketh/OmniCalc), and OmniCalc is licensed under GPL-3.0.
 
 ## Fixed
 
@@ -47,4 +47,4 @@ No microphone, camera, contacts or location access is requested. Currency rates 
 
 ## License
 
-Apache License 2.0. See the LICENSE file in the repository.
+GNU General Public License v3.0. See the LICENSE file in the repository.

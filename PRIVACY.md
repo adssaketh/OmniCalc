@@ -61,7 +61,7 @@ OmniCalc does not collect personal information from anyone, including children. 
 
 ## Open source
 
-OmniCalc is open source under the Apache License 2.0. The code is public at [https://github.com/adssaketh/OmniCalc](https://github.com/adssaketh/OmniCalc), so anyone can check that it does what this policy says.
+OmniCalc is free software under the GNU General Public License v3.0 (GPL-3.0). The code is public at [https://github.com/adssaketh/OmniCalc](https://github.com/adssaketh/OmniCalc), so anyone can check that it does what this policy says.
 
 ## Changes to this policy
 

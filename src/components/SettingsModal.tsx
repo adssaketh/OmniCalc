@@ -704,7 +704,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                 </div>
               }
               title="Source code on GitHub"
-              subtitle={`${REPO_LABEL} • Open source (Apache-2.0)`}
+              subtitle={`${REPO_LABEL} • Open source (GPL-3.0)`}
               href={REPO_URL}
               trailing={<ExternalLink className="w-4 h-4 shrink-0" style={{ color: 'var(--m3-on-surface-variant)' }} />}
             />

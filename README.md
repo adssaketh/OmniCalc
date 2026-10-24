@@ -94,7 +94,7 @@ Get the latest signed APK from the [**Releases**](https://github.com/adssaketh/O
 ├── assets/                # Icon and splash source images
 ├── .github/workflows/     # CI: debug + signed release APK, GitHub Releases
 ├── RELEASE_NOTES.md       # Description used for the GitHub Release
-├── LICENSE                # Apache License 2.0
+├── LICENSE                # GNU General Public License v3.0
 ├── capacitor.config.json
 └── vite.config.ts
 ```
@@ -105,7 +105,7 @@ Get the latest signed APK from the [**Releases**](https://github.com/adssaketh/O
 No microphone, camera, contacts or location access is requested. Currency rates are fetched from public exchange-rate APIs when online. See `public/privacy-policy.html`.
 
 ## License
-Licensed under the [Apache License, Version 2.0](./LICENSE). Copyright 2026 Saketh. See [NOTICE](./NOTICE).
+OmniCalc is free software, licensed under the [GNU General Public License v3.0](./LICENSE). Copyright (C) 2026 Saketh. You may use, study, share and change it; if you share a changed version you must share its source under the same license. A few files that came from Google's AI Studio template keep their original Apache-2.0 notice, which is compatible with the GPL.
 
 ## Author
 Built by **Saketh** ([@adssaketh](https://github.com/adssaketh)).
