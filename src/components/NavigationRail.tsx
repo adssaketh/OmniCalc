@@ -18,6 +18,7 @@ interface NavigationRailProps {
   isHistoryOpen?: boolean;
   historyCount?: number;
   enableGrapher?: boolean;
+  enablePhysics?: boolean;
   theme?: ThemeId;
 }
 
@@ -34,9 +35,10 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({
   isHistoryOpen = false,
   historyCount = 0,
   enableGrapher = false,
+  enablePhysics = false,
   theme,
 }) => {
-  const items = getNavItems(enableGrapher);
+  const items = getNavItems(enableGrapher, enablePhysics);
 
   return (
     <aside

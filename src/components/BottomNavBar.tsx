@@ -14,6 +14,7 @@ interface BottomNavBarProps {
   isHistoryOpen?: boolean;
   historyCount?: number;
   enableGrapher?: boolean;
+  enablePhysics?: boolean;
 }
 
 /**
@@ -29,8 +30,9 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   isHistoryOpen = false,
   historyCount = 0,
   enableGrapher = false,
+  enablePhysics = false,
 }) => {
-  const items = getNavItems(enableGrapher);
+  const items = getNavItems(enableGrapher, enablePhysics);
 
   return (
     <motion.nav

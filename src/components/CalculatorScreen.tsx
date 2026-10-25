@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { AngleMode, HistoryItem } from '../types';
@@ -263,6 +263,28 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
       return prev.slice(0, -1);
     });
   }, [hasEvaluated, soundEnabled, hapticEnabled]);
+
+  // Live answer preview: shown (small) under the expression while typing, before = is pressed.
+  // It mirrors what = would calculate, and stays hidden for plain numbers, equation
+  // definitions (y = ...) and anything that is not yet a complete calculation.
+  const livePreview = useMemo(() => {
+    if (hasEvaluated) return '';
+    const trimmed = expression.trim();
+    if (!trimmed || /^\s*y\s*=/i.test(trimmed)) return '';
+    const isPlainNumber = /^[−-]?\d+(\.\d+)?$/.test(trimmed);
+    if (isPlainNumber && !equation) return '';
+    try {
+      let exprToEval = trimmed;
+      const openCount = (exprToEval.match(/\(/g) || []).length;
+      const closeCount = (exprToEval.match(/\)/g) || []).length;
+      if (openCount > closeCount) exprToEval += ')'.repeat(openCount - closeCount);
+      if (equation && isPlainNumber) exprToEval = `y(${trimmed})`;
+      const formatted = MathEvaluator.formatResult(MathEvaluator.evaluate(exprToEval, angleMode), decimalPrecision);
+      return formatted === trimmed ? '' : formatted;
+    } catch {
+      return '';
+    }
+  }, [expression, hasEvaluated, equation, angleMode, decimalPrecision]);
 
   // Evaluate Expression
   const handleEvaluate = useCallback(() => {
@@ -1230,6 +1252,16 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
               {expression}
             </div>
 
+            {!hasEvaluated && (
+              <div
+                className="font-mono font-semibold text-base sm:text-lg h-7 mt-1 tracking-tight truncate"
+                style={{ color: 'var(--m3-primary)' }}
+                aria-live="polite"
+              >
+                {livePreview && <>= {livePreview}</>}
+              </div>
+            )}
+
             {lastAnswer && hasEvaluated && (
               <div
                 className="font-mono font-bold text-2xl sm:text-3xl lg:text-4xl mt-1.5 tracking-tight truncate animate-m3-result-update"
@@ -1465,6 +1497,16 @@ export const CalculatorScreen: React.FC<CalculatorScreenProps> = ({
             className={`font-bold tracking-tight py-1 select-all ${hasEvaluated ? 'animate-m3-result-update' : ''}`}
             style={{ color: hasEvaluated ? 'var(--m3-primary)' : 'var(--m3-on-surface)' }}
           />
+        )}
+        {/* Small live answer; turns into the big answer when = is pressed. Fixed height so the keys never jump. */}
+        {!hasEvaluated && (
+          <div
+            className="h-7 sm:h-8 text-lg sm:text-xl font-semibold tracking-tight truncate"
+            style={{ color: 'var(--m3-primary)' }}
+            aria-live="polite"
+          >
+            {livePreview && <>= {livePreview}</>}
+          </div>
         )}
       </div>
     </motion.div>
