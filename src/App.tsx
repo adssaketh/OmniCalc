@@ -210,8 +210,15 @@ export default function App() {
         setSystemColors(colors);
         try {
           const userChosen = localStorage.getItem('omni_calc_settings_theme_user_set');
+          // Only auto-default to dynamic colours if the user never picked a
+          // theme AND the saved theme isn't already a deliberate non-default
+          // (e.g. pure black saved by an older build that didn't set the flag).
           if (!userChosen) {
-            setSettings((prev) => ({ ...prev, theme: 'dynamic' }));
+            setSettings((prev) =>
+              prev.theme === 'm3-amoled' || prev.theme === 'dynamic'
+                ? prev
+                : { ...prev, theme: 'dynamic' },
+            );
           }
         } catch {
           // ignore

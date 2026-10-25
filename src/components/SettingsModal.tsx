@@ -497,11 +497,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
               title="Pure black (AMOLED)"
               subtitle="Pitch black surfaces to save battery on OLED screens"
               trailing={<Switch on={settings.theme === 'm3-amoled'} />}
-              onClick={() =>
-                settings.theme === 'm3-amoled'
-                  ? onUpdateSettings({ theme: 'dynamic' })
-                  : onUpdateSettings({ theme: 'm3-amoled', colorMode: 'dark' })
-              }
+              onClick={() => {
+                // Record that the user picked a theme so the dynamic-colour
+                // auto-default never overrides it on the next launch/resume.
+                try {
+                  localStorage.setItem('omni_calc_settings_theme_user_set', 'true');
+                } catch {
+                  // ignore
+                }
+                if (settings.theme === 'm3-amoled') {
+                  onUpdateSettings({ theme: 'dynamic' });
+                } else {
+                  onUpdateSettings({ theme: 'm3-amoled', colorMode: 'dark' });
+                }
+              }}
             />
           </Section>
 
