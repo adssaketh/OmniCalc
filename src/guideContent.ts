@@ -250,7 +250,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     steps: [
       'Tap a constant key to type its symbol.',
       'Combine it with other numbers like any value, for example 2×π×5.',
-      'The Physics Lab tab lists every constant with its full value and unit.',
+      'Turn on Physics Lab in Settings → Features to see every constant with its full value and unit.',
     ],
     examples: [
       { expr: '2×π×5', note: 'Circumference of a circle with radius 5' },

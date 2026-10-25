@@ -95,6 +95,8 @@ export interface AppSettings {
   currencySymbol: string;
   currencyCode: string;
   enableGrapher: boolean;
+  /** Show the Physics Lab screen (off by default) */
+  enablePhysics: boolean;
   /** Scroll edge effect: Off / Fade / Fade + blur */
   edgeEffect: EdgeEffect;
   /** How far from the bars content starts to fade */

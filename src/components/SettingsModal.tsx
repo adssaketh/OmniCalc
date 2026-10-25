@@ -12,6 +12,7 @@ import {
   Volume2,
   Smartphone,
   LineChart,
+  Atom,
   ShieldCheck,
   RotateCcw,
   ChevronRight,
@@ -432,6 +433,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
       theme: 'dynamic',
       colorMode: 'system',
       enableGrapher: false,
+      enablePhysics: false,
       edgeEffect: 'fade',
       fadeHeight: 'medium',
       barStyle: 'solid',
@@ -665,6 +667,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
           </Section>
 
           <Section title="Features">
+            <Row
+              icon={Atom}
+              title="Physics Lab"
+              subtitle="Constants, formulas and solvers. Adds a Physics tab to the navigation"
+              trailing={<Switch on={settings.enablePhysics} />}
+              onClick={() => onUpdateSettings({ enablePhysics: !settings.enablePhysics })}
+            />
             <Row
               icon={LineChart}
               title="Interactive 2D grapher"

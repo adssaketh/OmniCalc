@@ -8,15 +8,15 @@ export interface NavItem {
   railLabel: string;
 }
 
-/** Destinations in display order. Physics Lab sits in the centre of the bottom bar. */
-export function getNavItems(enableGrapher: boolean): NavItem[] {
+/** Destinations in display order. Physics Lab (optional, off by default) sits third. */
+export function getNavItems(enableGrapher: boolean, enablePhysics: boolean = false): NavItem[] {
   const items: NavItem[] = [
     { id: 'standard', label: 'Calculator', railLabel: 'Calc' },
     { id: 'converter', label: 'Converter', railLabel: 'Convert' },
-    { id: 'physics', label: 'Physics Lab', railLabel: 'Physics' },
     { id: 'finance', label: 'Finance', railLabel: 'Finance' },
     { id: 'recents', label: 'Recents', railLabel: 'Recents' },
   ];
+  if (enablePhysics) items.splice(2, 0, { id: 'physics', label: 'Physics Lab', railLabel: 'Physics' });
   if (enableGrapher) items.push({ id: 'grapher', label: 'Grapher', railLabel: 'Graph' });
   return items;
 }

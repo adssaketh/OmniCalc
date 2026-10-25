@@ -41,6 +41,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   currencySymbol: '₹',
   currencyCode: 'INR',
   enableGrapher: false,
+  enablePhysics: false,
   edgeEffect: 'fade',
   fadeHeight: 'medium',
   barStyle: 'solid',
@@ -189,6 +190,13 @@ export default function App() {
       setCurrentMode('standard');
     }
   }, [settings.enableGrapher, currentMode]);
+
+  // If Physics Lab is turned off in settings, return to standard calculator
+  useEffect(() => {
+    if (!settings.enablePhysics && currentMode === 'physics') {
+      setCurrentMode('standard');
+    }
+  }, [settings.enablePhysics, currentMode]);
 
   // Launcher Shortcuts and Deep Links (cold start and warm start)
   useEffect(() => {
@@ -545,7 +553,7 @@ export default function App() {
           e.preventDefault();
           setCurrentMode('converter');
           setIsHistoryOpen(false);
-        } else if (e.key === '3') {
+        } else if (e.key === '3' && settings.enablePhysics) {
           e.preventDefault();
           setCurrentMode('physics');
           setIsHistoryOpen(false);
@@ -569,7 +577,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [isSettingsOpen, isHistoryOpen, isGuideOpen, settings.enableGrapher]);
+  }, [isSettingsOpen, isHistoryOpen, isGuideOpen, settings.enableGrapher, settings.enablePhysics]);
 
   const headerProps = {
     soundEnabled: settings.soundEnabled,
@@ -623,6 +631,7 @@ export default function App() {
           isHistoryOpen={isHistoryOpen}
           historyCount={history.length}
           enableGrapher={settings.enableGrapher}
+          enablePhysics={settings.enablePhysics}
           theme={settings.theme}
         />
       )}
@@ -684,7 +693,7 @@ export default function App() {
                   />
                 )}
 
-                {currentMode === 'physics' && (
+                {settings.enablePhysics && currentMode === 'physics' && (
                   <PhysicsScreen
                     soundEnabled={settings.soundEnabled}
                     hapticEnabled={settings.hapticEnabled}
@@ -763,6 +772,7 @@ export default function App() {
               isHistoryOpen={isHistoryOpen}
               historyCount={history.length}
               enableGrapher={settings.enableGrapher}
+              enablePhysics={settings.enablePhysics}
             />
           </div>
         )}
