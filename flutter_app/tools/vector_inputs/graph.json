@@ -1,0 +1,335 @@
+[
+{
+"expr": "sin(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "cos(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "tan(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "x^2",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "x^3",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "sqrt(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "1/x",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "e^x",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "ln(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "sin(x)",
+"width": 360,
+"height": 420,
+"originX": -95,
+"originY": 37,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "sin(x)",
+"width": 360,
+"height": 420,
+"originX": -95.5,
+"originY": -61.25,
+"scale": 50,
+"mouseX": null
+},
+{
+"expr": "cos(x)",
+"width": 412,
+"height": 500,
+"originX": 133.5,
+"originY": -80,
+"scale": 62.5,
+"mouseX": null
+},
+{
+"expr": "x^2",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 10,
+"mouseX": null
+},
+{
+"expr": "x^2",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 250,
+"mouseX": null
+},
+{
+"expr": "x^2",
+"width": 342,
+"height": 360,
+"originX": -17,
+"originY": 23,
+"scale": 62.5,
+"mouseX": null
+},
+{
+"expr": "1/x",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": 180
+},
+{
+"expr": "tan(x)",
+"width": 400,
+"height": 360,
+"originX": 12,
+"originY": -8,
+"scale": 31.25,
+"mouseX": 77.5
+},
+{
+"expr": "sqrt(x)",
+"width": 360,
+"height": 420,
+"originX": -60,
+"originY": 0,
+"scale": 40,
+"mouseX": 100
+},
+{
+"expr": "ln(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": 30
+},
+{
+"expr": "sin(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": 0
+},
+{
+"expr": "sin(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": 225.3
+},
+{
+"expr": "x^2",
+"width": 360,
+"height": 420,
+"originX": 25,
+"originY": -40,
+"scale": 40,
+"mouseX": 301
+},
+{
+"expr": "e^x",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": 359
+},
+{
+"expr": "1/x",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": 180.0001
+},
+{
+"expr": "2x+1",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "x*x-4",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "abs(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "floor(x)",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "sin(x) * 2",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": 90
+},
+{
+"expr": "x^x",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "0",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "bad((",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "",
+"width": 360,
+"height": 420,
+"originX": 0,
+"originY": 0,
+"scale": 40,
+"mouseX": null
+},
+{
+"expr": "x",
+"width": 360,
+"height": 420,
+"originX": -0.3,
+"originY": 0.2,
+"scale": 40,
+"mouseX": 179.8
+},
+{
+"expr": "x",
+"width": 360,
+"height": 420,
+"originX": 0.4,
+"originY": -0.4,
+"scale": 40,
+"mouseX": 180.2
+},
+{
+"expr": "sin(x)",
+"width": 360,
+"height": 420,
+"originX": -200,
+"originY": -150,
+"scale": 15,
+"mouseX": 10
+},
+{
+"expr": "cos(x)",
+"width": 360,
+"height": 420,
+"originX": 10000.0,
+"originY": 10000.0,
+"scale": 40,
+"mouseX": 5
+}
+]

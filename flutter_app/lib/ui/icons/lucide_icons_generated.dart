@@ -1,11 +1,11 @@
 // GENERATED FILE - DO NOT EDIT.
-// Source of truth: lucide-react 0.546.0 (the web app's icon library), icons: copy, check, delete, corner-down-left, chevron-up, rotate-ccw, ruler, scale, thermometer, square, box, gauge, hard-drive, clock, activity, zap, compass, magnet, arrow-left-right, chevron-down, globe, landmark, piggy-bank, wallet, receipt, chart-line, refresh-cw, trending-up, triangle-alert, search, atom, orbit, sparkles, flame.
+// Source of truth: lucide-react 0.546.0 (the web app's icon library), icons: copy, check, delete, corner-down-left, chevron-up, rotate-ccw, ruler, scale, thermometer, square, box, gauge, hard-drive, clock, activity, zap, compass, magnet, arrow-left-right, chevron-down, globe, landmark, piggy-bank, wallet, receipt, chart-line, refresh-cw, trending-up, triangle-alert, search, atom, orbit, sparkles, flame, zoom-in, zoom-out, crosshair.
 // Regenerate with: node flutter_app/tools/gen_lucide_paths.mjs
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:ui';
 
-enum LucideIconId { copy, check, delete, cornerDownLeft, chevronUp, rotateCcw, ruler, scale, thermometer, square, box, gauge, hardDrive, clock, activity, zap, compass, magnet, arrowLeftRight, chevronDown, globe, landmark, piggyBank, wallet, receipt, lineChart, refreshCw, trendingUp, alertTriangle, search, atom, orbit, sparkles, flame }
+enum LucideIconId { copy, check, delete, cornerDownLeft, chevronUp, rotateCcw, ruler, scale, thermometer, square, box, gauge, hardDrive, clock, activity, zap, compass, magnet, arrowLeftRight, chevronDown, globe, landmark, piggyBank, wallet, receipt, lineChart, refreshCw, trendingUp, alertTriangle, search, atom, orbit, sparkles, flame, zoomIn, zoomOut, crosshair }
 
 /// lucide "copy"
 Path _lucideCopy() {
@@ -598,6 +598,45 @@ Path _lucideFlame() {
   return p;
 }
 
+/// lucide "zoom-in"
+Path _lucideZoomIn() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(11.0, 11.0), radius: 8.0));
+  p.moveTo(21.0, 21.0);
+  p.lineTo(16.65, 16.65);
+  p.moveTo(11.0, 8.0);
+  p.lineTo(11.0, 14.0);
+  p.moveTo(8.0, 11.0);
+  p.lineTo(14.0, 11.0);
+  return p;
+}
+
+/// lucide "zoom-out"
+Path _lucideZoomOut() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(11.0, 11.0), radius: 8.0));
+  p.moveTo(21.0, 21.0);
+  p.lineTo(16.65, 16.65);
+  p.moveTo(8.0, 11.0);
+  p.lineTo(14.0, 11.0);
+  return p;
+}
+
+/// lucide "crosshair"
+Path _lucideCrosshair() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 10.0));
+  p.moveTo(22.0, 12.0);
+  p.lineTo(18.0, 12.0);
+  p.moveTo(6.0, 12.0);
+  p.lineTo(2.0, 12.0);
+  p.moveTo(12.0, 6.0);
+  p.lineTo(12.0, 2.0);
+  p.moveTo(12.0, 22.0);
+  p.lineTo(12.0, 18.0);
+  return p;
+}
+
 /// Builders of the 24 x 24 stroke icons.
 final Map<LucideIconId, Path Function()> kLucideIconBuilders = <LucideIconId, Path Function()>{
   LucideIconId.copy: _lucideCopy,
@@ -634,4 +673,7 @@ final Map<LucideIconId, Path Function()> kLucideIconBuilders = <LucideIconId, Pa
   LucideIconId.orbit: _lucideOrbit,
   LucideIconId.sparkles: _lucideSparkles,
   LucideIconId.flame: _lucideFlame,
+  LucideIconId.zoomIn: _lucideZoomIn,
+  LucideIconId.zoomOut: _lucideZoomOut,
+  LucideIconId.crosshair: _lucideCrosshair,
 };

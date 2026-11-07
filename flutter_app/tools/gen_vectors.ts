@@ -164,6 +164,67 @@ function genCurrency() {
   }));
 }
 
+/**
+ * GraphScreen.tsx `drawGraph`, with the canvas calls replaced by collectors. The arithmetic (grid loops with JS `%`,
+ * `toFixed` labels, the 2 px curve loop with its clip rule, the cursor point) is copied from the component line by line;
+ * the real MathEvaluator does the evaluating. Width and height are the canvas size (`canvas.width` / `canvas.height`).
+ */
+function genGraph() {
+  return readInputs('graph').map(
+    (i: { expr: string; width: number; height: number; originX: number; originY: number; scale: number; mouseX: number | null }) => {
+      const { expr: activeExpr, width, height, scale } = i;
+      const origin = { x: i.originX, y: i.originY };
+      const ox = width / 2 + origin.x;
+      const oy = height / 2 + origin.y;
+      const step = scale;
+      const vertical: unknown[] = [];
+      const horizontal: unknown[] = [];
+      for (let x = ox % step; x < width; x += step) {
+        const unitVal = ((x - ox) / scale).toFixed(0);
+        vertical.push({ pos: num(x), label: unitVal !== '0' ? { text: unitVal, x: num(x + 3), y: num(oy - 4) } : null });
+      }
+      for (let y = oy % step; y < height; y += step) {
+        const unitVal = (-(y - oy) / scale).toFixed(0);
+        horizontal.push({ pos: num(y), label: unitVal !== '0' ? { text: unitVal, x: num(ox + 4), y: num(y - 3) } : null });
+      }
+      const curve: string[][][] = [];
+      let isDrawing = false;
+      for (let px = 0; px <= width; px += 2) {
+        const mathX = (px - ox) / scale;
+        const mathY = MathEvaluator.evaluateFunction(activeExpr, mathX, 'rad');
+        if (!isNaN(mathY) && isFinite(mathY)) {
+          const py = oy - mathY * scale;
+          if (py >= -100 && py <= height + 100) {
+            if (!isDrawing) {
+              curve.push([[num(px), num(py)]]);
+              isDrawing = true;
+            } else {
+              curve[curve.length - 1].push([num(px), num(py)]);
+            }
+          } else {
+            isDrawing = false;
+          }
+        } else {
+          isDrawing = false;
+        }
+      }
+      let cursor: string[] | null = null;
+      let tipX: string | null = null;
+      let tipY: string | null = null;
+      if (i.mouseX !== null) {
+        const mx = i.mouseX;
+        const cursorX = (mx - ox) / scale;
+        const cursorY = MathEvaluator.evaluateFunction(activeExpr, cursorX, 'rad');
+        if (!isNaN(cursorY) && isFinite(cursorY)) cursor = [num(mx), num(oy - cursorY * scale)];
+        // the coordinates tooltip (clientWidth is the canvas width when the pixel ratio is 1)
+        tipX = ((mx - (width / 2 + origin.x)) / scale).toFixed(2);
+        tipY = MathEvaluator.evaluateFunction(activeExpr, (mx - (width / 2 + origin.x)) / scale, 'rad').toFixed(2);
+      }
+      return { ...i, ox: num(ox), oy: num(oy), vertical, horizontal, curve, cursor, tipX, tipY };
+    },
+  );
+}
+
 const outputs: Record<string, unknown> = {
   evaluator: genEvaluator(),
   evaluate_function: genEvaluateFunction(),
@@ -181,6 +242,7 @@ const outputs: Record<string, unknown> = {
   projectile: withOut('projectile', (...a) => PhysicsSolver.solveProjectile(...(a as [number, number]))),
   relativity: withOut('relativity', (...a) => PhysicsSolver.solveRelativity(...(a as [number]))),
   electromagnetism: withOut('electromagnetism', (...a) => PhysicsSolver.solveElectromagnetism(...(a as [number, number, number]))),
+  graph: genGraph(),
   photon: withOut('photon', (...a) => PhysicsSolver.solvePhotonWave(...(a as ['wavelength', number]))),
 };
 

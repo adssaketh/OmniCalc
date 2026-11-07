@@ -1,7 +1,66 @@
 # Phase 5: tool screens (in steps)
 
-Phase 5 is split. **5a is the Converter, 5b is Currency, 5c is the other five Finance tabs plus the converter swap-button fix, 5d (below) is Physics Lab.**
-Still to do: 5e Grapher, 5f History tape + Settings modal + Guide sheet (these replace `dev_settings_sheet.dart`).
+Phase 5 is split. **5a is the Converter, 5b is Currency, 5c is the other five Finance tabs plus the converter swap-button fix, 5d is Physics Lab, 5e (below) is the Grapher.**
+Still to do: 5f History tape + Settings modal + Guide sheet (these replace `dev_settings_sheet.dart`).
+
+# Phase 5e: Grapher
+
+## What is here (5e)
+- `lib/ui/screens/graph_screen.dart`: port of `GraphScreen.tsx`. `screens.dart` now builds it for `CalculatorMode.grapher`; the shell
+  stand-in (`placeholderScreen`) is no longer used by the app, so the `_` case of `appScreenBuilder` is gone.
+  - Function bar: `f(x) =` box (default `sin(x)`, placeholder `e.g. sin(x) * 2`), **Plot Function** (op click), Reset View (toggle click,
+    scale 40 and origin 0). Enter in the box plots like the form submit does. One column below `sm`, one row from `sm`.
+  - Nine presets (`sin(x)`, `cos(x)`, `tan(x)`, `x²`, `x³`, `√x`, `1/x`, `eˣ`, `ln(x)`): fill the box and plot at once (toggle click); the one
+    whose expression equals the plotted text is the active chip (primary-container, weight 700).
+  - Plot area 360 / 420 / 500 / 560 px tall (base / sm / md / lg). Drawing follows `drawGraph` step by step: background, vertical grid (line,
+    then its `toFixed(0)` label at `x + 3, oy - 4`), horizontal grid (label at `ox + 4, y - 3`), axes at 1.5 px, the curve at 2.5 px
+    (every second pixel column, `evaluateFunction(expr, x, 'rad')`, a non-finite value or `py` outside `[-100, height + 100]` ends the
+    piece), then the `#10b981` dot and the two `[3, 3]` dashed lines. Grid loops use JS `%` semantics (`double.remainder`) and repeated addition.
+  - Pan with one finger / the mouse, zoom with the two buttons (x1.25 and /1.25, clamped 10..250) and the wheel (up x1.15, otherwise x0.85,
+    same clamp, `deltaY` 0 zooms out as in the browser). A drag that starts on the plot never scrolls the page (`touch-none`): the plot claims
+    the pointer with an eager recognizer. A second finger is ignored while two are down, as `handleTouchStart/Move` do.
+  - Coordinates tooltip (top-left): crosshair icon, `x: ...`, `·`, `y: ...` with `toFixed(2)` (so `NaN`, `-0.00` and `Infinity` read as in
+    the browser). Mouse: shown on hover, hidden on leave. Touch: stays at the point where the finger lifted (the web app never clears it on
+    `touchend`).
+- `engine`: nothing new; `MathEvaluator.evaluateFunction` is the Phase 1 port.
+- Lucide: ZoomIn, ZoomOut, Crosshair added to the generator (RotateCcw was there); 37 icons, `--check` passes against lucide-react 0.546.0.
+- `Pressable` got `animated` (default true). The zoom buttons only have `transition-colors`, so their `active:scale-90` jumps at once.
+- Vectors: `tools/gen_vectors.ts` now writes `test/golden/graph.json` (37 cases: every preset, pans with negative and fractional origins,
+  fractional scales after zoom steps, cursor on / at an asymptote / off the curve, evaluator quirks such as `2x+1`, `x^x`, `bad((`, empty).
+  `genGraph()` copies the arithmetic of `drawGraph` and the tooltip with collectors instead of canvas calls and runs the real `MathEvaluator`.
+- Tests: `test/golden/graph_golden_test.dart` (every vector: grid positions and label strings, curve pieces point by point, cursor point,
+  tooltip strings) and `test/ui/screens/graph_screen_test.dart` (22 widget tests: first view, sizes, icons, Plot / Enter / bad expression /
+  presets with their clicks, zoom buttons and clamps, Reset, wheel, drag, drag does not scroll the page, two fingers, hover / pan /
+  NaN / leave / touch tooltip, phone / sm / md / lg layouts).
+
+## Deliberate differences (5e)
+1. **Pixel-ratio layout (see parity doubt 1).** The plane is laid out at the CSS size of the plot, not at `size * devicePixelRatio`.
+   `kGraphReproduceWebPixelRatioQuirk` (top of `graph_screen.dart`) switches the literal behaviour back on.
+2. The plot's grid labels use the app font list (`Google Sans`, `Google Sans Text`, `Roboto Flex`, `Roboto`), not the canvas font string.
+3. `backdrop-blur` on the zoom pill and the tooltip is not drawn: both sit on opaque `surface-container-high`, so it is invisible.
+4. `touchcancel` ends the drag here; the web app never handles it (the drag would stay on until the next `touchend` / `mouseup`).
+5. No cursor spinner or focus ring: the input has `outline-none` in the web app too.
+
+## Not done / open (5e)
+- 5f History / Settings / Guide.
+- No screenshot goldens and no device check. I rendered the painter to a PNG once (dark and light) and looked at it; that is not a golden.
+
+## Verification status (5e)
+Flutter 3.47.9 was installed in the chat sandbox this time (the Flutter download host was reachable), so analyze and the **full suite ran
+locally**: 4,770 passed and 6 skipped, no analyzer errors or warnings. CI result is recorded below once the run finishes.
+Run: `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
+
+## Parity doubts (5e)
+1. **High-density screens.** `resize()` sets `canvas.width = rect.width * devicePixelRatio` and scales the context by the same ratio, but
+   `drawGraph` then reads `canvas.width` / `canvas.height` (device pixels) as if they were CSS pixels: the origin goes to
+   `width * ratio / 2` and the grid and curve are laid out over `width * ratio` units, of which only the first `width` are visible. On an
+   Android WebView with a ratio of 2.6 the axes and the curve would be off the visible canvas, while the tooltip uses `clientWidth / 2`.
+   I ported the layout the page has at a ratio of 1 (what the code evidently intends). If the Capacitor app really shows the plane like
+   that, set `kGraphReproduceWebPixelRatioQuirk = true`; `GraphFrame` and the painter already take the buffer size.
+2. **`-0` labels.** `toFixed(0)` of a tiny negative number is `"-0"`, which the web app draws (only the exact string `"0"` is skipped).
+   `jsToFixed` does the same; none of the 37 vectors happens to hit it, so only the `js_number` tests cover it.
+3. Label baseline and 1 px line anti-aliasing on a real device are not compared with the browser.
+4. The first layout uses an estimated page height of 700 before the natural height is measured (same mechanism as 5a to 5d).
 
 # Phase 5d: Physics Lab
 

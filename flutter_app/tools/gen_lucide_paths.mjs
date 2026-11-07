@@ -60,6 +60,10 @@ const ICONS = [
   ['orbit', 'Orbit'],
   ['sparkles', 'Sparkles'],
   ['flame', 'Flame'],
+  // Phase 5e: Grapher (GraphScreen.tsx): zoom buttons and the coordinates tooltip (RotateCcw was already there).
+  ['zoom-in', 'ZoomIn'],
+  ['zoom-out', 'ZoomOut'],
+  ['crosshair', 'Crosshair'],
 ];
 const WANT_VERSION = /^0\.546\./;
 
