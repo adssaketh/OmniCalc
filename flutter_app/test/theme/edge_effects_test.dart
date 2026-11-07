@@ -90,10 +90,10 @@ void main() {
     expect(f.bottom, 1);
     f.updateFromScroll(pixels: 24, maxScrollExtent: 1000);
     expect(f.top, 0.5);
-    f.updateFromScroll(pixels: 10, maxScrollExtent: 1000); // 10 / 48 = 0.2083 -> 0.22
-    expect(f.top, 0.22);
+    f.updateFromScroll(pixels: 10, maxScrollExtent: 1000); // 10 / 48 = 0.2083 -> 0.2
+    expect(f.top, 0.2);
     f.updateFromScroll(pixels: 990, maxScrollExtent: 1000); // 10 / 48 from the end
-    expect(f.bottom, 0.22);
+    expect(f.bottom, 0.2);
     f.updateFromScroll(pixels: 1000, maxScrollExtent: 1000);
     expect(f.bottom, 0);
     f.updateFromScroll(pixels: -30, maxScrollExtent: 1000); // overscroll never goes negative

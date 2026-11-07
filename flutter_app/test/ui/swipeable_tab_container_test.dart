@@ -112,7 +112,7 @@ void main() {
   });
 
   testWidgets('NoSwipe areas are ignored', (tester) async {
-    final active = await pumpTabs(tester, content: const NoSwipe(child: SizedBox(height: 300, width: double.infinity)));
+    final active = await pumpTabs(tester, content: const NoSwipe(child: ColoredBox(color: Color(0x00000000), child: SizedBox(height: 300, width: double.infinity))));
     await drag(tester, start, -150);
     expect(active.value, 'a');
   });
@@ -122,7 +122,7 @@ void main() {
       tester,
       content: SizedBox(
         height: 300,
-        child: ListView(scrollDirection: Axis.horizontal, children: [for (var i = 0; i < 10; i++) const SizedBox(width: 200, height: 50)]),
+        child: ListView(scrollDirection: Axis.horizontal, children: [for (var i = 0; i < 10; i++) const SizedBox(width: 200, height: 300)]),
       ),
     );
     await drag(tester, start, -150);

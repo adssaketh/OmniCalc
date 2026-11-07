@@ -31,7 +31,9 @@ Future<Harness> pumpApp(
     systemColorsSource: const FakeSystemColorsSource(null),
     feedback: feedback,
   ));
-  await tester.pump(const Duration(milliseconds: 1200));
+  // the bar's entrance spring starts on the frame after the first one, so it needs two pumps
+  await tester.pump(const Duration(milliseconds: 16));
+  await tester.pump(const Duration(milliseconds: 1500));
   return (settings: store, history: history, feedback: feedback);
 }
 
