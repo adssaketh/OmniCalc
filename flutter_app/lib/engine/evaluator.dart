@@ -5,6 +5,7 @@
 import 'dart:math' as math;
 
 import 'calc_error.dart';
+import 'chemistry/calc_functions.dart';
 import 'js_number.dart';
 import 'types.dart';
 
@@ -821,7 +822,9 @@ class MathEvaluator {
 
   /// Public evaluation method with multi-argument calculus preprocessor.
   static double evaluate(String expr, [AngleMode angleMode = AngleMode.deg]) {
-    final clean = _applyPercent(expr.trim());
+    // Phase 6 (Part 3.2): molar("H2O"), amass("Fe"), atomic("Fe") become numbers first, before percent, sanitize and
+    // the infix nCr / mod regexes, so a formula in the quotes is never rewritten. Not in the TS oracle.
+    final clean = _applyPercent(ChemCalcFunctions.resolve(expr).trim());
     if (clean.isEmpty) return 0;
 
     // 1. Process multi-argument calculus and discrete functions (diff, integrate, sum, prod, nCr, nPr, gcd, lcm, mod, root)

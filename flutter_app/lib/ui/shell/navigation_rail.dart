@@ -29,6 +29,7 @@ class ShellNavigationRail extends StatefulWidget {
     this.historyCount = 0,
     this.enableGrapher = false,
     this.enablePhysics = false,
+    this.enableChemistry = false,
   });
 
   final CalculatorMode currentMode;
@@ -44,6 +45,7 @@ class ShellNavigationRail extends StatefulWidget {
   final int historyCount;
   final bool enableGrapher;
   final bool enablePhysics;
+  final bool enableChemistry;
 
   @override
   State<ShellNavigationRail> createState() => _ShellNavigationRailState();
@@ -57,7 +59,7 @@ class _ShellNavigationRailState extends State<ShellNavigationRail> with SingleTi
   final Map<String, GlobalKey> _itemKeys = {};
   bool _measuredOnce = false;
 
-  List<NavItem> get _items => getNavItems(widget.enableGrapher, widget.enablePhysics);
+  List<NavItem> get _items => getNavItems(widget.enableGrapher, widget.enablePhysics, widget.enableChemistry);
 
   String? _activeId() {
     for (final i in _items) {

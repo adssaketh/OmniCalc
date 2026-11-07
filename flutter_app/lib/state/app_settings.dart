@@ -63,6 +63,7 @@ class AppSettings {
     this.currencyCode = 'INR',
     this.enableGrapher = false,
     this.enablePhysics = false,
+    this.enableChemistry = false,
     this.edgeEffect = EdgeEffect.fade,
     this.fadeHeight = FadeHeight.medium,
     this.barStyle = BarStyle.solid,
@@ -87,6 +88,7 @@ class AppSettings {
 
   /// Show the Physics Lab screen (off by default).
   final bool enablePhysics;
+  final bool enableChemistry;
   final EdgeEffect edgeEffect;
   final FadeHeight fadeHeight;
   final BarStyle barStyle;
@@ -114,6 +116,7 @@ class AppSettings {
     String? currencyCode,
     bool? enableGrapher,
     bool? enablePhysics,
+    bool? enableChemistry,
     EdgeEffect? edgeEffect,
     FadeHeight? fadeHeight,
     BarStyle? barStyle,
@@ -133,6 +136,7 @@ class AppSettings {
       currencyCode: currencyCode ?? this.currencyCode,
       enableGrapher: enableGrapher ?? this.enableGrapher,
       enablePhysics: enablePhysics ?? this.enablePhysics,
+      enableChemistry: enableChemistry ?? this.enableChemistry,
       edgeEffect: edgeEffect ?? this.edgeEffect,
       fadeHeight: fadeHeight ?? this.fadeHeight,
       barStyle: barStyle ?? this.barStyle,
@@ -155,6 +159,7 @@ class AppSettings {
     'currencyCode',
     'enableGrapher',
     'enablePhysics',
+    'enableChemistry',
     'edgeEffect',
     'fadeHeight',
     'barStyle',
@@ -179,6 +184,7 @@ class AppSettings {
       currencyCode: _stringOr(json['currencyCode'], d.currencyCode),
       enableGrapher: _boolOr(json['enableGrapher'], d.enableGrapher),
       enablePhysics: _boolOr(json['enablePhysics'], d.enablePhysics),
+      enableChemistry: _boolOr(json['enableChemistry'], d.enableChemistry),
       edgeEffect: _enumOr(EdgeEffect.values, json['edgeEffect'], d.edgeEffect),
       fadeHeight: _enumOr(FadeHeight.values, json['fadeHeight'], d.fadeHeight),
       barStyle: _enumOr(BarStyle.values, json['barStyle'], d.barStyle),
@@ -205,6 +211,7 @@ class AppSettings {
         'currencyCode': currencyCode,
         'enableGrapher': enableGrapher,
         'enablePhysics': enablePhysics,
+        'enableChemistry': enableChemistry,
         'edgeEffect': edgeEffect.name,
         'fadeHeight': fadeHeight.name,
         'barStyle': barStyle.name,

@@ -190,6 +190,8 @@ class _AppShellState extends State<AppShell> {
         go(CalculatorMode.finance);
       } else if (key == LogicalKeyboardKey.digit5 && settings.enableGrapher) {
         go(CalculatorMode.grapher);
+      } else if (key == LogicalKeyboardKey.digit6 && settings.enableChemistry) {
+        go(CalculatorMode.chemistry);
       } else if (key == LogicalKeyboardKey.keyH || key == LogicalKeyboardKey.keyR) {
         nav.toggleHistory();
       } else if (key == LogicalKeyboardKey.keyS || key == LogicalKeyboardKey.comma) {
@@ -230,7 +232,11 @@ class _AppShellState extends State<AppShell> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       widget.feedback.setVibrationIntensity(settings.vibrationIntensity);
-      nav.enforceEnabledModes(enableGrapher: settings.enableGrapher, enablePhysics: settings.enablePhysics);
+      nav.enforceEnabledModes(
+        enableGrapher: settings.enableGrapher,
+        enablePhysics: settings.enablePhysics,
+        enableChemistry: settings.enableChemistry,
+      );
     });
 
     final style = ShellStyle.fromSettings(settings);
@@ -362,6 +368,7 @@ class _AppShellState extends State<AppShell> {
                 historyCount: history.count,
                 enableGrapher: settings.enableGrapher,
                 enablePhysics: settings.enablePhysics,
+                enableChemistry: settings.enableChemistry,
               ),
             ),
           ),
@@ -385,6 +392,7 @@ class _AppShellState extends State<AppShell> {
                 historyCount: history.count,
                 enableGrapher: settings.enableGrapher,
                 enablePhysics: settings.enablePhysics,
+                enableChemistry: settings.enableChemistry,
               ),
               Expanded(child: column),
             ],
@@ -460,6 +468,7 @@ Widget placeholderScreen(BuildContext context, CalculatorMode mode) {
     CalculatorMode.converter => 'Converter (Phase 5)',
     CalculatorMode.finance => 'Finance (Phase 5)',
     CalculatorMode.physics => 'Physics Lab (Phase 5)',
+    CalculatorMode.chemistry => 'Chemistry (Phase 6)',
     CalculatorMode.grapher => 'Grapher (Phase 5)',
   };
   return SizedBox(

@@ -83,6 +83,7 @@ AppSettings resetSettings(AppSettings s) => s.copyWith(
       colorMode: ColorMode.system,
       enableGrapher: false,
       enablePhysics: false,
+      enableChemistry: false,
       edgeEffect: EdgeEffect.fade,
       fadeHeight: FadeHeight.medium,
       barStyle: BarStyle.solid,
@@ -1167,6 +1168,14 @@ class _SettingsSheetState extends State<SettingsSheet> {
                         subtitle: 'Constants, formulas and solvers. Adds a Physics tab to the navigation',
                         trailing: M3Switch(key: const ValueKey('switch-physics'), on: s.enablePhysics),
                         onTap: () => update((c) => c.copyWith(enablePhysics: !c.enablePhysics)),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-chemistry'),
+                        icon: LucideIconId.flame,
+                        title: 'Chemistry',
+                        subtitle: 'Periodic table, formulas, equation balancer and solvers. Adds a Chemistry tab to the navigation',
+                        trailing: M3Switch(key: const ValueKey('switch-chemistry'), on: s.enableChemistry),
+                        onTap: () => update((c) => c.copyWith(enableChemistry: !c.enableChemistry)),
                       ),
                       _SettingsRow(
                         key: const ValueKey('row-grapher'),

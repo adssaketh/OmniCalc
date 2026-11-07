@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'svg_paths_generated.dart';
 
 /// `NavIconId` (src/components/NavIcons.tsx): the calculator modes plus the header actions.
-enum NavIconId { standard, scientific, converter, finance, physics, grapher, recents, settings, sound, guide }
+enum NavIconId { standard, scientific, converter, finance, physics, chemistry, grapher, recents, settings, sound, guide }
 
 NavIconId navIconIdFor(String id) => NavIconId.values.firstWhere((e) => e.name == id, orElse: () => NavIconId.standard);
 
@@ -87,6 +87,8 @@ class NavIconPainter extends CustomPainter {
         _calculator(canvas);
       case NavIconId.physics:
         _physics(canvas);
+      case NavIconId.chemistry:
+        _chemistry(canvas);
       case NavIconId.converter:
         {
           final p = _strokeRound(active ? 2.2 : 1.9);
@@ -140,6 +142,23 @@ class NavIconPainter extends CustomPainter {
       canvas.drawOval(const Rect.fromLTRB(-9.2, -4, 9.2, 4), _stroke(active ? 2 : 1.8));
       canvas.restore();
     }
+  }
+
+  // Chemistry: conical flask (lucide "flask-conical" outline), liquid line, rim.
+  void _chemistry(Canvas canvas) {
+    final flask = Path()
+      ..moveTo(10, 2.5)
+      ..lineTo(10, 9.5)
+      ..lineTo(4.6, 19.8)
+      ..quadraticBezierTo(4.1, 21.5, 5.9, 21.5)
+      ..lineTo(18.1, 21.5)
+      ..quadraticBezierTo(19.9, 21.5, 19.4, 19.8)
+      ..lineTo(14, 9.5)
+      ..lineTo(14, 2.5);
+    final p = _strokeRound(active ? 2 : 1.8);
+    canvas.drawPath(flask, p);
+    canvas.drawLine(const Offset(8.5, 2.5), const Offset(15.5, 2.5), p);
+    canvas.drawLine(const Offset(7.2, 15.5), const Offset(16.8, 15.5), p);
   }
 
   void _recents(Canvas canvas) {

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../state/navigation_state.dart';
 import '../calculator/calculator_screen.dart';
+import 'chemistry_screen.dart';
 import 'converter_screen.dart';
 import 'finance_screen.dart';
 import 'graph_screen.dart';
@@ -14,6 +15,7 @@ Widget appScreenBuilder(BuildContext context, CalculatorMode mode) {
     CalculatorMode.converter => const ConverterScreen(),
     CalculatorMode.finance => const FinanceScreen(),
     CalculatorMode.physics => const PhysicsScreen(),
+    CalculatorMode.chemistry => const ChemistryScreen(),
     CalculatorMode.grapher => const GraphScreen(),
   };
 }

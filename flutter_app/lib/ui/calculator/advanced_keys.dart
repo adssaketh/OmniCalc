@@ -173,6 +173,30 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         inp('atm', '101325 Pa', 'atm'),
         inp('au', 'astron unit', 'au'),
       ];
+    case AdvancedTab.chemistry:
+      // Phase 6. The functions take their text in quotes, e.g. molar("H2O"), amass("Fe"), atomic("Fe"), atomicsym(26).
+      return [
+        tpl('molar', 'molar mass', 'molar("'),
+        tpl('amass', 'atomic mass', 'amass("'),
+        tpl('atomic', 'atomic no.', 'atomic("'),
+        tpl('atomicsym', 'symbol of Z', 'atomicsym('),
+        inp('" "', 'quote', '"', textSm: true),
+        _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
+        inp(',', 'comma', ', ', textSm: true),
+        inp('N_A', 'avogadro', 'NA'),
+        inp('R', 'gas const', 'R'),
+        inp('k_B', 'boltzmann', 'kB'),
+        inp('q_e', 'elem charge', 'qe'),
+        inp('atm', '101325 Pa', 'atm'),
+        formula('H₂O', 'molar("H2O")'),
+        formula('NaCl', 'molar("NaCl")'),
+        formula('CO₂', 'molar("CO2")'),
+        formula('C₆H₁₂O₆', 'molar("C6H12O6")'),
+        formula('Ca(OH)₂', 'molar("Ca(OH)2")'),
+        formula('Al₂(SO₄)₃', 'molar("Al2(SO4)3")'),
+        formula('KMnO₄', 'molar("KMnO4")'),
+        formula('CuSO₄·5H₂O', 'molar("CuSO4.5H2O")'),
+      ];
   }
 }
 

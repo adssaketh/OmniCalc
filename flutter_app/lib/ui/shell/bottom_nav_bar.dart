@@ -25,6 +25,7 @@ class BottomNavBar extends StatefulWidget {
     this.historyCount = 0,
     this.enableGrapher = false,
     this.enablePhysics = false,
+    this.enableChemistry = false,
   });
 
   final CalculatorMode currentMode;
@@ -37,6 +38,7 @@ class BottomNavBar extends StatefulWidget {
   final int historyCount;
   final bool enableGrapher;
   final bool enablePhysics;
+  final bool enableChemistry;
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -46,7 +48,7 @@ class _BottomNavBarState extends State<BottomNavBar> with TickerProviderStateMix
   late final SpringValue _enter;
   late final SpringValue _pill;
 
-  List<NavItem> get _items => getNavItems(widget.enableGrapher, widget.enablePhysics);
+  List<NavItem> get _items => getNavItems(widget.enableGrapher, widget.enablePhysics, widget.enableChemistry);
 
   int _activeIndex() {
     final items = _items;

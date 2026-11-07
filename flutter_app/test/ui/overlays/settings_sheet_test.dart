@@ -52,6 +52,7 @@ void main() {
         colorMode: ColorMode.dark,
         enableGrapher: true,
         enablePhysics: true,
+        enableChemistry: true,
         edgeEffect: EdgeEffect.blur,
         fadeHeight: FadeHeight.tall,
         barStyle: BarStyle.glass,
@@ -72,6 +73,7 @@ void main() {
       expect(r.colorMode, ColorMode.system);
       expect(r.enableGrapher, false);
       expect(r.enablePhysics, false);
+      expect(r.enableChemistry, false);
       expect(r.edgeEffect, EdgeEffect.fade);
       expect(r.fadeHeight, FadeHeight.medium);
       expect(r.barStyle, BarStyle.solid);
@@ -112,6 +114,8 @@ void main() {
       expect(h.settings.settings.hapticEnabled, false);
       await tapRow(tester, 'row-physics');
       expect(h.settings.settings.enablePhysics, true);
+      await tapRow(tester, 'row-chemistry');
+      expect(h.settings.settings.enableChemistry, true);
       await tapRow(tester, 'row-grapher');
       expect(h.settings.settings.enableGrapher, true);
       await tapRow(tester, 'row-sound');

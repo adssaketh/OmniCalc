@@ -115,6 +115,18 @@ void main() {
       expect(find.text('Grapher'), findsOneWidget);
     });
 
+    testWidgets('the Chemistry tab follows its setting and goes away with it', (tester) async {
+      final h = await pumpApp(tester, settings: const AppSettings(enableChemistry: true));
+      expect(find.text('Chemistry'), findsOneWidget);
+      await tester.tap(find.text('Chemistry'));
+      await settle(tester);
+      expect(navOf(tester).mode, CalculatorMode.chemistry);
+      h.settings.update((s) => s.copyWith(enableChemistry: false));
+      await settle(tester);
+      expect(navOf(tester).mode, CalculatorMode.standard);
+      expect(find.text('Chemistry'), findsNothing);
+    });
+
     testWidgets('the calculator keeps the header merged (no separate Header pill)', (tester) async {
       await pumpApp(tester);
       expect(find.byType(Header), findsOneWidget);

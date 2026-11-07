@@ -7,13 +7,14 @@ import '../../editor/expr_doc.dart';
 import '../../editor/linear.dart';
 import '../../editor/rich_layout.dart' show CaretHit;
 import '../../engine/calc_error.dart';
+import '../../engine/chemistry/calc_functions.dart';
 import '../../engine/evaluator.dart';
 import '../../engine/types.dart';
 import '../../services/feedback_service.dart';
 import '../../state/history_store.dart';
 
 /// `AdvancedTab` of CalculatorScreen.tsx.
-enum AdvancedTab { calculus, trig, powers, prob, constants }
+enum AdvancedTab { calculus, trig, powers, prob, constants, chemistry }
 
 /// `ADVANCED_TABS` (id, label, badge).
 const List<({AdvancedTab id, String label, String badge})> advancedTabDefs = [
@@ -22,6 +23,8 @@ const List<({AdvancedTab id, String label, String badge})> advancedTabDefs = [
   (id: AdvancedTab.powers, label: 'Powers', badge: 'xʸ'),
   (id: AdvancedTab.prob, label: 'Probability', badge: 'nCr'),
   (id: AdvancedTab.constants, label: 'Constants', badge: 'π'),
+  // Phase 6: appended last so the order of the existing tabs does not change.
+  (id: AdvancedTab.chemistry, label: 'Chemistry', badge: 'mol'),
 ];
 
 /// Memory ribbon actions (`handleMemory`).
@@ -528,8 +531,9 @@ class CalculatorController extends ChangeNotifier {
         shown = exprToEval;
       }
 
-      final result = MathEvaluator.evaluate(exprToEval, _angleMode);
-      final formatted = MathEvaluator.formatResult(result, _decimalPrecision);
+      // atomicsym(26) is the one chemistry function whose answer is text (Phase 6); it only works as the whole expression
+      final formatted = ChemCalcFunctions.textResult(exprToEval) ??
+          MathEvaluator.formatResult(MathEvaluator.evaluate(exprToEval, _angleMode), _decimalPrecision);
 
       _lastQuestion = shown;
       _lastAnswer = formatted;

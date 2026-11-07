@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 /// `CalculatorMode` (src/types/index.ts).
-enum CalculatorMode { standard, scientific, converter, finance, physics, grapher }
+enum CalculatorMode { standard, scientific, converter, finance, physics, chemistry, grapher }
 
 /// `NavItem` (src/navigation.ts). `id` is a CalculatorMode name or 'recents'.
 class NavItem {
@@ -20,8 +20,9 @@ class NavItem {
   CalculatorMode get mode => CalculatorMode.values.firstWhere((m) => m.name == id);
 }
 
-/// `getNavItems`: destinations in display order. Physics Lab (optional, off by default) sits third.
-List<NavItem> getNavItems(bool enableGrapher, [bool enablePhysics = false]) {
+/// `getNavItems`: destinations in display order. Physics Lab and Chemistry (optional, off by default) sit after the
+/// Converter, in that order.
+List<NavItem> getNavItems(bool enableGrapher, [bool enablePhysics = false, bool enableChemistry = false]) {
   final items = <NavItem>[
     const NavItem('standard', 'Calculator', 'Calc'),
     const NavItem('converter', 'Converter', 'Convert'),
@@ -29,6 +30,7 @@ List<NavItem> getNavItems(bool enableGrapher, [bool enablePhysics = false]) {
     const NavItem('recents', 'Recents', 'Recents'),
   ];
   if (enablePhysics) items.insert(2, const NavItem('physics', 'Physics Lab', 'Physics'));
+  if (enableChemistry) items.insert(enablePhysics ? 3 : 2, const NavItem('chemistry', 'Chemistry', 'Chem'));
   if (enableGrapher) items.add(const NavItem('grapher', 'Grapher', 'Graph'));
   return items;
 }
@@ -157,9 +159,10 @@ class NavigationState extends ChangeNotifier {
   }
 
   /// Settings or Grapher switched off while it is the current screen: back to the calculator.
-  void enforceEnabledModes({required bool enableGrapher, required bool enablePhysics}) {
+  void enforceEnabledModes({required bool enableGrapher, required bool enablePhysics, bool enableChemistry = false}) {
     if (!enableGrapher && _mode == CalculatorMode.grapher) setMode(CalculatorMode.standard);
     if (!enablePhysics && _mode == CalculatorMode.physics) setMode(CalculatorMode.standard);
+    if (!enableChemistry && _mode == CalculatorMode.chemistry) setMode(CalculatorMode.standard);
   }
 
   /// Android back button / back gesture: close the top layer first (guide, settings sub-sheet, settings, history),
