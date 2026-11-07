@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../editor/expr_doc.dart';
 import '../../editor/linear.dart';
+import '../../editor/nodes.dart';
 import '../../editor/rich_layout.dart' show CaretHit;
 import '../../engine/calc_error.dart';
 import '../../engine/chemistry/calc_functions.dart';
@@ -14,7 +15,7 @@ import '../../services/feedback_service.dart';
 import '../../state/history_store.dart';
 
 /// `AdvancedTab` of CalculatorScreen.tsx.
-enum AdvancedTab { calculus, trig, powers, prob, constants, chemistry }
+enum AdvancedTab { calculus, trig, powers, prob, constants, chemistry, es }
 
 /// `ADVANCED_TABS` (id, label, badge).
 const List<({AdvancedTab id, String label, String badge})> advancedTabDefs = [
@@ -25,6 +26,8 @@ const List<({AdvancedTab id, String label, String badge})> advancedTabDefs = [
   (id: AdvancedTab.constants, label: 'Constants', badge: 'π'),
   // Phase 6: appended last so the order of the existing tabs does not change.
   (id: AdvancedTab.chemistry, label: 'Chemistry', badge: 'mol'),
+  // Phase 8a: the natural-display keys (fraction, roots, SHIFT / ALPHA, arrows), again appended last.
+  (id: AdvancedTab.es, label: 'ES', badge: 'a/b'),
 ];
 
 /// Memory ribbon actions (`handleMemory`).
@@ -137,6 +140,13 @@ class CalculatorController extends ChangeNotifier {
   String get _expression => _doc.linear;
   set _expression(String v) => _doc = ExprDoc.fromLinear(v);
 
+  void _clearModifiers() {
+    _shift = false;
+    _alpha = false;
+    _insArmed = false;
+    _lastWasPower = false;
+  }
+
   /// Results and messages are shown exactly as they are: no `^` or `_` in them is read as a superscript.
   void _setPlain(String v) => _doc = ExprDoc.plain(v);
 
@@ -164,6 +174,12 @@ class CalculatorController extends ChangeNotifier {
   bool _copied = false;
   bool _hasEvaluated = false;
   bool _isEqualsPressed = false;
+  // Phase 8a: the SHIFT / ALPHA / INS prefixes of the ES keys and the Syntax ERROR line
+  bool _shift = false;
+  bool _alpha = false;
+  bool _insArmed = false;
+  bool _lastWasPower = false;
+  String? _syntaxError;
   int _historyIndex = -1;
   Timer? _copiedTimer;
   Timer? _equalsTimer;
@@ -178,6 +194,23 @@ class CalculatorController extends ChangeNotifier {
   bool get copied => _copied;
   bool get hasEvaluated => _hasEvaluated;
   bool get isEqualsPressed => _isEqualsPressed;
+  bool get shiftOn => _shift;
+  bool get alphaOn => _alpha;
+  bool get insArmed => _insArmed;
+
+  /// "Syntax ERROR" while an unfilled placeholder is blocking the calculation (the caret stands on it), else null.
+  String? get syntaxError => _syntaxError;
+
+  /// The status-bar annunciators that are on, in the order the display lists them (Part 9, section 9.2). The angle unit
+  /// has its own badge, so D / R / G are not repeated here; the ones for modes that do not exist yet (STAT, CMPLX, MAT,
+  /// VCT, FIX, SCI, STO, RCL, Disp) join in the phases that add those modes.
+  List<String> get annunciators => [
+        if (_shift) 'S',
+        if (_alpha) 'A',
+        if (_memory != 0) 'M',
+        if (_insArmed) 'INS',
+        if (!_hasEvaluated && _doc.hasStructure) 'Math',
+      ];
   int get historyIndex => _historyIndex;
 
   /// JavaScript truthiness of `equation` (a string): null and '' are falsy.
@@ -219,6 +252,8 @@ class CalculatorController extends ChangeNotifier {
   // -- Handlers ---------------------------------------------------------------------------------------------------
   void handleInput(String token) {
     playSound(ClickType.num);
+    _clearModifiers();
+    _syntaxError = null;
     if (_treeMode) {
       _treeInput(token);
       return;
@@ -261,7 +296,7 @@ class CalculatorController extends ChangeNotifier {
   // -- Typing inside the tree (caret in a superscript / subscript, or moved away from the end) ------------------------
   /// Inserts text at the caret. Opening another group deeper than [kMaxNesting] levels is refused.
   void _treeInsert(String text) {
-    if (text.contains('^') && _doc.depth >= kMaxNesting) {
+    if (text.contains('^') && _doc.scriptDepth >= kMaxNesting) {
       notifyListeners();
       return;
     }
@@ -289,7 +324,8 @@ class CalculatorController extends ChangeNotifier {
 
   void _treeParentheses() {
     final pc = _doc.prevChar;
-    final prev = _expression;
+    // inside a fraction, root... only the parentheses typed in that slot count; elsewhere the whole line, as before
+    final prev = _doc.structDepth > 0 ? serializeNodes(_doc.current.sublist(0, _doc.offset)) : _expression;
     if (_count(prev, '(') > _count(prev, ')') && pc.isNotEmpty && !_operatorChars.contains(pc)) {
       _treeInsert(')');
     } else if (pc.isEmpty || const ['+', '−', '×', '÷', '(', '^', '%', ',', ' '].contains(pc)) {
@@ -302,6 +338,8 @@ class CalculatorController extends ChangeNotifier {
   /// Insert a function such as `sin(`.
   void handleFunction(String fnName) {
     playSound(ClickType.op);
+    _clearModifiers();
+    _syntaxError = null;
     if (_treeMode) {
       _treeCall('$fnName(');
       return;
@@ -328,6 +366,8 @@ class CalculatorController extends ChangeNotifier {
   /// Insert a template such as `diff(`, `integrate(`, `sum(`.
   void handleInsertTemplate(String template) {
     playSound(ClickType.op);
+    _clearModifiers();
+    _syntaxError = null;
     if (_treeMode) {
       _treeCall(template);
       return;
@@ -351,6 +391,8 @@ class CalculatorController extends ChangeNotifier {
 
   void handleParentheses() {
     playSound(ClickType.op);
+    _clearModifiers();
+    _syntaxError = null;
     if (_treeMode) {
       _treeParentheses();
       return;
@@ -382,6 +424,8 @@ class CalculatorController extends ChangeNotifier {
 
   void handleClear() {
     playSound(ClickType.clear);
+    _clearModifiers();
+    _syntaxError = null;
     // AC on an already empty display also forgets the saved y = ... equation
     if (_expression == '0' && !_hasEvaluated && hasEquation) {
       MathEvaluator.setYDefinition(null);
@@ -396,6 +440,8 @@ class CalculatorController extends ChangeNotifier {
 
   void handleBackspace() {
     playSound(ClickType.op);
+    _clearModifiers();
+    _syntaxError = null;
     if (_hasEvaluated) {
       _hasEvaluated = false;
       _expression = '0';
@@ -436,12 +482,33 @@ class CalculatorController extends ChangeNotifier {
   /// Arrow keys and taps. Not while a result is shown (it is a result, not something being edited).
   bool moveCaretLeft() {
     if (_hasEvaluated || !_doc.moveLeft()) return false;
+    _clearModifiers();
+    _syntaxError = null;
     notifyListeners();
     return true;
   }
 
   bool moveCaretRight() {
     if (_hasEvaluated || !_doc.moveRight()) return false;
+    _clearModifiers();
+    _syntaxError = null;
+    notifyListeners();
+    return true;
+  }
+
+  /// ▼ / ▲ of the replay pad: numerator <-> denominator of the fraction around the caret.
+  bool moveCaretDown() {
+    if (_hasEvaluated || !_doc.moveDown()) return false;
+    _clearModifiers();
+    _syntaxError = null;
+    notifyListeners();
+    return true;
+  }
+
+  bool moveCaretUp() {
+    if (_hasEvaluated || !_doc.moveUp()) return false;
+    _clearModifiers();
+    _syntaxError = null;
     notifyListeners();
     return true;
   }
@@ -459,6 +526,119 @@ class CalculatorController extends ChangeNotifier {
     if (_hasEvaluated) return;
     if (_doc.setCaret(hit.path, hit.offset)) notifyListeners();
   }
+
+  // -- ES keys (Phase 8a): SHIFT / ALPHA / INS and the natural-display structures ---------------------------------------
+  void toggleShift() {
+    playSound(ClickType.toggle);
+    final on = !_shift;
+    _clearModifiers();
+    _shift = on;
+    notifyListeners();
+  }
+
+  void toggleAlpha() {
+    playSound(ClickType.toggle);
+    final on = !_alpha;
+    _clearModifiers();
+    _alpha = on;
+    notifyListeners();
+  }
+
+  /// INS: the next function key takes the value or expression to the right of the caret as its argument.
+  void toggleIns() {
+    playSound(ClickType.toggle);
+    final on = !_insArmed;
+    _clearModifiers();
+    _insArmed = on;
+    notifyListeners();
+  }
+
+  /// Gets the line ready for a structure: a result on screen or the initial `0` is replaced by an empty line.
+  void _prepareStructInsert() {
+    if (_hasEvaluated) {
+      _hasEvaluated = false;
+      _lastQuestion = '';
+      _lastAnswer = '';
+      _doc = ExprDoc.fromNodes(const []);
+    } else if (_doc.path.isEmpty && _doc.root.length == 1 && _doc.root.first == const CharNode('0')) {
+      _doc = ExprDoc.fromNodes(const []);
+    }
+  }
+
+  void _insertStruct(StructNode Function() make, {int focus = 0, int? wrapSlot}) {
+    playSound(ClickType.op);
+    final wrap = _insArmed && wrapSlot != null;
+    _clearModifiers();
+    _syntaxError = null;
+    _prepareStructInsert();
+    final node = make();
+    if (wrap) {
+      _doc.insertStructWrapping(node, argSlot: wrapSlot);
+    } else {
+      _doc.insertStruct(node, focus: focus);
+    }
+    notifyListeners();
+  }
+
+  /// The fraction key: an empty stacked fraction, caret in the numerator.
+  void esFraction() => _insertStruct(FracNode.new);
+
+  /// SHIFT + fraction: mixed fraction (whole part, numerator, denominator).
+  void esMixedFraction() => _insertStruct(MixedFracNode.new);
+
+  /// √ with its overbar. With INS armed it takes what is to the right of the caret.
+  void esSqrt() => _insertStruct(SqrtNode.new, wrapSlot: 0);
+
+  /// ∛ : a root whose index is already 3.
+  void esCbrt() => _insertStruct(
+        () => RootNode([SlotNode([const CharNode('3')]), SlotNode()]),
+        focus: 1,
+        wrapSlot: 1,
+      );
+
+  /// ⁿ√ : index first, then the radicand.
+  void esRoot() => _insertStruct(RootNode.new, wrapSlot: 1);
+
+  /// |x| (Abs).
+  void esAbs() => _insertStruct(AbsNode.new, wrapSlot: 0);
+
+  /// log with a lowered base: base first, then the argument.
+  void esLogBase() => _insertStruct(LogBaseNode.new, wrapSlot: 1);
+
+  /// `x²`, `x³`, `x⁻¹` of the ES tab: a raised group with the caret INSIDE it, so the next key stays in the exponent
+  /// until the right arrow leaves it (video frame: `X` then `x²`). Pressed twice in a row the second press is ignored,
+  /// as the manual says for these three.
+  void esPower(String chars) {
+    playSound(ClickType.num);
+    final repeated = _lastWasPower;
+    _clearModifiers();
+    _syntaxError = null;
+    if (repeated) {
+      _lastWasPower = true;
+      notifyListeners();
+      return;
+    }
+    if (_hasEvaluated) {
+      _hasEvaluated = false;
+      _lastQuestion = '';
+      _lastAnswer = '';
+    }
+    if (_doc.scriptDepth < kMaxNesting) {
+      _doc.insertNode(SupNode([for (final u in chars.codeUnits) CharNode(String.fromCharCode(u))]));
+      _doc.moveLeft(); // into the group, at its end
+      _lastWasPower = true;
+    }
+    notifyListeners();
+  }
+
+  /// A key whose function arrives in a later phase (CALC and SOLVE: 8c): it only lets go of SHIFT / ALPHA / INS.
+  void esNotYet() {
+    _clearModifiers();
+    notifyListeners();
+  }
+
+  /// ALPHA + CALC types `=` (an equation such as `(X²−6)/(X+3)=10`; SOLVE reads it in Phase 8c).
+  void esEquals() => handleInput('=');
 
   // -- Live preview -------------------------------------------------------------------------------------------------
   String? _livePreviewKey;
@@ -495,6 +675,16 @@ class CalculatorController extends ChangeNotifier {
   // -- Evaluate -----------------------------------------------------------------------------------------------------
   void handleEvaluate() {
     playSound(ClickType.eval);
+    _clearModifiers();
+    _syntaxError = null;
+    // an unfilled placeholder (an empty numerator, radicand, ...) is a Syntax ERROR and the caret goes to it
+    final placeholder = _hasEvaluated ? null : _doc.firstPlaceholderPath;
+    if (placeholder != null) {
+      _doc.setCaret(placeholder, 0);
+      _syntaxError = 'Syntax ERROR';
+      notifyListeners();
+      return;
+    }
     try {
       var exprToEval = _expression;
       final openCount = _count(exprToEval, '(');
@@ -794,10 +984,12 @@ class CalculatorController extends ChangeNotifier {
       return true;
     }
     if (key == 'ArrowUp') {
+      if (moveCaretUp()) return true; // inside a fraction: denominator -> numerator
       handleHistoryStep(1);
       return true;
     }
     if (key == 'ArrowDown') {
+      if (moveCaretDown()) return true;
       handleHistoryStep(-1);
       return true;
     }

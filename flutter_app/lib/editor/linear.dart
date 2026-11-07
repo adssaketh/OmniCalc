@@ -195,11 +195,48 @@ String _operandBefore(String content, Node? next) {
   return op;
 }
 
+/// A slot's text for the engine: what is typed in it, with any `(` left open closed so it cannot swallow what follows
+/// the structure.
+String _slotText(SlotNode slot) {
+  final t = serializeNodes(slot.children);
+  final open = _openCount(t);
+  return open > 0 ? t + ')' * open : t;
+}
+
+/// The legacy-engine text of a structure (Phase 8a). The Casio engine of Phase 8b reads the tree itself; until then every
+/// structure is written in the dialect the ported OmniCalc evaluator already understands, so results do not change:
+/// fraction `((a)÷(b))`, mixed fraction `((w)+((n)÷(d)))`, `sqrt(x)`, `root(n,x)`, `abs(x)`, `logb(base,x)`.
+String _structText(StructNode n) {
+  final t = [for (final s in n.slots) _slotText(s)];
+  return switch (n) {
+    FracNode() => '((${t[0]})÷(${t[1]}))',
+    MixedFracNode() => '((${t[0]})+((${t[1]})÷(${t[2]})))',
+    SqrtNode() => 'sqrt(${t[0]})',
+    RootNode() => 'root(${t[0]},${t[1]})',
+    AbsNode() => 'abs(${t[0]})',
+    LogBaseNode() => 'logb(${t[0]},${t[1]})',
+  };
+}
+
+/// A structure written next to something it would be multiplied by gets an explicit `×` (`2` then a fraction is
+/// `2×((a)÷(b))`), so the legacy engine does not depend on implicit multiplication around `sqrt(`, `root(`, ...
+bool _endsOperand(String written) {
+  if (written.isEmpty) return false;
+  final c = written.codeUnitAt(written.length - 1);
+  return _isDigitOrDot(c) || _isLetter(c) || c == 0x29 || c == 0x21 || c == 0x25 || c == 0x3C0 /* π */;
+}
+
+bool _startsOperand(String ch) {
+  final c = ch.codeUnitAt(0);
+  return _isDigitOrDot(c) || _isLetter(c) || c == 0x28 || c == 0x3C0 || c == 0x221A /* √ */;
+}
+
 /// The engine string of [nodes] (see the library comment).
 String serializeNodes(List<Node> nodes) {
   final b = StringBuffer();
   for (var i = 0; i < nodes.length; i++) {
     final next = i + 1 < nodes.length ? nodes[i + 1] : null;
+    if (nodes[i] is StructNode && _endsOperand(b.toString())) b.write('×');
     switch (nodes[i]) {
       case CharNode(:final ch):
         b.write(ch);
@@ -215,6 +252,11 @@ String serializeNodes(List<Node> nodes) {
             ..write('_')
             ..write(_operandBefore(serializeNodes(children), next));
         }
+      case SlotNode(:final children):
+        b.write(serializeNodes(children));
+      case StructNode():
+        b.write(_structText(nodes[i] as StructNode));
+        if (next is CharNode && _startsOperand(next.ch)) b.write('×');
     }
   }
   return b.toString();

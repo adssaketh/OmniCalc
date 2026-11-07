@@ -141,7 +141,7 @@ void main() {
   });
 
   group('advanced keypad tab', () {
-    test('the Chemistry tab is last and the others keep their order', () {
+    test('the Chemistry tab comes after the original five (the ES tab of Phase 8a follows it)', () {
       expect(advancedTabDefs.map((d) => d.id).toList(), [
         AdvancedTab.calculus,
         AdvancedTab.trig,
@@ -149,6 +149,7 @@ void main() {
         AdvancedTab.prob,
         AdvancedTab.constants,
         AdvancedTab.chemistry,
+        AdvancedTab.es,
       ]);
     });
 

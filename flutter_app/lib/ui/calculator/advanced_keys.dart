@@ -7,7 +7,7 @@ import 'calculator_controller.dart';
 
 enum _Role { onSurface, primary, tertiary }
 
-enum _Kind { normal, formula, angle }
+enum _Kind { normal, formula, angle, active }
 
 /// One key of an advanced tab (a `<button className={btnClass}>` of renderAdvancedTabContent).
 class _Adv {
@@ -22,6 +22,10 @@ class _Adv {
     this.mono = false,
     this.subSize = 10,
     this.subOpacity = 0.7,
+    this.shiftLabel,
+    this.alphaLabel,
+    this.shiftArmed = false,
+    this.alphaArmed = false,
   });
 
   final String label;
@@ -38,6 +42,13 @@ class _Adv {
   final bool mono;
   final double subSize;
   final double subOpacity;
+
+  /// Small labels of the SHIFT and ALPHA layers (ES tab), drawn like the photo: SHIFT in the primary colour, ALPHA in the
+  /// tertiary colour. The one whose prefix is armed is bold.
+  final String? shiftLabel;
+  final String? alphaLabel;
+  final bool shiftArmed;
+  final bool alphaArmed;
 }
 
 const String _hintCalculus = 'Format: diff(f(x), x_val) • integrate(f(x), a, b) • sum(f(x), 1, n)';
@@ -173,6 +184,64 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         inp('atm', '101325 Pa', 'atm'),
         inp('au', 'astron unit', 'au'),
       ];
+    case AdvancedTab.es:
+      // Phase 8a. Every key of this tab honours SHIFT / ALPHA through [layered]: the armed layer's action runs instead of
+      // the plain one (a key without that layer just does its plain action).
+      _Adv layered(
+        String label,
+        String sub, {
+        required VoidCallback main,
+        VoidCallback? shift,
+        VoidCallback? alpha,
+        String? shiftLabel,
+        String? alphaLabel,
+        double? size,
+        bool mono = false,
+      }) =>
+          _Adv(
+            label,
+            sub,
+            () {
+              if (c.alphaOn && alpha != null) {
+                alpha();
+              } else if (c.shiftOn && shift != null) {
+                shift();
+              } else {
+                main();
+              }
+            },
+            labelSize: size ?? 14,
+            textSm: true,
+            mono: mono,
+            shiftLabel: shiftLabel,
+            alphaLabel: alphaLabel,
+            shiftArmed: c.shiftOn && shift != null,
+            alphaArmed: c.alphaOn && alpha != null,
+          );
+      _Adv prefix(String label, String sub, bool on, VoidCallback tap) =>
+          _Adv(label, sub, tap, kind: on ? _Kind.active : _Kind.normal, labelSize: 12, textSm: false, role: _Role.primary);
+      return [
+        prefix('SHIFT', 'prefix', c.shiftOn, c.toggleShift),
+        prefix('ALPHA', 'prefix', c.alphaOn, c.toggleAlpha),
+        prefix('INS', 'wrap arg', c.insArmed, c.toggleIns),
+        layered('CALC', 'soon', main: c.esNotYet, shift: c.esNotYet, alpha: c.esEquals, shiftLabel: 'SOLVE', alphaLabel: '=', size: 12),
+        _Adv('◀', 'left', c.moveCaretLeft, labelSize: 14, textSm: true),
+        _Adv('▲', 'up', c.moveCaretUp, labelSize: 14, textSm: true),
+        _Adv('▼', 'down', c.moveCaretDown, labelSize: 14, textSm: true),
+        _Adv('▶', 'right', c.moveCaretRight, labelSize: 14, textSm: true),
+        layered('▭/▭', 'fraction', main: c.esFraction, shift: c.esMixedFraction, shiftLabel: 'a▭/▭'),
+        layered('√▭', 'root', main: c.esSqrt, shift: c.esCbrt, shiftLabel: '∛▭'),
+        _Adv('ⁿ√▭', 'n-th root', c.esRoot, labelSize: 14, textSm: true),
+        _Adv('|▭|', 'abs', c.esAbs, labelSize: 14, textSm: true),
+        _Adv('log▭▭', 'any base', c.esLogBase, labelSize: 12, textSm: true),
+        layered('x²', 'square', main: () => c.esPower('2'), shift: () => c.esPower('3'), shiftLabel: 'x³'),
+        _Adv('x⁻¹', 'inverse', () => c.esPower('−1'), labelSize: 14, textSm: true),
+        _Adv('xʸ', 'power', () => c.handleInput('^'), labelSize: 14, textSm: true),
+        _Adv('X', 'var X', () => c.handleInput('X'), labelSize: 14, textSm: true, role: _Role.primary, mono: true),
+        _Adv('Y', 'var Y', () => c.handleInput('Y'), labelSize: 14, textSm: true, role: _Role.tertiary, mono: true),
+        _Adv('→', 'exit', c.exitGroup, labelSize: 14, textSm: true, role: _Role.primary),
+        _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
+      ];
     case AdvancedTab.chemistry:
       // Phase 6. The functions take their text in quotes, e.g. molar("H2O"), amass("Fe"), atomic("Fe"), atomicsym(26).
       return [
@@ -300,6 +369,7 @@ class _AdvButton extends StatelessWidget {
     final Color fg;
     switch (def.kind) {
       case _Kind.angle:
+      case _Kind.active:
         bg = t.primaryContainer;
         fg = t.onPrimaryContainer;
       case _Kind.formula:
@@ -331,12 +401,35 @@ class _AdvButton extends StatelessWidget {
       opacity: def.subOpacity,
     );
 
+    Widget layerLabels() {
+      TextStyle layer(Color color, bool armed) => subStyle.copyWith(
+            color: color,
+            fontWeight: armed ? FontWeight.w800 : FontWeight.w600,
+            decoration: armed ? TextDecoration.underline : TextDecoration.none,
+            decorationColor: color,
+          );
+      // one Text.rich, not a Row: like the plain sub label it may run past the key without a layout overflow
+      return Text.rich(
+        TextSpan(children: [
+          if (def.shiftLabel != null) TextSpan(text: def.shiftLabel, style: layer(t.primary, def.shiftArmed)),
+          if (def.shiftLabel != null && def.alphaLabel != null) const TextSpan(text: '  '),
+          if (def.alphaLabel != null) TextSpan(text: def.alphaLabel, style: layer(t.tertiary, def.alphaArmed)),
+        ]),
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.visible,
+      );
+    }
+
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(def.label, maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: labelStyle),
-        Text(def.sub, maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: subStyle),
+        if (def.shiftLabel != null || def.alphaLabel != null)
+          layerLabels()
+        else
+          Text(def.sub, maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: subStyle),
       ],
     );
 

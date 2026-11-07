@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 ///
 /// An expression is a list of nodes. A [CharNode] is one character of the text the engine reads; a [SupNode] is a
 /// raised group (the exponent of `^`); a [SubNode] is a lowered group (`_`). The structured Part 9 nodes (fraction,
-/// root, integral, ...) are added in Phase 8a on top of [GroupNode]; nothing here assumes there are only two kinds.
+/// root, ...) are the [StructNode]s added in Phase 8a on top of [GroupNode]; integrals, sums and the rest follow in 8c.
 @immutable
 sealed class Node {
   const Node();
@@ -86,6 +86,125 @@ final class SubNode extends GroupNode {
   String toString() => bare ? 'BareSub($children)' : 'Sub($children)';
 }
 
+/// A place the caret can stand inside a structure: the numerator of a fraction, the radicand of a root, ...
+///
+/// A slot never appears in an expression list; it is only a child of a [StructNode]. The caret path of something typed
+/// in a numerator is `[indexOfFraction, 0, ...]`: the first step picks the structure, the second its slot.
+final class SlotNode extends GroupNode {
+  SlotNode([super.children = const []]);
+
+  @override
+  String get jsonKey => 'slot';
+
+  @override
+  String toString() => 'Slot($children)';
+}
+
+/// A natural-display structure (Part 9, section 9.2) whose [children] are its [SlotNode]s, in reading order.
+/// An empty slot is a placeholder: it is drawn as a hollow box and calculating with it is a Syntax ERROR.
+sealed class StructNode extends GroupNode {
+  // ignore: use_super_parameters
+  StructNode(List<SlotNode> slots) : super(slots);
+
+  /// The slots, in the order the caret visits them.
+  List<SlotNode> get slots => children.cast<SlotNode>();
+
+  @override
+  Object toJson() => <String, Object?>{
+        jsonKey: [for (final s in slots) nodesToJson(s.children)],
+      };
+
+  /// Every slot empty: Backspace removes the whole structure.
+  bool get allEmpty => slots.every((s) => s.children.isEmpty);
+}
+
+/// Stacked fraction: numerator, denominator.
+final class FracNode extends StructNode {
+  FracNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode(), SlotNode()]);
+
+  @override
+  String get jsonKey => 'frac';
+
+  @override
+  String toString() => 'Frac($children)';
+}
+
+/// Mixed fraction: whole part, numerator, denominator.
+final class MixedFracNode extends StructNode {
+  MixedFracNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode(), SlotNode(), SlotNode()]);
+
+  @override
+  String get jsonKey => 'mixed';
+
+  @override
+  String toString() => 'Mixed($children)';
+}
+
+/// Square root with an overbar: one slot.
+final class SqrtNode extends StructNode {
+  SqrtNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode()]);
+
+  @override
+  String get jsonKey => 'sqrt';
+
+  @override
+  String toString() => 'Sqrt($children)';
+}
+
+/// n-th root: index, radicand.
+final class RootNode extends StructNode {
+  RootNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode(), SlotNode()]);
+
+  @override
+  String get jsonKey => 'root';
+
+  @override
+  String toString() => 'Root($children)';
+}
+
+/// Absolute value bars: one slot.
+final class AbsNode extends StructNode {
+  AbsNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode()]);
+
+  @override
+  String get jsonKey => 'abs';
+
+  @override
+  String toString() => 'Abs($children)';
+}
+
+/// log with a lowered base: base, argument (`log` + base + argument, as the key shows it).
+final class LogBaseNode extends StructNode {
+  LogBaseNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode(), SlotNode()]);
+
+  @override
+  String get jsonKey => 'logb';
+
+  @override
+  String toString() => 'LogBase($children)';
+}
+
+/// Builds the structure called [key] around [slots] (null for a name this editor does not know).
+StructNode? structFromKey(String key, List<SlotNode> slots) {
+  switch (key) {
+    case 'frac':
+      return slots.length == 2 ? FracNode(slots) : null;
+    case 'mixed':
+      return slots.length == 3 ? MixedFracNode(slots) : null;
+    case 'sqrt':
+      return slots.length == 1 ? SqrtNode(slots) : null;
+    case 'root':
+      return slots.length == 2 ? RootNode(slots) : null;
+    case 'abs':
+      return slots.length == 1 ? AbsNode(slots) : null;
+    case 'logb':
+      return slots.length == 2 ? LogBaseNode(slots) : null;
+  }
+  return null;
+}
+
+const Set<String> _structKeys = {'frac', 'mixed', 'sqrt', 'root', 'abs', 'logb'};
+
 /// Nodes as plain JSON: runs of characters become one string, a group becomes `{"sup": [...]}` or `{"sub": [...]}`.
 /// `[ "2", {"sup": ["3", "+", "x"]}, "+1" ]` is `2` then a superscript `3+x`, then `+1`.
 List<Object> nodesToJson(List<Node> nodes) {
@@ -120,6 +239,19 @@ List<Node>? nodesFromJson(Object? raw, {int depth = 0}) {
       for (final unit in item.codeUnits) {
         out.add(CharNode(String.fromCharCode(unit)));
       }
+    } else if (item is Map && item.length == 1 && _structKeys.contains(item.keys.first)) {
+      final key = item.keys.first as String;
+      final raw = item[key];
+      if (raw is! List) return null;
+      final slots = <SlotNode>[];
+      for (final part in raw) {
+        final inner = nodesFromJson(part, depth: depth + 1);
+        if (inner == null) return null;
+        slots.add(SlotNode(inner));
+      }
+      final node = structFromKey(key, slots);
+      if (node == null) return null;
+      out.add(node);
     } else if (item is Map && item.length == 1) {
       final sup = item['sup'];
       final sub = item['sub'];

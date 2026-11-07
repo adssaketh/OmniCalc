@@ -53,8 +53,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     final history = context.read<HistoryStore>();
     _c = CalculatorController(
       feedback: context.read<FeedbackService>(),
-      onAddHistoryRich: ({required expression, required result, required mode, rich}) =>
-          history.add(expression: expression, result: result, mode: mode, rich: rich),
+      onAddHistoryRich: (
+              {required expression, required result, required mode, rich}) =>
+          history.add(
+              expression: expression, result: result, mode: mode, rich: rich),
     );
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
   }
@@ -105,7 +107,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     if ((ctrl || meta) && logical.keyLabel.length == 1) {
       // with Ctrl held, event.character is a control code; the key label is what KeyboardEvent.key reports
       key = logical.keyLabel.toLowerCase();
-    } else if (logical == LogicalKeyboardKey.enter || logical == LogicalKeyboardKey.numpadEnter) {
+    } else if (logical == LogicalKeyboardKey.enter ||
+        logical == LogicalKeyboardKey.numpadEnter) {
       key = 'Enter';
     } else if (logical == LogicalKeyboardKey.backspace) {
       key = 'Backspace';
@@ -127,8 +130,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       key = logical.keyLabel.toLowerCase();
     }
     // numpad keys keep working when the platform reports no character for them
-    if (key == null && event.physicalKey == PhysicalKeyboardKey.numpadMultiply) key = '*';
-    if (key == null && event.physicalKey == PhysicalKeyboardKey.numpadDivide) key = '/';
+    if (key == null && event.physicalKey == PhysicalKeyboardKey.numpadMultiply)
+      key = '*';
+    if (key == null && event.physicalKey == PhysicalKeyboardKey.numpadDivide)
+      key = '/';
     if (key == null) return false;
 
     if ((ctrl || meta) && (key == 'v' || key == 'V')) {
@@ -150,7 +155,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   }
 
   void _toggleAngle(SettingsStore store) {
-    store.update((s) => s.copyWith(angleMode: s.angleMode == AngleMode.deg ? AngleMode.rad : AngleMode.deg));
+    store.update((s) => s.copyWith(
+        angleMode:
+            s.angleMode == AngleMode.deg ? AngleMode.rad : AngleMode.deg));
   }
 
   void _syncPinned(bool portrait) {
@@ -194,8 +201,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     return ListenableBuilder(
       listenable: _c,
       builder: (context, _) => layout.isLandscape
-          ? _Landscape(controller: _c, onToggleAngle: () => _toggleAngle(settingsStore))
-          : _PortraitKeys(controller: _c, onToggleAngle: () => _toggleAngle(settingsStore)),
+          ? _Landscape(
+              controller: _c, onToggleAngle: () => _toggleAngle(settingsStore))
+          : _PortraitKeys(
+              controller: _c, onToggleAngle: () => _toggleAngle(settingsStore)),
     );
   }
 }
@@ -243,18 +252,26 @@ class _Key extends StatelessWidget {
   }
 }
 
-Widget _label(String s, double size, FontWeight weight, Color color, {bool mono = false, double? letterSpacingEm}) {
+Widget _label(String s, double size, FontWeight weight, Color color,
+    {bool mono = false, double? letterSpacingEm}) {
   return Text(
     s,
     maxLines: 1,
     softWrap: false,
-    style: calcText(size: size, weight: weight, color: color, lineHeight: size * 1.5, mono: mono, letterSpacingEm: letterSpacingEm),
+    style: calcText(
+        size: size,
+        weight: weight,
+        color: color,
+        lineHeight: size * 1.5,
+        mono: mono,
+        letterSpacingEm: letterSpacingEm),
   );
 }
 
 /// The `=` key: springs smaller, brightens and glows while a hardware Enter / = is flashing it.
 class _EqualsKey extends StatelessWidget {
-  const _EqualsKey({required this.controller, required this.radius, required this.child});
+  const _EqualsKey(
+      {required this.controller, required this.radius, required this.child});
 
   final CalculatorController controller;
   final double radius;
@@ -279,7 +296,14 @@ class _EqualsKey extends StatelessWidget {
         curve: M3Curves.tailwind,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius),
-          boxShadow: pressed ? [BoxShadow(color: withAlphaFraction(t.primary, 0.85), blurRadius: 32, spreadRadius: 6)] : const [],
+          boxShadow: pressed
+              ? [
+                  BoxShadow(
+                      color: withAlphaFraction(t.primary, 0.85),
+                      blurRadius: 32,
+                      spreadRadius: 6)
+                ]
+              : const [],
         ),
         child: _Key(
           onTap: controller.handleEvaluate,
@@ -303,11 +327,20 @@ String _memoryLabel(MemoryAction a) => switch (a) {
       MemoryAction.ms => 'MS',
     };
 
-const List<MemoryAction> _ribbon = [MemoryAction.mc, MemoryAction.mr, MemoryAction.mPlus, MemoryAction.mMinus];
+const List<MemoryAction> _ribbon = [
+  MemoryAction.mc,
+  MemoryAction.mr,
+  MemoryAction.mPlus,
+  MemoryAction.mMinus
+];
 
 /// Round icon button of the display card (history, copy).
 class _RoundIconButton extends StatelessWidget {
-  const _RoundIconButton({required this.onTap, required this.child, required this.t, this.semanticLabel});
+  const _RoundIconButton(
+      {required this.onTap,
+      required this.child,
+      required this.t,
+      this.semanticLabel});
 
   final VoidCallback onTap;
   final Widget child;
@@ -328,7 +361,8 @@ class _RoundIconButton extends StatelessWidget {
 }
 
 class _HistoryButton extends StatelessWidget {
-  const _HistoryButton({required this.t, required this.count, required this.onTap});
+  const _HistoryButton(
+      {required this.t, required this.count, required this.onTap});
 
   final M3Tokens t;
   final int count;
@@ -343,15 +377,22 @@ class _HistoryButton extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          LucideIcon(LucideIconId.rotateCcw, color: t.onSurfaceVariant, size: 16),
+          LucideIcon(LucideIconId.rotateCcw,
+              color: t.onSurfaceVariant, size: 16),
           if (count > 0) ...[
             const SizedBox(width: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(color: t.primary, borderRadius: BorderRadius.circular(9999)),
+              decoration: BoxDecoration(
+                  color: t.primary, borderRadius: BorderRadius.circular(9999)),
               child: Text(
                 count > 9 ? '9+' : '$count',
-                style: calcText(size: 10, weight: FontWeight.w700, color: t.onPrimary, lineHeight: 15, mono: true),
+                style: calcText(
+                    size: 10,
+                    weight: FontWeight.w700,
+                    color: t.onPrimary,
+                    lineHeight: 15,
+                    mono: true),
               ),
             ),
           ],
@@ -374,7 +415,8 @@ class _CopyButton extends StatelessWidget {
       onTap: controller.handleCopy,
       semanticLabel: 'Copy result',
       child: controller.copied
-          ? const LucideIcon(LucideIconId.check, color: Color(0xFF22C55E), size: 16)
+          ? const LucideIcon(LucideIconId.check,
+              color: Color(0xFF22C55E), size: 16)
           : LucideIcon(LucideIconId.copy, color: t.onSurfaceVariant, size: 16),
     );
   }
@@ -383,7 +425,8 @@ class _CopyButton extends StatelessWidget {
 /// Leaves the superscript / subscript the caret is in (the "exit" key of the rich editor). Shown only while the
 /// caret is inside a group, in the badge row, so the keypad and the layout stay as they were.
 class _ExitGroupChip extends StatelessWidget {
-  const _ExitGroupChip({required this.t, required this.size, required this.onTap});
+  const _ExitGroupChip(
+      {required this.t, required this.size, required this.onTap});
 
   final M3Tokens t;
   final double size;
@@ -401,15 +444,86 @@ class _ExitGroupChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         child: Text(
           '→',
-          style: calcText(size: size, weight: FontWeight.w700, color: t.primary, lineHeight: size * (size == 12 ? 16 / 12 : 20 / 14), mono: true),
+          style: calcText(
+              size: size,
+              weight: FontWeight.w700,
+              color: t.primary,
+              lineHeight: size * (size == 12 ? 16 / 12 : 20 / 14),
+              mono: true),
         ),
       ),
     );
   }
 }
 
+/// The status-bar annunciators of the natural display (Part 9, section 9.2): S, A, INS, M, Math, and the Syntax ERROR
+/// line. Nothing is drawn while none is on, so plain arithmetic keeps the badge row it always had.
+class _AnnunciatorChips extends StatelessWidget {
+  const _AnnunciatorChips(
+      {required this.t, required this.controller, required this.size});
+
+  final M3Tokens t;
+  final CalculatorController controller;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final names = controller.annunciators;
+    final error = controller.syntaxError;
+    if (names.isEmpty && error == null) return const SizedBox.shrink();
+    final line = size * (size == 12 ? 16 / 12 : 20 / 14);
+    Widget chip(String text, {required Color fg, required Color bg}) =>
+        Flexible(
+          child: Container(
+            key: ValueKey('annunciator-$text'),
+            padding: EdgeInsets.symmetric(
+                horizontal: 8, vertical: size == 12 ? 2 : 3),
+            decoration: BoxDecoration(
+                color: bg, borderRadius: BorderRadius.circular(9999)),
+            child: Semantics(
+              label: 'Annunciator $text',
+              excludeSemantics: true,
+              child: Text(
+                text,
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                style: calcText(
+                    size: size - 2,
+                    weight: FontWeight.w700,
+                    color: fg,
+                    lineHeight: line,
+                    mono: true),
+              ),
+            ),
+          ),
+        );
+    // a Flexible so a long line ("Syntax ERROR" beside S, A, Math) shrinks instead of overflowing the badge row
+    return Flexible(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final n in names) ...[
+            const SizedBox(width: 6),
+            chip(n, fg: t.onSecondaryContainer, bg: t.secondaryContainer),
+          ],
+          if (error != null) ...[
+            const SizedBox(width: 6),
+            chip(error, fg: t.onErrorContainer, bg: t.errorContainer),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _AngleBadge extends StatelessWidget {
-  const _AngleBadge({required this.t, required this.controller, required this.onTap, required this.size, required this.vPad});
+  const _AngleBadge(
+      {required this.t,
+      required this.controller,
+      required this.onTap,
+      required this.size,
+      required this.vPad});
 
   final M3Tokens t;
   final CalculatorController controller;
@@ -430,7 +544,12 @@ class _AngleBadge extends StatelessWidget {
         child: Text(
           // from the store, not the controller: the controller only learns the new mode when the screen rebuilds
           context.watch<SettingsStore>().settings.angleMode.id.toUpperCase(),
-          style: calcText(size: size, weight: FontWeight.w700, color: t.primary, lineHeight: size * (size == 12 ? 16 / 12 : 20 / 14), mono: true),
+          style: calcText(
+              size: size,
+              weight: FontWeight.w700,
+              color: t.primary,
+              lineHeight: size * (size == 12 ? 16 / 12 : 20 / 14),
+              mono: true),
         ),
       ),
     );
@@ -449,7 +568,8 @@ class _PortraitDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(listenable: controller, builder: (context, _) => _build(context));
+    return ListenableBuilder(
+        listenable: controller, builder: (context, _) => _build(context));
   }
 
   Widget _build(BuildContext context) {
@@ -472,7 +592,8 @@ class _PortraitDisplay extends StatelessWidget {
     final headerRow = Header(
       embedded: true,
       soundEnabled: settings.soundEnabled,
-      onToggleSound: () => settingsStore.update((s) => s.copyWith(soundEnabled: !s.soundEnabled)),
+      onToggleSound: () => settingsStore
+          .update((s) => s.copyWith(soundEnabled: !s.soundEnabled)),
       onOpenSettings: () => nav.setSettingsOpen(true),
       onOpenGuide: () => nav.setGuideOpen(true),
     );
@@ -514,7 +635,10 @@ class _PortraitDisplay extends StatelessWidget {
           onCaretHit: c.placeCaret,
         ),
       );
-      answer = c.hasEvaluated ? M3ResultUpdate(trigger: '${c.expression}|${c.lastQuestion}', child: fit) : fit;
+      answer = c.hasEvaluated
+          ? M3ResultUpdate(
+              trigger: '${c.expression}|${c.lastQuestion}', child: fit)
+          : fit;
     }
 
     final card = Container(
@@ -536,7 +660,9 @@ class _PortraitDisplay extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
-                      border: Border(bottom: BorderSide(color: withAlphaFraction(t.onSurface, 0.10))),
+                      border: Border(
+                          bottom: BorderSide(
+                              color: withAlphaFraction(t.onSurface, 0.10))),
                     ),
                     child: headerRow,
                   ),
@@ -546,15 +672,19 @@ class _PortraitDisplay extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
+                        Flexible(
+                            child: Row(
                           children: [
                             _AngleBadge(
                               t: t,
                               controller: c,
-                              onTap: () => _toggleAngleFrom(context, settingsStore),
+                              onTap: () =>
+                                  _toggleAngleFrom(context, settingsStore),
                               size: smallText ? 14 : 12,
                               vPad: 4,
                             ),
+                            _AnnunciatorChips(
+                                t: t, controller: c, size: smallText ? 14 : 12),
                             if (c.caretInGroup) ...[
                               const SizedBox(width: 8),
                               _ExitGroupChip(
@@ -573,10 +703,13 @@ class _PortraitDisplay extends StatelessWidget {
                               ),
                             ],
                           ],
-                        ),
+                        )),
                         Row(
                           children: [
-                            _HistoryButton(t: t, count: history.count, onTap: () => nav.setHistoryOpen(true)),
+                            _HistoryButton(
+                                t: t,
+                                count: history.count,
+                                onTap: () => nav.setHistoryOpen(true)),
                             const SizedBox(width: 8),
                             _CopyButton(t: t, controller: c),
                           ],
@@ -592,7 +725,9 @@ class _PortraitDisplay extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (c.hasEquation) _EquationLine(controller: c, t: t, size: smallText ? 14 : 12),
+                          if (c.hasEquation)
+                            _EquationLine(
+                                controller: c, t: t, size: smallText ? 14 : 12),
                           if (c.lastQuestion.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 2),
@@ -619,7 +754,9 @@ class _PortraitDisplay extends StatelessWidget {
                               child: Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  c.livePreview.isEmpty ? '' : '= ${c.livePreview}',
+                                  c.livePreview.isEmpty
+                                      ? ''
+                                      : '= ${c.livePreview}',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: calcText(
@@ -655,7 +792,8 @@ class _PortraitDisplay extends StatelessWidget {
               curve: M3Curves.emphasizedDecelerate,
               builder: (context, v, child) => Opacity(
                 opacity: v.clamp(0.0, 1.0),
-                child: Transform.translate(offset: Offset(0, -10 * (1 - v)), child: child),
+                child: Transform.translate(
+                    offset: Offset(0, -10 * (1 - v)), child: child),
               ),
               child: card,
             ),
@@ -663,13 +801,19 @@ class _PortraitDisplay extends StatelessWidget {
   }
 
   void _toggleAngleFrom(BuildContext context, SettingsStore store) {
-    store.update((s) => s.copyWith(angleMode: s.angleMode == AngleMode.deg ? AngleMode.rad : AngleMode.deg));
+    store.update((s) => s.copyWith(
+        angleMode:
+            s.angleMode == AngleMode.deg ? AngleMode.rad : AngleMode.deg));
   }
 }
 
 /// `animate-pulse` badge with the number of unclosed parentheses.
 class _PulsingBadge extends StatefulWidget {
-  const _PulsingBadge({required this.text, required this.t, required this.size, required this.animate});
+  const _PulsingBadge(
+      {required this.text,
+      required this.t,
+      required this.size,
+      required this.animate});
 
   final String text;
   final M3Tokens t;
@@ -680,8 +824,10 @@ class _PulsingBadge extends StatefulWidget {
   State<_PulsingBadge> createState() => _PulsingBadgeState();
 }
 
-class _PulsingBadgeState extends State<_PulsingBadge> with SingleTickerProviderStateMixin {
-  late final AnimationController _ctl = AnimationController(vsync: this, duration: const Duration(seconds: 2));
+class _PulsingBadgeState extends State<_PulsingBadge>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctl =
+      AnimationController(vsync: this, duration: const Duration(seconds: 2));
 
   @override
   void initState() {
@@ -705,11 +851,14 @@ class _PulsingBadgeState extends State<_PulsingBadge> with SingleTickerProviderS
         final p = _ctl.value;
         final phase = p < 0.5 ? p * 2 : (1 - p) * 2;
         final eased = const Cubic(0.4, 0, 0.6, 1).transform(phase);
-        return Opacity(opacity: widget.animate ? 1 - 0.5 * eased : 1, child: child);
+        return Opacity(
+            opacity: widget.animate ? 1 - 0.5 * eased : 1, child: child);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-        decoration: BoxDecoration(color: t.surfaceContainerHigh, borderRadius: BorderRadius.circular(9999)),
+        decoration: BoxDecoration(
+            color: t.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(9999)),
         child: Text(
           widget.text,
           style: calcText(
@@ -726,7 +875,8 @@ class _PulsingBadgeState extends State<_PulsingBadge> with SingleTickerProviderS
 }
 
 class _EquationLine extends StatelessWidget {
-  const _EquationLine({required this.controller, required this.t, required this.size});
+  const _EquationLine(
+      {required this.controller, required this.t, required this.size});
 
   final CalculatorController controller;
   final M3Tokens t;
@@ -735,7 +885,9 @@ class _EquationLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = controller;
-    final hint = (c.lastQuestion.isNotEmpty || c.expression != '0') ? '' : '· type x, then =';
+    final hint = (c.lastQuestion.isNotEmpty || c.expression != '0')
+        ? ''
+        : '· type x, then =';
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Text.rich(
@@ -744,14 +896,23 @@ class _EquationLine extends StatelessWidget {
             TextSpan(text: 'y = ${c.equation} '),
             TextSpan(
               text: hint,
-              style: calcText(size: size, weight: FontWeight.w400, color: t.tertiary, lineHeight: size == 12 ? 16 : 20, opacity: 0.8),
+              style: calcText(
+                  size: size,
+                  weight: FontWeight.w400,
+                  color: t.tertiary,
+                  lineHeight: size == 12 ? 16 : 20,
+                  opacity: 0.8),
             ),
           ],
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.right,
-        style: calcText(size: size, weight: FontWeight.w600, color: t.tertiary, lineHeight: size == 12 ? 16 : 20),
+        style: calcText(
+            size: size,
+            weight: FontWeight.w600,
+            color: t.tertiary,
+            lineHeight: size == 12 ? 16 : 20),
       ),
     );
   }
@@ -785,14 +946,20 @@ class _PortraitKeys extends StatelessWidget {
                 height: tw(w, 32, sm: 40, md: 44),
                 child: _Key(
                   onTap: () => c.handleMemory(_ribbon[i]),
-                  background: (_ribbon[i] == MemoryAction.mr && c.memory != 0) ? t.secondaryContainer : t.surfaceContainer,
-                  foreground: (_ribbon[i] == MemoryAction.mr && c.memory != 0) ? t.onSecondaryContainer : t.onSurfaceVariant,
+                  background: (_ribbon[i] == MemoryAction.mr && c.memory != 0)
+                      ? t.secondaryContainer
+                      : t.surfaceContainer,
+                  foreground: (_ribbon[i] == MemoryAction.mr && c.memory != 0)
+                      ? t.onSecondaryContainer
+                      : t.onSurfaceVariant,
                   radius: 9999,
                   child: _label(
                     _memoryLabel(_ribbon[i]),
                     tw(w, 12, sm: 14),
                     FontWeight.w700,
-                    (_ribbon[i] == MemoryAction.mr && c.memory != 0) ? t.onSecondaryContainer : t.onSurfaceVariant,
+                    (_ribbon[i] == MemoryAction.mr && c.memory != 0)
+                        ? t.onSecondaryContainer
+                        : t.onSurfaceVariant,
                     mono: true,
                   ),
                 ),
@@ -812,7 +979,8 @@ class _PortraitKeys extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: CachedIntrinsicHeight(
                 estimate: 300,
-                child: _AdvancedDrawer(controller: c, onToggleAngle: onToggleAngle, width: w),
+                child: _AdvancedDrawer(
+                    controller: c, onToggleAngle: onToggleAngle, width: w),
               ),
             )
           : const SizedBox(width: double.infinity),
@@ -836,13 +1004,17 @@ class _PortraitKeys extends StatelessWidget {
 
     return Align(
       alignment: Alignment.topCenter,
-      child: ConstrainedBox(constraints: BoxConstraints(maxWidth: maxW), child: card),
+      child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxW), child: card),
     );
   }
 }
 
 class _AdvancedDrawer extends StatelessWidget {
-  const _AdvancedDrawer({required this.controller, required this.onToggleAngle, required this.width});
+  const _AdvancedDrawer(
+      {required this.controller,
+      required this.onToggleAngle,
+      required this.width});
 
   final CalculatorController controller;
   final VoidCallback onToggleAngle;
@@ -853,17 +1025,24 @@ class _AdvancedDrawer extends StatelessWidget {
     final t = M3Theme.of(context);
     final c = controller;
     final sm = width >= 640;
-    final tabs = [for (final d in advancedTabDefs) TabItem(id: d.id.name, label: d.label, badge: d.badge)];
+    final tabs = [
+      for (final d in advancedTabDefs)
+        TabItem(id: d.id.name, label: d.label, badge: d.badge)
+    ];
     return Container(
       padding: EdgeInsets.all(sm ? 16 : 12),
-      decoration: BoxDecoration(color: t.surfaceContainer, borderRadius: BorderRadius.circular(28)),
+      decoration: BoxDecoration(
+          color: t.surfaceContainer, borderRadius: BorderRadius.circular(28)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
             padding: const EdgeInsets.only(bottom: 8),
             margin: const EdgeInsets.only(bottom: 8),
-            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: withAlphaFraction(t.outlineVariant, 0.4)))),
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                        color: withAlphaFraction(t.outlineVariant, 0.4)))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -897,13 +1076,20 @@ class _AdvancedDrawer extends StatelessWidget {
                   onTap: c.hideScientific,
                   semanticLabel: 'Hide advanced keys',
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Hide', style: calcText(size: 12, weight: FontWeight.w600, color: t.primary, lineHeight: 16)),
+                        Text('Hide',
+                            style: calcText(
+                                size: 12,
+                                weight: FontWeight.w600,
+                                color: t.primary,
+                                lineHeight: 16)),
                         const SizedBox(width: 6),
-                        LucideIcon(LucideIconId.chevronUp, color: t.primary, size: 14),
+                        LucideIcon(LucideIconId.chevronUp,
+                            color: t.primary, size: 14),
                       ],
                     ),
                   ),
@@ -922,7 +1108,11 @@ class _AdvancedDrawer extends StatelessWidget {
             tabPillColor: t.surfaceContainerHigh,
             child: KeyedSubtree(
               key: ValueKey(c.advancedTab),
-              child: AdvancedTabContent(controller: c, onToggleAngleMode: onToggleAngle, width: width, landscape: false),
+              child: AdvancedTabContent(
+                  controller: c,
+                  onToggleAngleMode: onToggleAngle,
+                  width: width,
+                  landscape: false),
             ),
           ),
         ],
@@ -985,7 +1175,8 @@ class _PortraitKeypad extends StatelessWidget {
           foreground: t.onSurfaceVariant,
           radius: r,
           semanticLabel: 'Backspace',
-          child: LucideIcon(LucideIconId.delete, color: t.onSurfaceVariant, size: tw(w, 20, sm: 24, md: 28)),
+          child: LucideIcon(LucideIconId.delete,
+              color: t.onSurfaceVariant, size: tw(w, 20, sm: 24, md: 28)),
         ),
         _Key(
           onTap: () => c.handleInput('%'),
@@ -1005,7 +1196,8 @@ class _PortraitKeypad extends StatelessWidget {
           background: sci ? t.tertiaryContainer : t.surfaceContainer,
           foreground: sci ? t.onTertiaryContainer : t.primary,
           radius: r,
-          semanticLabel: sci ? 'Hide advanced symbols keys' : 'Show advanced symbols keys',
+          semanticLabel:
+              sci ? 'Hide advanced symbols keys' : 'Show advanced symbols keys',
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             // scaleDown only acts when the content is wider than the key (narrow phones, fallback fonts)
@@ -1014,9 +1206,12 @@ class _PortraitKeypad extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  FxTurn(key: ValueKey(sci), child: OmniCalcLogo(size: tw(w, 16, sm: 20))),
+                  FxTurn(
+                      key: ValueKey(sci),
+                      child: OmniCalcLogo(size: tw(w, 16, sm: 20))),
                   const SizedBox(width: 6),
-                  _label(sci ? 'fx ON' : 'fx ADV', tw(w, 12, sm: 16), FontWeight.w700, sci ? t.onTertiaryContainer : t.primary,
+                  _label(sci ? 'fx ON' : 'fx ADV', tw(w, 12, sm: 16),
+                      FontWeight.w700, sci ? t.onTertiaryContainer : t.primary,
                       mono: true, letterSpacingEm: -0.025),
                 ],
               ),
@@ -1039,7 +1234,10 @@ class _PortraitKeypad extends StatelessWidget {
             children: [
               _label('=', big, FontWeight.w700, t.onPrimary),
               const SizedBox(width: 8),
-              Opacity(opacity: 0.75, child: LucideIcon(LucideIconId.cornerDownLeft, color: t.onPrimary, size: tw(w, 20, sm: 24))),
+              Opacity(
+                  opacity: 0.75,
+                  child: LucideIcon(LucideIconId.cornerDownLeft,
+                      color: t.onPrimary, size: tw(w, 20, sm: 24))),
             ],
           ),
         ),
@@ -1092,7 +1290,8 @@ class _Landscape extends StatelessWidget {
       estimate: 500,
       child: LayoutBuilder(
         builder: (context, box) {
-          final height = math.max(500.0, box.hasBoundedHeight ? box.maxHeight : 500.0);
+          final height =
+              math.max(500.0, box.hasBoundedHeight ? box.maxHeight : 500.0);
           return Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
@@ -1102,9 +1301,16 @@ class _Landscape extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(width: leftW, child: _LandscapeDisplay(controller: controller, onToggleAngle: onToggleAngle)),
+                    SizedBox(
+                        width: leftW,
+                        child: _LandscapeDisplay(
+                            controller: controller,
+                            onToggleAngle: onToggleAngle)),
                     SizedBox(width: gap),
-                    Expanded(child: _LandscapeKeys(controller: controller, onToggleAngle: onToggleAngle)),
+                    Expanded(
+                        child: _LandscapeKeys(
+                            controller: controller,
+                            onToggleAngle: onToggleAngle)),
                   ],
                 ),
               ),
@@ -1117,7 +1323,8 @@ class _Landscape extends StatelessWidget {
 }
 
 class _LandscapeDisplay extends StatelessWidget {
-  const _LandscapeDisplay({required this.controller, required this.onToggleAngle});
+  const _LandscapeDisplay(
+      {required this.controller, required this.onToggleAngle});
 
   final CalculatorController controller;
   final VoidCallback onToggleAngle;
@@ -1163,32 +1370,51 @@ class _LandscapeDisplay extends StatelessWidget {
                                 children: [
                                   Flexible(
                                     child: RichExpressionView(
-                                      doc: ExprDoc.fromJson(h.rich) ?? ExprDoc.plain(h.expression),
+                                      doc: ExprDoc.fromJson(h.rich) ??
+                                          ExprDoc.plain(h.expression),
                                       fit: false,
                                       max: 12,
                                       lineHeightPx: 16,
                                       weight: FontWeight.w400,
                                       letterSpacingEm: 0,
-                                      color: withAlphaFraction(t.onSurfaceVariant, 0.7),
+                                      color: withAlphaFraction(
+                                          t.onSurfaceVariant, 0.7),
                                     ),
                                   ),
                                   Text(
                                     ' = ${h.result}',
                                     maxLines: 1,
-                                    style: calcText(size: 12, weight: FontWeight.w600, color: t.onSurfaceVariant, lineHeight: 16, mono: true),
+                                    style: calcText(
+                                        size: 12,
+                                        weight: FontWeight.w600,
+                                        color: t.onSurfaceVariant,
+                                        lineHeight: 16,
+                                        mono: true),
                                   ),
                                 ],
                               )
                             : Text.rich(
                                 TextSpan(children: [
-                                  TextSpan(text: h.expression, style: TextStyle(color: withAlphaFraction(t.onSurfaceVariant, 0.7))),
+                                  TextSpan(
+                                      text: h.expression,
+                                      style: TextStyle(
+                                          color: withAlphaFraction(
+                                              t.onSurfaceVariant, 0.7))),
                                   const TextSpan(text: ' = '),
-                                  TextSpan(text: h.result, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                  TextSpan(
+                                      text: h.result,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600)),
                                 ]),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.right,
-                                style: calcText(size: 12, weight: FontWeight.w400, color: t.onSurfaceVariant, lineHeight: 16, mono: true),
+                                style: calcText(
+                                    size: 12,
+                                    weight: FontWeight.w400,
+                                    color: t.onSurfaceVariant,
+                                    lineHeight: 16,
+                                    mono: true),
                               ),
                       ),
                     ),
@@ -1202,7 +1428,8 @@ class _LandscapeDisplay extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         tape,
-        if (c.hasEquation) _EquationLine(controller: c, t: t, size: sm ? 14 : 12),
+        if (c.hasEquation)
+          _EquationLine(controller: c, t: t, size: sm ? 14 : 12),
         if (c.lastQuestion.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
@@ -1210,7 +1437,14 @@ class _LandscapeDisplay extends StatelessWidget {
               '${c.lastQuestion} =',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: calcText(size: 14, weight: FontWeight.w400, color: t.outline, lineHeight: 20, mono: true, letterSpacingEm: 0.025, opacity: 0.7),
+              style: calcText(
+                  size: 14,
+                  weight: FontWeight.w400,
+                  color: t.outline,
+                  lineHeight: 20,
+                  mono: true,
+                  letterSpacingEm: 0.025,
+                  opacity: 0.7),
             ),
           ),
         Padding(
@@ -1241,7 +1475,13 @@ class _LandscapeDisplay extends StatelessWidget {
                   c.livePreview.isEmpty ? '' : '= ${c.livePreview}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: calcText(size: sm ? 18 : 16, weight: FontWeight.w600, color: t.primary, lineHeight: sm ? 28 : 24, mono: true, letterSpacingEm: -0.025),
+                  style: calcText(
+                      size: sm ? 18 : 16,
+                      weight: FontWeight.w600,
+                      color: t.primary,
+                      lineHeight: sm ? 28 : 24,
+                      mono: true,
+                      letterSpacingEm: -0.025),
                 ),
               ),
             ),
@@ -1271,17 +1511,34 @@ class _LandscapeDisplay extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.all(pad),
-      decoration: BoxDecoration(color: t.surfaceContainerLow, borderRadius: BorderRadius.circular(32)),
+      decoration: BoxDecoration(
+          color: t.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(32)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _AngleBadge(t: t, controller: c, onTap: onToggleAngle, size: 12, vPad: 6),
+              Flexible(
+                child: Row(
+                  children: [
+                    _AngleBadge(
+                        t: t,
+                        controller: c,
+                        onTap: onToggleAngle,
+                        size: 12,
+                        vPad: 6),
+                    _AnnunciatorChips(t: t, controller: c, size: 12),
+                  ],
+                ),
+              ),
               Row(
                 children: [
-                  _HistoryButton(t: t, count: history.count, onTap: () => nav.setHistoryOpen(true)),
+                  _HistoryButton(
+                      t: t,
+                      count: history.count,
+                      onTap: () => nav.setHistoryOpen(true)),
                   const SizedBox(width: 8),
                   _CopyButton(t: t, controller: c),
                 ],
@@ -1292,13 +1549,17 @@ class _LandscapeDisplay extends StatelessWidget {
             child: ClipRect(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Center(child: SizedBox(width: double.infinity, child: display)),
+                child: Center(
+                    child: SizedBox(width: double.infinity, child: display)),
               ),
             ),
           ),
           Container(
             padding: const EdgeInsets.only(top: 12),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: withAlphaFraction(t.outlineVariant, 0.3)))),
+            decoration: BoxDecoration(
+                border: Border(
+                    top: BorderSide(
+                        color: withAlphaFraction(t.outlineVariant, 0.3)))),
             child: Row(
               children: [
                 for (var i = 0; i < _ribbon.length; i++) ...[
@@ -1311,7 +1572,9 @@ class _LandscapeDisplay extends StatelessWidget {
                         background: t.surfaceContainer,
                         foreground: t.onSurfaceVariant,
                         radius: 16,
-                        child: _label(_memoryLabel(_ribbon[i]), 12, FontWeight.w700, t.onSurfaceVariant, mono: true),
+                        child: _label(_memoryLabel(_ribbon[i]), 12,
+                            FontWeight.w700, t.onSurfaceVariant,
+                            mono: true),
                       ),
                     ),
                   ),
@@ -1342,14 +1605,18 @@ class _LandscapeKeys extends StatelessWidget {
     final minKey = tw(w, 46, sm: 54, md: 62);
     final r = tw(w, 22, sm: 26);
     final sm = w >= 640;
-    final tabs = [for (final d in advancedTabDefs) TabItem(id: d.id.name, label: d.label, badge: d.badge)];
+    final tabs = [
+      for (final d in advancedTabDefs)
+        TabItem(id: d.id.name, label: d.label, badge: d.badge)
+    ];
 
     Widget digit(String d) => _Key(
           onTap: () => c.handleInput(d),
           background: t.surfaceContainerHigh,
           foreground: t.onSurface,
           radius: r,
-          child: _label(d, sm ? 24 : 20, FontWeight.w500, t.onSurface, mono: true),
+          child:
+              _label(d, sm ? 24 : 20, FontWeight.w500, t.onSurface, mono: true),
         );
     Widget op(String o) => _Key(
           onTap: () => c.handleInput(o),
@@ -1358,14 +1625,34 @@ class _LandscapeKeys extends StatelessWidget {
           radius: r,
           child: _label(o, 24, FontWeight.w700, t.onSecondaryContainer),
         );
-    Widget fnKey(VoidCallback onTap, Widget child) =>
-        _Key(onTap: onTap, background: t.surfaceContainer, foreground: t.onSurface, radius: r, child: child);
+    Widget fnKey(VoidCallback onTap, Widget child) => _Key(
+        onTap: onTap,
+        background: t.surfaceContainer,
+        foreground: t.onSurface,
+        radius: r,
+        child: child);
 
     final rows = <List<(int span, Widget child)>>[
       [
-        (1, _Key(onTap: c.handleClear, background: t.tertiaryContainer, foreground: t.onTertiaryContainer, radius: r, child: _label('AC', 16, FontWeight.w700, t.onTertiaryContainer))),
-        (1, fnKey(c.handleBackspace, LucideIcon(LucideIconId.delete, color: t.onSurface, size: 20))),
-        (1, fnKey(() => c.handleInput('%'), _label('%', 16, FontWeight.w600, t.onSurface))),
+        (
+          1,
+          _Key(
+              onTap: c.handleClear,
+              background: t.tertiaryContainer,
+              foreground: t.onTertiaryContainer,
+              radius: r,
+              child: _label('AC', 16, FontWeight.w700, t.onTertiaryContainer))
+        ),
+        (
+          1,
+          fnKey(c.handleBackspace,
+              LucideIcon(LucideIconId.delete, color: t.onSurface, size: 20))
+        ),
+        (
+          1,
+          fnKey(() => c.handleInput('%'),
+              _label('%', 16, FontWeight.w600, t.onSurface))
+        ),
         (1, op('÷')),
       ],
       [(1, digit('7')), (1, digit('8')), (1, digit('9')), (1, op('×'))],
@@ -1380,7 +1667,8 @@ class _LandscapeKeys extends StatelessWidget {
             background: t.surfaceContainerHigh,
             foreground: t.onSurface,
             radius: r,
-            child: _label('.', sm ? 24 : 20, FontWeight.w700, t.onSurface, mono: true),
+            child: _label('.', sm ? 24 : 20, FontWeight.w700, t.onSurface,
+                mono: true),
           ),
         ),
         (
@@ -1395,7 +1683,10 @@ class _LandscapeKeys extends StatelessWidget {
                 children: [
                   _label('=', 24, FontWeight.w700, t.onPrimary),
                   const SizedBox(width: 6),
-                  Opacity(opacity: 0.8, child: LucideIcon(LucideIconId.cornerDownLeft, color: t.onPrimary, size: 16)),
+                  Opacity(
+                      opacity: 0.8,
+                      child: LucideIcon(LucideIconId.cornerDownLeft,
+                          color: t.onPrimary, size: 16)),
                 ],
               ),
             ),
@@ -1415,7 +1706,8 @@ class _LandscapeKeys extends StatelessWidget {
                 children: [
                   for (var k = 0; k < rows[i].length; k++) ...[
                     if (k > 0) SizedBox(width: keyGap),
-                    Expanded(flex: rows[i][k].$1 == 2 ? 2 : 1, child: rows[i][k].$2),
+                    Expanded(
+                        flex: rows[i][k].$1 == 2 ? 2 : 1, child: rows[i][k].$2),
                   ],
                 ],
               ),
@@ -1427,7 +1719,9 @@ class _LandscapeKeys extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.all(pad),
-      decoration: BoxDecoration(color: t.surfaceContainerLow, borderRadius: BorderRadius.circular(32)),
+      decoration: BoxDecoration(
+          color: t.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(32)),
       child: ClipRect(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1444,7 +1738,11 @@ class _LandscapeKeys extends StatelessWidget {
                 fillHeight: true,
                 child: KeyedSubtree(
                   key: ValueKey(c.advancedTab),
-                  child: AdvancedTabContent(controller: c, onToggleAngleMode: onToggleAngle, width: w, landscape: true),
+                  child: AdvancedTabContent(
+                      controller: c,
+                      onToggleAngleMode: onToggleAngle,
+                      width: w,
+                      landscape: true),
                 ),
               ),
             ),
