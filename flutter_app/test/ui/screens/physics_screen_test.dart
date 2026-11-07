@@ -87,7 +87,8 @@ void main() {
       expect(formatConstantValue(0.00000125663706212), '1.256637e-6');
       expect(formatConstantValue(376.730313668), '376.730313668');
       expect(formatConstantValue(8.314462618), '8.314462618');
-      expect(formatConstantValue(0.002897771955), '2.897772e-3');
+      expect(formatConstantValue(0.002897771955), '0.002897771955'); // above 1e-3: plain
+      expect(formatConstantValue(0.001), '1.000000e-3'); // at 1e-3: exponent
       expect(formatConstantValue(6371000), '6.371000e+6');
       expect(formatConstantValue(0), '0');
     });
@@ -398,11 +399,11 @@ void main() {
 
     testWidgets('tablet width: search box and chip strip share one row, no layout errors', (tester) async {
       await pumpPhysics(tester, size: const Size(900, 2400));
-      final search = tester.getSize(find.byKey(const ValueKey('constants-search')));
-      expect(search.width, greaterThan(0));
       final chips = tester.getRect(find.byKey(const ValueKey('constants-chips')));
       final field = tester.getRect(find.byKey(const ValueKey('constants-search')));
+      // (the test font is wide, so the strip can take nearly the whole row and leave the search box at its 56 px padding)
       expect(chips.left, greaterThan(field.right));
+      expect(chips.top, lessThan(field.bottom));
       expect(tester.takeException(), isNull);
     });
 

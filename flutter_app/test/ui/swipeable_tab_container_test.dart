@@ -129,6 +129,38 @@ void main() {
     expect(active.value, 'a');
   });
 
+  testWidgets('a SingleChildScrollView that scrolls sideways (a table) keeps its own drag and does not throw', (tester) async {
+    final active = await pumpTabs(
+      tester,
+      content: SizedBox(
+        height: 300,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: const ColoredBox(color: Color(0x00000000), child: SizedBox(width: 2000, height: 300)),
+        ),
+      ),
+    );
+    await drag(tester, start, -150);
+    expect(active.value, 'a');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a SingleChildScrollView that does not scroll (a short chip strip) still lets the swipe change tab', (tester) async {
+    final active = await pumpTabs(
+      tester,
+      content: SizedBox(
+        height: 300,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: const ColoredBox(color: Color(0x00000000), child: SizedBox(width: 100, height: 300)),
+        ),
+      ),
+    );
+    await drag(tester, start, -200);
+    expect(active.value, 'b');
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('content returns to rest after the gesture', (tester) async {
     await pumpTabs(tester);
     final before = tester.getTopLeft(find.byKey(const ValueKey('content')));

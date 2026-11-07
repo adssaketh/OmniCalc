@@ -213,9 +213,23 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
         final obj = target as RenderObject;
         // only viewports that sit inside the content area
         if (content != null && _isDescendant(obj, content)) {
-          final viewport = target as RenderViewportBase;
-          final offset = viewport.offset;
-          if (viewport.axis == Axis.horizontal &&
+          // A sliver viewport (ListView, CustomScrollView) or the private single-child viewport behind
+          // SingleChildScrollView (tables, chip strips): both report `axis` and `offset`.
+          Axis? axis;
+          ViewportOffset? offset;
+          if (target is RenderViewportBase) {
+            axis = target.axis;
+            offset = target.offset;
+          } else {
+            try {
+              final dynamic d = target;
+              axis = d.axis as Axis;
+              offset = d.offset as ViewportOffset;
+            } catch (_) {
+              // some other viewport: it does not scroll sideways as far as we can tell
+            }
+          }
+          if (axis == Axis.horizontal &&
               offset is ScrollPosition &&
               offset.hasContentDimensions &&
               offset.maxScrollExtent > 0) {
