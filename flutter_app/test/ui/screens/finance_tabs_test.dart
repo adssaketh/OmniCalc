@@ -16,14 +16,14 @@ import 'package:provider/provider.dart';
 
 import '../../support/fake_currency.dart';
 
-/// Opens the Finance screen, switches to [tabLabel] (the tab strip needs a wide window to show every tab), then goes
-/// to a tall phone-sized window so the whole page is laid out.
+/// Opens the Finance screen at [size] (a tall window, so the whole page is laid out) and switches to [tabLabel]. The
+/// window is never resized after the switch: a layout change remounts the screen and resets the active tab.
 Future<SilentFeedbackService> pumpFinanceTab(
   WidgetTester tester,
   String tabLabel, {
   Size size = const Size(400, 3600),
 }) async {
-  tester.view.physicalSize = const Size(1300, 1400);
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final feedback = SilentFeedbackService();
@@ -39,9 +39,8 @@ Future<SilentFeedbackService> pumpFinanceTab(
   Provider.of<NavigationState>(tester.element(find.byType(AppShell)), listen: false).setMode(CalculatorMode.finance);
   await tester.pump(const Duration(milliseconds: 16));
   await tester.pump(const Duration(milliseconds: 1500));
+  await tester.ensureVisible(find.text(tabLabel));
   await tester.tap(find.text(tabLabel));
-  await tester.pump(const Duration(milliseconds: 600));
-  tester.view.physicalSize = size;
   await tester.pump(const Duration(milliseconds: 600));
   feedback.log.clear();
   return feedback;
@@ -290,17 +289,19 @@ void main() {
       expect(find.text('Yr 1'), findsNothing);
     });
 
-    testWidgets('one column on a phone, two columns from 768 px', (tester) async {
+    testWidgets('one column on a phone', (tester) async {
       await pumpFinanceTab(tester, 'Loan / EMI');
       final input = tester.getRect(find.byKey(const ValueKey('loan-principal-input')));
       final emi = tester.getRect(find.byKey(const ValueKey('loan-emi')));
       expect(emi.top, greaterThan(input.top + 300));
-      tester.view.physicalSize = const Size(1000, 3600);
-      await tester.pump(const Duration(milliseconds: 600));
-      final input2 = tester.getRect(find.byKey(const ValueKey('loan-principal-input')));
-      final emi2 = tester.getRect(find.byKey(const ValueKey('loan-emi')));
-      expect(emi2.left, greaterThan(input2.right));
-      expect((emi2.top - input2.top).abs(), lessThan(150));
+    });
+
+    testWidgets('two columns from 768 px', (tester) async {
+      await pumpFinanceTab(tester, 'Loan / EMI', size: const Size(1000, 3600));
+      final input = tester.getRect(find.byKey(const ValueKey('loan-principal-input')));
+      final emi = tester.getRect(find.byKey(const ValueKey('loan-emi')));
+      expect(emi.left, greaterThan(input.right));
+      expect((emi.top - input.top).abs(), lessThan(150));
     });
   });
 
