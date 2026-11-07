@@ -25,6 +25,7 @@ import '../shell/swipeable_tab_container.dart';
 import 'advanced_keys.dart';
 import 'calc_style.dart';
 import 'calculator_controller.dart';
+import 'data_sheets.dart';
 import 'mode_menu.dart';
 
 /// Screen builder of the shell: the calculator for `standard`, the Phase 5 stand-ins for the other modes.
@@ -62,6 +63,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               expression: expression, result: result, mode: mode, rich: rich),
     );
     _c.onOpenModeMenu = () => showModeMenu(context, _c);
+    _c.onOpenStatTypeMenu = () => showStatTypeDialog(context, _c);
+    _c.onOpenStatEditor = () => showStatEditor(context, _c);
+    _c.onOpenMatrixEditor = () => showMatrixEditor(context, _c);
+    _c.onOpenVectorEditor = () => showVectorEditor(context, _c);
+    _c.onOpenTable = () => showTableSheet(context, _c);
+    _c.onShowMatVecResult = () => showMatVecResult(context, _c);
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
     CasioRuntime.instance.addListener(_casioChanged);
   }

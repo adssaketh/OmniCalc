@@ -9,9 +9,9 @@ import '../../state/casio_settings.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/tokens.dart';
 import 'calculator_controller.dart';
+import 'data_sheets.dart';
 
-/// The MODE menu (manual p.9): COMP, CMPLX, BASE-N and EQN. STAT, MATRIX, VECTOR and TABLE are listed but not available yet
-/// (Phase 7d-2).
+/// The MODE menu (manual p.9): COMP, CMPLX, BASE-N, EQN, STAT, MATRIX, VECTOR and TABLE.
 Future<void> showModeMenu(BuildContext context, CalculatorController c) {
   final t = M3Theme.of(context);
   return showDialog<void>(
@@ -30,7 +30,20 @@ Future<void> showModeMenu(BuildContext context, CalculatorController c) {
             controller: c,
             onPick: (m) {
               Navigator.of(ctx).pop();
-              c.setMode(m);
+              switch (m) {
+                case CasioMode.matrix:
+                  c.enterMatrix();
+                case CasioMode.vector:
+                  c.enterVector();
+                case CasioMode.table:
+                  c.enterTable();
+                default:
+                  c.setMode(m);
+              }
+            },
+            onStat: () {
+              Navigator.of(ctx).pop();
+              showStatTypeDialog(context, c);
             },
             onEqn: () {
               Navigator.of(ctx).pop();
@@ -44,11 +57,12 @@ Future<void> showModeMenu(BuildContext context, CalculatorController c) {
 }
 
 class ModeMenu extends StatelessWidget {
-  const ModeMenu({super.key, required this.controller, required this.onPick, required this.onEqn});
+  const ModeMenu({super.key, required this.controller, required this.onPick, required this.onEqn, this.onStat});
 
   final CalculatorController controller;
   final void Function(CasioMode) onPick;
   final VoidCallback onEqn;
+  final VoidCallback? onStat;
 
   @override
   Widget build(BuildContext context) {
@@ -89,10 +103,10 @@ class ModeMenu extends StatelessWidget {
         item('mode-cmplx', '2  CMPLX', 'complex numbers', selected: m == CasioMode.cmplx, onTap: () => onPick(CasioMode.cmplx)),
         item('mode-base', '3  BASE-N', 'DEC HEX BIN OCT', selected: m == CasioMode.baseN, onTap: () => onPick(CasioMode.baseN)),
         item('mode-eqn', '4  EQN', 'equations', onTap: onEqn),
-        item('mode-stat', '5  STAT', 'next phase'),
-        item('mode-matrix', '6  MATRIX', 'next phase'),
-        item('mode-vector', '7  VECTOR', 'next phase'),
-        item('mode-table', '8  TABLE', 'next phase'),
+        item('mode-stat', '5  STAT', 'statistics', selected: m == CasioMode.stat, onTap: onStat),
+        item('mode-matrix', '6  MATRIX', 'MatA MatB MatC', selected: m == CasioMode.matrix, onTap: () => onPick(CasioMode.matrix)),
+        item('mode-vector', '7  VECTOR', 'VctA VctB VctC', selected: m == CasioMode.vector, onTap: () => onPick(CasioMode.vector)),
+        item('mode-table', '8  TABLE', 'f(x), g(x)', selected: m == CasioMode.table, onTap: () => onPick(CasioMode.table)),
         const SizedBox(height: 12),
       ],
     );

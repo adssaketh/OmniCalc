@@ -151,6 +151,7 @@ void main() {
         AdvancedTab.chemistry,
         AdvancedTab.es,
         AdvancedTab.modes,
+        AdvancedTab.data,
       ]);
     });
 

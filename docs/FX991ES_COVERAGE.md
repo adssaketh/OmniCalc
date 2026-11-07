@@ -28,7 +28,7 @@ total is the whole inventory.
 | A14 | `SHIFT` | Done | 8a | test/ui/calculator_es_test.dart |
 | A15 | `ALPHA` | Done | 8a | test/ui/calculator_es_test.dart |
 | A16 | REPLAY pad (◀ ▶ ▲ ▼) | Done | 8a | test/ui/calculator_es_test.dart |
-| A17 | `MODE` menu (COMP, CMPLX, BASE-N, EQN work; STAT, MATRIX, VECTOR, TABLE are listed as next phase) | Partial | 7d-2 | test/ui/calculator_modes_test.dart |
+| A17 | `MODE` menu (COMP, CMPLX, BASE-N, EQN, STAT, MATRIX, VECTOR, TABLE; the last four open sheets instead of Casio screens) | Done | 7d-2 | test/ui/data_modes_test.dart |
 | A18 | `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec, complex format, STAT frequency and TABLE format settings; Disp and CONT remain) | Partial | 7e | test/casio/casio_settings_test.dart |
 | A19 | `CLR` Setup / Memory / All | Deferred | 7e | - |
 | A20 | `STO` | Done | 7b | test/casio/casio_engine_test.dart |
@@ -124,5 +124,29 @@ total is the whole inventory.
 | K05 | no-solution and infinite-solutions messages | Done | 7d-1 | test/casio/eqn_test.dart |
 | K06 | Coefficient Editor, one solution per `=` with ▲▼ scrolling (a dialog that lists every solution at once) | Partial | 7e | test/casio/eqn_test.dart |
 
-Sections I (STAT) and L to N (MATRIX, VECTOR, TABLE) are Deferred to 7d-2, and O to R (INEQ, VERIF, DIST, persistence) to 7e.
-Their rows are added to this file when each phase starts, one row per inventory item.
+| I01 | STAT types: 1-VAR, A+BX, _+CX², ln X, e^X, A·B^X, A·X^B, 1/X | Done | 7d-2 | test/casio/stat_test.dart |
+| I02 | Statistics Editor: x, y, FREQ columns (40/20/26 lines), Ins, Del, Del-A (a full-height sheet) | Partial | 7d-2 | test/ui/data_modes_test.dart |
+| I03 | 1-VAR results: n, Σx, Σx², x̄, σx, sx, minX, maxX, Q1, Med, Q3 | Done | 7d-2 | test/casio/stat_test.dart |
+| I04 | Paired results: Σy, Σy², Σxy, Σx³, Σx²y, Σx⁴, ȳ, σy, sy, minY, maxY | Done | 7d-2 | test/casio/stat_test.dart |
+| I05 | Regression coefficients A, B, C and r for the seven regression types, x̂, x̂₁, x̂₂, ŷ | Done | 7d-2 | test/casio/stat_test.dart |
+| I06 | Normal distribution P(, Q(, R(, ▸t | Done | 7d-2 | test/casio/stat_test.dart |
+| I07 | Changing the type keeps the data between paired types and clears it between 1-VAR and paired; leaving STAT clears it | Done | 7d-2 | test/ui/data_modes_test.dart |
+| I08 | Errors: Argument ERROR for an incomplete row or a bad FREQ | Done | 7d-2 | test/casio/stat_test.dart |
+| L01 | MATRIX: MatA, MatB, MatC, MatAns, Dim up to 3×3 | Done | 7d-2 | test/casio/matrix_vector_test.dart |
+| L02 | MatA+MatB, MatA−MatB, MatA×MatB, k·MatA | Done | 7d-2 | test/casio/matrix_vector_test.dart |
+| L03 | det, Trn, Ref, Rref, Abs, MatA², MatA³, MatA⁻¹ (exact fractions) | Done | 7d-2 | test/casio/matrix_vector_test.dart |
+| L04 | Dimension ERROR, Math ERROR (singular), Syntax ERROR (wrong power or wrong mode names) | Done | 7d-2 | test/casio/matrix_vector_test.dart |
+| L05 | Matrix editor and MatAns screen with STO (full-height sheets) | Partial | 7d-2 | test/ui/data_modes_test.dart |
+| M01 | VECTOR: VctA, VctB, VctC, VctAns, Dim 2 or 3 | Done | 7d-2 | test/casio/matrix_vector_test.dart |
+| M02 | VctA+VctB, VctA−VctB, k·VctA, Dot, cross product, Abs | Done | 7d-2 | test/casio/matrix_vector_test.dart |
+| M03 | Angle between vectors, unit vector through Abs | Done | 7d-2 | test/casio/matrix_vector_test.dart |
+| M04 | Vector editor and VctAns screen with STO (full-height sheets) | Partial | 7d-2 | test/ui/data_modes_test.dart |
+| N01 | TABLE f(x) with Start, End, Step (defaults 1, 5, 1) | Done | 7d-2 | test/casio/table_test.dart |
+| N02 | TABLE f(x) and g(x) (SETUP table format) | Done | 7d-2 | test/casio/table_test.dart |
+| N03 | Row limits 30 (f) and 20 (f and g), Insufficient MEM above them | Done | 7d-2 | test/casio/table_test.dart |
+| N04 | Argument ERROR for End ≤ Start or Step ≤ 0; Pol, Rec, ∫, d/dx, Σ, ∏ not allowed | Done | 7d-2 | test/casio/table_test.dart |
+| N05 | A cell that cannot be calculated shows ERROR; X takes the last x | Done | 7d-2 | test/casio/table_test.dart |
+| N06 | Table sheet (a full-height sheet; the ▲▼ scrolling of the Casio screen is a scrolling list) | Partial | 7d-2 | test/ui/data_modes_test.dart |
+
+Sections O to R (INEQ, VERIF, DIST, persistence) are Deferred to 7e.
+Their rows are added to this file when that phase starts, one row per inventory item.

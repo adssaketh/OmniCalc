@@ -15,6 +15,8 @@ import '../../engine/casio/config.dart';
 import '../../engine/casio/cval.dart' show CVal, CasioError, CasioErrorKind;
 import '../../engine/casio/engine.dart';
 import '../../engine/casio/format.dart';
+import '../../engine/casio/matrix.dart';
+import '../../engine/casio/stat.dart';
 import '../../engine/casio/solve_calc.dart';
 import '../../engine/chemistry/calc_functions.dart';
 import '../../engine/evaluator.dart';
@@ -42,10 +44,10 @@ void _casioWorker(List<Object?> msg) {
 enum _SessionStage { none, prompt, continueScreen, result, error }
 
 /// `AdvancedTab` of CalculatorScreen.tsx.
-enum AdvancedTab { calculus, trig, powers, prob, constants, chemistry, es, modes }
+enum AdvancedTab { calculus, trig, powers, prob, constants, chemistry, es, modes, data }
 
 /// The calculation mode of the MODE menu (manual p.9). EQN is a separate screen (a dialog), so it is not listed here.
-enum CasioMode { comp, cmplx, baseN }
+enum CasioMode { comp, cmplx, baseN, stat, matrix, vector, table }
 
 /// `ADVANCED_TABS` (id, label, badge).
 const List<({AdvancedTab id, String label, String badge})> advancedTabDefs = [
@@ -60,6 +62,8 @@ const List<({AdvancedTab id, String label, String badge})> advancedTabDefs = [
   (id: AdvancedTab.es, label: 'ES', badge: 'a/b'),
   // Phase 7d: MODE menu, CMPLX keys, BASE-N keys, again appended last.
   (id: AdvancedTab.modes, label: 'Modes', badge: 'MODE'),
+  // Phase 7d-2: STAT, MATRIX, VECTOR and TABLE keys (they depend on the current mode), again appended last.
+  (id: AdvancedTab.data, label: 'Data', badge: 'STAT'),
 ];
 
 /// Memory ribbon actions (`handleMemory`).
@@ -236,6 +240,7 @@ class CalculatorController extends ChangeNotifier {
     _clearModifiers();
     _syntaxError = null;
     if (_busy) return;
+    if (_mode == CasioMode.stat && m != CasioMode.stat) _statData = null;
     _mode = m;
     _bnResult = null;
     _setPlain('0');
@@ -272,6 +277,122 @@ class CalculatorController extends ChangeNotifier {
   void openModeMenu() {
     playSound(ClickType.toggle);
     onOpenModeMenu?.call();
+  }
+
+  // -- STAT / MATRIX / VECTOR / TABLE (Phase 7d-2) --------------------------------------------------------------------
+  StatType _statType = StatType.oneVar;
+  StatData? _statData;
+  final MatVecStore matVec = MatVecStore();
+  CasioMatVec? _mv;
+  CMatrix? _matResult;
+  CVector? _vecResult;
+  String _tableF = '';
+  String _tableG = '';
+
+  /// Set by the screen: open the editors and the result sheet.
+  VoidCallback? onOpenStatEditor;
+  VoidCallback? onOpenStatTypeMenu;
+  VoidCallback? onOpenMatrixEditor;
+  VoidCallback? onOpenVectorEditor;
+  VoidCallback? onOpenTable;
+  VoidCallback? onShowMatVecResult;
+
+  CasioMatVec get _matvec => _mv ??= CasioMatVec(matVec, engine.memory);
+  StatType get statType => _statType;
+  CMatrix? get matrixResult => _matResult;
+  CVector? get vectorResult => _vecResult;
+  String get tableF => _tableF;
+  String get tableG => _tableG;
+
+  /// What the MODE key shows under its label.
+  String get modeName => switch (_mode) {
+        CasioMode.comp => 'COMP',
+        CasioMode.cmplx => 'CMPLX',
+        CasioMode.baseN => 'BASE-N',
+        CasioMode.stat => 'STAT',
+        CasioMode.matrix => 'MATRIX',
+        CasioMode.vector => 'VECTOR',
+        CasioMode.table => 'TABLE',
+      };
+
+  /// The Statistics Editor data. A change of the STAT format (FREQ column) starts it over (manual p.59).
+  StatData get statData {
+    var d = _statData;
+    if (d == null || d.type != _statType || d.freqColumn != engine.config.statFreq) {
+      d = StatData(_statType, engine.config.statFreq);
+      _statData = d;
+    }
+    return d;
+  }
+
+  /// MODE ▸ STAT ▸ a type: enters STAT mode and opens the Statistics Editor.
+  void enterStat(StatType t) {
+    _statData = null;
+    _statType = t;
+    setMode(CasioMode.stat);
+    onOpenStatEditor?.call();
+  }
+
+  /// STAT/DIST ▸ Type: data stays when the change is between paired types, and is cleared between 1-VAR and paired (manual p.59).
+  void changeStatType(StatType t) {
+    if (t.paired != _statType.paired) {
+      _statData = null;
+    } else if (_statData != null) {
+      _statData = statData.withType(t);
+    }
+    _statType = t;
+    notifyListeners();
+  }
+
+  void enterMatrix() {
+    setMode(CasioMode.matrix);
+    onOpenMatrixEditor?.call();
+  }
+
+  void enterVector() {
+    setMode(CasioMode.vector);
+    onOpenVectorEditor?.call();
+  }
+
+  void enterTable() {
+    setMode(CasioMode.table);
+    onOpenTable?.call();
+  }
+
+  /// The table function entered on the calculation line, kept for the Table sheet.
+  void setTableFunctions(String f, String g) {
+    _tableF = f;
+    _tableG = g;
+  }
+
+  void openStatTypeMenu() {
+    playSound(ClickType.toggle);
+    onOpenStatTypeMenu?.call();
+  }
+
+  void openStatEditor() {
+    playSound(ClickType.toggle);
+    if (_mode == CasioMode.stat) onOpenStatEditor?.call();
+  }
+
+  void openMatVecEditor() {
+    playSound(ClickType.toggle);
+    if (_mode == CasioMode.matrix) onOpenMatrixEditor?.call();
+    if (_mode == CasioMode.vector) onOpenVectorEditor?.call();
+  }
+
+  void openTableSheet() {
+    playSound(ClickType.toggle);
+    if (_mode == CasioMode.table) onOpenTable?.call();
+  }
+
+  /// Re-shows the last matrix / vector result (MatAns / VctAns screen).
+  void showMatVecResult() {
+    if (_mode == CasioMode.matrix && matVec.matAns != null || _mode == CasioMode.vector && matVec.vctAns != null) {
+      _matResult = matVec.matAns;
+      _vecResult = matVec.vctAns;
+      onShowMatVecResult?.call();
+    }
   }
   bool _copied = false;
   bool _hasEvaluated = false;
@@ -319,6 +440,9 @@ class CalculatorController extends ChangeNotifier {
   List<String> get annunciators => [
         if (_mode == CasioMode.cmplx) 'CMPLX',
         if (_mode == CasioMode.baseN) ...['BASE', _baseMode.label],
+        if (_mode == CasioMode.stat) 'STAT',
+        if (_mode == CasioMode.matrix) 'MAT',
+        if (_mode == CasioMode.vector) 'VCT',
         if (_shift) 'S',
         if (_alpha) 'A',
         if (_memory != 0) 'M',
@@ -1239,6 +1363,27 @@ class CalculatorController extends ChangeNotifier {
         final o = complexEngine.evaluate(expr, engine.config);
         final forms = [for (final f in o.forms) CasioShown(f.text, f.expr)];
         _commitCustom(forms, shown);
+      } else if (_mode == CasioMode.stat) {
+        final o = StatCalc.evaluate(expr, CasioStat.fromData(statData), engine);
+        _commitCustom(o.forms, shown);
+      } else if (_mode == CasioMode.matrix || _mode == CasioMode.vector) {
+        final vectorMode = _mode == CasioMode.vector;
+        final o = _matvec.evaluate(expr, engine.config, vectorMode: vectorMode);
+        if (o.scalar != null) {
+          _commitCustom(CasioFormatter(engine.config).forms(o.scalar!), shown);
+        } else {
+          final cells = CasioMatVec.cellTexts((o.matrix ?? o.vector)!, engine.config);
+          final text = o.matrix != null
+              ? '[${[for (var r = 0; r < o.matrix!.rows; r++) '[${cells.sublist(r * o.matrix!.cols, (r + 1) * o.matrix!.cols).join(' ')}]'].join('')}]'
+              : '[${cells.join(' ')}]';
+          _matResult = o.matrix;
+          _vecResult = o.vector;
+          _commitCustom([CasioShown(text, vectorMode ? 'VctAns' : 'MatAns')], shown);
+          onShowMatVecResult?.call();
+        }
+      } else if (_mode == CasioMode.table) {
+        _tableF = expr;
+        onOpenTable?.call();
       } else {
         final o = _bn.evaluate(expr, _baseMode);
         _bnResult = o;

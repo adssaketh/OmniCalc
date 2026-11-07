@@ -365,7 +365,7 @@ void main() {
     });
   });
 
-  test('the Modes tab (Phase 7d) is the last Advanced tab and the others keep their order', () {
+  test('the Data tab (Phase 7d-2) is the last Advanced tab, Modes (Phase 7d) before it and the others keep their order', () {
     expect(advancedTabDefs.map((d) => d.id).toList(), [
       AdvancedTab.calculus,
       AdvancedTab.trig,
@@ -375,6 +375,7 @@ void main() {
       AdvancedTab.chemistry,
       AdvancedTab.es,
       AdvancedTab.modes,
+      AdvancedTab.data,
     ]);
   });
 }

@@ -4,6 +4,7 @@ import '../../theme/motion.dart';
 import '../../theme/tokens.dart';
 import '../../engine/casio/base_n.dart';
 import 'calc_style.dart';
+import '../../engine/casio/stat.dart';
 import 'calculator_controller.dart';
 
 enum _Role { onSurface, primary, tertiary }
@@ -259,7 +260,7 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
       _Adv baseKey(String label, BaseMode m) => _Adv(label, 'base', () => c.setBaseMode(m),
           kind: c.mode == CasioMode.baseN && c.baseMode == m ? _Kind.active : _Kind.normal, labelSize: 12, textSm: false, role: _Role.primary);
       return [
-        _Adv('MODE', c.mode == CasioMode.cmplx ? 'CMPLX' : (c.mode == CasioMode.baseN ? 'BASE-N' : 'COMP'), c.openModeMenu,
+        _Adv('MODE', c.modeName, c.openModeMenu,
             labelSize: 12, textSm: true, role: _Role.primary),
         inp('i', 'imaginary', 'i', textSm: true),
         inp('∠', 'polar angle', '∠', textSm: true),
@@ -289,6 +290,74 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         inp('E', 'hex digit', 'E', textSm: true),
         inp('F', 'hex digit', 'F', textSm: true),
       ];
+    case AdvancedTab.data:
+      // Phase 7d-2. The keys follow the current mode: STAT (editor, type, statistics), MATRIX, VECTOR, TABLE. In the other
+      // modes the four entry keys open each mode.
+      _Adv sym(String label, String sub) => _Adv(label, sub, () => c.handleInput(label), labelSize: label.length > 3 ? 12 : 14, textSm: true);
+      switch (c.mode) {
+        case CasioMode.stat:
+          final t = c.statType;
+          final two = t.paired;
+          return [
+            _Adv('Data', 'editor', c.openStatEditor, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('Type', 'STAT type', c.openStatTypeMenu, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('MODE', 'menu', c.openModeMenu, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
+            for (final k in two ? StatKeys.sums2 : StatKeys.sums1) sym(k, 'sum'),
+            for (final k in two ? StatKeys.vars2 : StatKeys.vars1) sym(k, 'variable'),
+            for (final k in two ? StatKeys.minMax2 : StatKeys.minMax1) sym(k, two ? 'min/max' : 'min/max/quart'),
+            if (two)
+              for (final k in (t == StatType.quadratic ? StatKeys.regQuad : StatKeys.reg)) sym(k, 'regression'),
+            if (!two) for (final k in StatKeys.distr) sym(k, 'normal'),
+          ];
+        case CasioMode.matrix:
+          return [
+            _Adv('Dim', 'MatA..C', c.openMatVecEditor, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('MODE', 'menu', c.openModeMenu, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('Ans', 'MatAns', c.showMatVecResult, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
+            inp('MatA', 'matrix', 'MatA', textSm: true),
+            inp('MatB', 'matrix', 'MatB', textSm: true),
+            inp('MatC', 'matrix', 'MatC', textSm: true),
+            inp('MatAns', 'last result', 'MatAns', textSm: true),
+            tpl('det', 'determinant', 'det('),
+            tpl('Trn', 'transpose', 'Trn('),
+            tpl('Ref', 'row echelon', 'Ref('),
+            tpl('Rref', 'reduced', 'Rref('),
+            tpl('Abs', 'element-wise', 'Abs('),
+            inp('x²', 'square', '^2'),
+            inp('x³', 'cube', '^3'),
+            inp('x⁻¹', 'inverse', '^(−1)'),
+          ];
+        case CasioMode.vector:
+          return [
+            _Adv('Dim', 'VctA..C', c.openMatVecEditor, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('MODE', 'menu', c.openModeMenu, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('Ans', 'VctAns', c.showMatVecResult, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
+            inp('VctA', 'vector', 'VctA', textSm: true),
+            inp('VctB', 'vector', 'VctB', textSm: true),
+            inp('VctC', 'vector', 'VctC', textSm: true),
+            inp('VctAns', 'last result', 'VctAns', textSm: true),
+            inp('Dot', 'dot product', ' Dot ', textSm: true),
+            inp('×', 'cross product', '×', textSm: true),
+            tpl('Abs', 'magnitude', 'Abs('),
+          ];
+        case CasioMode.table:
+          return [
+            _Adv('f(x)', 'table', c.openTableSheet, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('MODE', 'menu', c.openModeMenu, labelSize: 12, textSm: true, role: _Role.primary),
+            inp('X', 'var X', 'X', textSm: true),
+            _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
+          ];
+        default:
+          return [
+            _Adv('STAT', 'statistics', c.openStatTypeMenu, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('MATRIX', 'MatA..C', c.enterMatrix, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('VECTOR', 'VctA..C', c.enterVector, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('TABLE', 'f(x) table', c.enterTable, labelSize: 12, textSm: true, role: _Role.primary),
+          ];
+      }
     case AdvancedTab.chemistry:
       // Phase 6. The functions take their text in quotes, e.g. molar("H2O"), amass("Fe"), atomic("Fe"), atomicsym(26).
       return [

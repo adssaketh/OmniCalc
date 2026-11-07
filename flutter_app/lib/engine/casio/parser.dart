@@ -145,14 +145,22 @@ const Set<String> _funcSet = <String>{
   'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh', 'sec', 'csc', 'cot',
   'sech', 'csch', 'coth', 'ln', 'log', 'log2', 'logb', 'exp', 'sqrt', 'cbrt', 'root', 'abs', 'round', 'floor', 'ceil',
   'sign', 'sgn', 'npr', 'ncr', 'mod', 'gcd', 'lcm', 'pol', 'rec', 'rnd', 'intg', 'int', 'const', 'conv', 'ranint#', 'dms',
-  'integral', 'deriv', 'sumx', 'prodx', 'arg', 'conjg',
+  'integral', 'deriv', 'sumx', 'prodx', 'arg', 'conjg', 'det', 'trn', 'ref', 'rref',
 };
+
+/// MATRIX / VECTOR mode (Phase 7d-2): the matrix and vector variables, `det(`, `Trn(`, `Ref(`, `Rref(` and the dot product
+/// `Dot` (priority 9). Longest word first.
+const List<String> _matvecWords = <String>[
+  'MatAns', 'VctAns', 'MatA', 'MatB', 'MatC', 'VctA', 'VctB', 'VctC', 'Rref', 'Trn', 'Ref', 'det', 'Dot',
+];
+
+const Set<String> kMatVecNames = <String>{'MatAns', 'VctAns', 'MatA', 'MatB', 'MatC', 'VctA', 'VctB', 'VctC'};
 
 /// ∫, d/dx, Σ and ∏ (Phase 7c). They always have their argument list in parentheses.
 const Set<String> kCalculusNames = <String>{'integral', 'deriv', 'sumx', 'prodx'};
 
 /// [complex]: CMPLX mode. `i` is the imaginary unit and `∠` the polar-coordinate symbol (priority 8, manual p.96).
-List<_Tok> _lex(String src, {bool complex = false}) {
+List<_Tok> _lex(String src, {bool complex = false, bool matvec = false}) {
   final out = <_Tok>[];
   var i = 0;
   final n = src.length;
@@ -364,6 +372,20 @@ List<_Tok> _lex(String src, {bool complex = false}) {
       i += 4;
       continue;
     }
+    if (matvec && isLetter(c)) {
+      String? word;
+      for (final w in _matvecWords) {
+        if (src.startsWith(w, i)) {
+          word = w;
+          break;
+        }
+      }
+      if (word != null) {
+        out.add(word == 'Dot' ? _Tok(_T.op, 'Dot', i) : _Tok(_T.id, kMatVecNames.contains(word) ? word : word.toLowerCase(), i));
+        i += word.length;
+        continue;
+      }
+    }
     if (isLetter(c)) {
       // longest known name first (case sensitive for the capitalised Casio names, insensitive for the rest)
       String? best;
@@ -420,15 +442,16 @@ String _canonical(String name, String raw) {
 // ---------------------------------------------------------------------------------------------------------------------
 
 class CasioParser {
-  CasioParser._(this._toks, this._complex);
+  CasioParser._(this._toks, this._complex, [this._matvec = false]);
 
   final List<_Tok> _toks;
   final bool _complex;
+  final bool _matvec;
   var _p = 0;
 
-  /// [complex] turns on `i` and `∠` (the CMPLX mode, Phase 7d).
-  static Node parse(String src, {bool complex = false}) {
-    final parser = CasioParser._(_lex(src, complex: complex), complex);
+  /// [complex] turns on `i` and `∠` (the CMPLX mode, Phase 7d). [matvec] turns on the matrix / vector words (Phase 7d-2).
+  static Node parse(String src, {bool complex = false, bool matvec = false}) {
+    final parser = CasioParser._(_lex(src, complex: complex, matvec: matvec), complex, matvec);
     final node = parser._parseSequence();
     if (parser._cur.t != _T.end) throw CasioError(CasioErrorKind.syntax, parser._cur.pos);
     return node;
@@ -475,11 +498,22 @@ class CasioParser {
 
   // 10: × ÷ ÷R
   Node _parseMul() {
-    var left = _parsePerm();
+    var left = _parseDot();
     while (_cur.t == _T.op && (_cur.s == '*' || _cur.s == '/' || _cur.s == '÷R')) {
       final op = _next();
-      final right = _parsePerm();
+      final right = _parseDot();
       left = NBin(op.s == '*' ? '*' : (op.s == '/' ? '/' : '÷R'), left, right, op.pos);
+    }
+    return left;
+  }
+
+  // 9: dot product (VECTOR mode)
+  Node _parseDot() {
+    var left = _parsePerm();
+    while (_cur.t == _T.op && _cur.s == 'Dot') {
+      final op = _next();
+      final right = _parsePerm();
+      left = NBin('Dot', left, right, op.pos);
     }
     return left;
   }
@@ -625,7 +659,7 @@ class CasioParser {
     final lower = name.toLowerCase();
     // plain names
     if (name == 'π' || name == 'e' || name == 'Ans' || name == 'PreAns' || name == 'Ran#' || _variables.contains(name) ||
-        _constWords.contains(name) || (_complex && name == 'i')) {
+        _constWords.contains(name) || (_complex && name == 'i') || (_matvec && kMatVecNames.contains(name))) {
       return NName(name, t.pos);
     }
     if (!_funcSet.contains(lower)) throw CasioError(CasioErrorKind.syntax, t.pos);

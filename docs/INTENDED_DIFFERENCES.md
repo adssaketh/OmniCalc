@@ -214,3 +214,12 @@ Input the unit would reject is a Syntax ERROR: a second decimal point, two numbe
 | `@` | rad | 0 | ERROR Syntax ERROR | p.19, p.93-94 |
 | `1,2` | deg | 2 | ERROR Syntax ERROR | p.19, p.93-94 |
 | `1,2` | rad | 2 | ERROR Syntax ERROR | p.19, p.93-94 |
+
+## D-MODE-1 Editors are sheets
+STAT (Statistics Editor), MATRIX, VECTOR and TABLE use full-height sheets with text fields instead of the 3-line Casio screens and cursor keys. The data and the results are the same. A matrix or vector result opens a result sheet with STO buttons for MatA–C or VctA–C.
+
+## D-MODE-2 Display style
+The display style (Math or Linear) follows the structure typed. The mode does not switch it by itself, and STAT, MATRIX, VECTOR and TABLE lines are typed in linear form.
+
+## D-VEC-1 Cross product of 2-dimensional vectors
+VctA×VctB with two 2-dimensional vectors gives a 3-dimensional vector (0, 0, z). The manual's example is not explicit on the display; unverified on a real device.
