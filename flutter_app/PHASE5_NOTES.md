@@ -3,6 +3,11 @@
 Phase 5 is split. **5a is the Converter, 5b (below) is Currency.** Still to do: 5c Finance (loan, compound, SWP, tip, ROI),
 5d Physics Lab, 5e Grapher, 5f History tape + Settings modal + Guide sheet (these replace `dev_settings_sheet.dart`).
 
+**To do in 5c (requested): fix the converter swap button.** In `converter_screen.dart` the phone layout puts the 40 px button in a
+24 px `OverflowBox`, so only the middle 24 px take touches. Lay it out like `currency_screen.dart` does (two 8 px gaps around a
+full 40 px button, `Center(child: _swapButton(t))`), keeping the md layout (button centred over the grid) as it is. Add a test
+that taps the top edge of the button on a phone-width screen.
+
 # Phase 5b: Currency
 
 The web app has no Currency screen of its own: `CurrencyConverter.tsx` is the first tab of `FinanceScreen.tsx`. So 5b ports that
