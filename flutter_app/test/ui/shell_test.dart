@@ -48,13 +48,13 @@ Future<void> settle(WidgetTester tester) async {
 
 void main() {
   group('phone layout', () {
-    testWidgets('bottom bar shows the destinations and the calculator placeholder', (tester) async {
+    testWidgets('bottom bar shows the destinations and the calculator', (tester) async {
       await pumpApp(tester);
       for (final label in ['Calculator', 'Converter', 'Finance', 'Recents']) {
         expect(find.text(label), findsOneWidget, reason: label);
       }
       expect(find.text('Physics Lab'), findsNothing);
-      expect(find.text('Calculator (Phase 4)'), findsOneWidget);
+      expect(find.text('fx ADV'), findsOneWidget); // the calculator keypad (Phase 4)
       expect(find.text('Calc'), findsNothing); // the rail's short label is not used here
     });
 
@@ -84,7 +84,8 @@ void main() {
       final h = await pumpApp(tester);
       h.history.add(expression: '1+1', result: '2');
       await tester.pump();
-      expect(find.text('1'), findsOneWidget);
+      // the keypad's "1" key plus the badge
+      expect(find.text('1'), findsNWidgets(2));
       await tester.tap(find.text('Recents'));
       await settle(tester);
       expect(navOf(tester).isHistoryOpen, isTrue);

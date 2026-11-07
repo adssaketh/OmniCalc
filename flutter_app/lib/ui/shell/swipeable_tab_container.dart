@@ -47,6 +47,8 @@ class SwipeableTabContainer extends StatefulWidget {
     this.showNavButtons = false,
     this.tabBarBottomPadding,
     this.tabBarBottomMargin,
+    this.tabPillColor,
+    this.fillHeight = false,
   });
 
   final List<TabItem> tabs;
@@ -59,6 +61,12 @@ class SwipeableTabContainer extends StatefulWidget {
   /// `tabBarClassName` replaces the default `pb-2 mb-3 sm:mb-4` (compact: `pb-1 mb-2`); these two stand in for it.
   final double? tabBarBottomPadding;
   final double? tabBarBottomMargin;
+
+  /// `tabPillClassName` (a background class on the pill track); null keeps the default `surfaceContainer`.
+  final Color? tabPillColor;
+
+  /// The content area takes the height left under the tab bar (`h-full flex-1` in the TSX) instead of its own height.
+  final bool fillHeight;
 
   @override
   State<SwipeableTabContainer> createState() => _SwipeableTabContainerState();
@@ -394,7 +402,7 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
                     constraints: BoxConstraints(minWidth: wide ? 0 : box.maxWidth),
                     child: DecoratedBox(
                       key: _rowKey,
-                      decoration: BoxDecoration(color: t.surfaceContainer, borderRadius: const BorderRadius.all(Radius.circular(9999))),
+                      decoration: BoxDecoration(color: widget.tabPillColor ?? t.surfaceContainer, borderRadius: const BorderRadius.all(Radius.circular(9999))),
                       child: Padding(
                         padding: EdgeInsets.all(inset),
                         child: Stack(
@@ -443,12 +451,7 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
       ),
     );
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        tabBar,
-        Listener(
+    final content = Listener(
           behavior: HitTestBehavior.translucent,
           onPointerDown: _onPointerDown,
           onPointerMove: _onPointerMove,
@@ -464,10 +467,18 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
             child: SizedBox(
               key: _contentKey,
               width: double.infinity,
+              height: widget.fillHeight ? double.infinity : null,
               child: widget.child,
             ),
           ),
-        ),
+        );
+
+    return Column(
+      mainAxisSize: widget.fillHeight ? MainAxisSize.max : MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        tabBar,
+        if (widget.fillHeight) Expanded(child: content) else content,
       ],
     );
   }

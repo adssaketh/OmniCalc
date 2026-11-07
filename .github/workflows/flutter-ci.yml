@@ -43,6 +43,12 @@ jobs:
           node tools/gen_theme_data.mjs --check
           node tools/gen_svg_paths.mjs --check
 
+      - name: Lucide icons match lucide-react 0.546 (the web app's version)
+        run: |
+          mkdir -p "$RUNNER_TEMP/lucide"
+          (cd "$RUNNER_TEMP/lucide" && npm init -y >/dev/null && npm install lucide-react@0.546.0 --no-audit --no-fund)
+          LUCIDE_DIR="$RUNNER_TEMP/lucide/node_modules/lucide-react" node tools/gen_lucide_paths.mjs --check
+
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
