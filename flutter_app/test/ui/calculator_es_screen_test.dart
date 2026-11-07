@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart' show ValueKey;
+import 'package:flutter/widgets.dart' show Scrollable, ValueKey;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'calculator_screen_test.dart' show pumpApp, settle, shown, tapKey;
@@ -18,6 +18,12 @@ Future<void> openEsTab(WidgetTester tester) async {
 Future<void> esKey(WidgetTester tester, String label) async {
   final f = find.text(label).first;
   await tester.ensureVisible(f);
+  // The ES tab has seven rows since Phase 7b: when the page is scrolled far down, the first rows sit under the pinned
+  // display. Scroll the page back until the key can be hit, as a person would.
+  for (var i = 0; i < 6 && find.text(label).hitTestable().evaluate().isEmpty; i++) {
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, 160), warnIfMissed: false);
+    await tester.pump(const Duration(milliseconds: 50));
+  }
   await tester.tap(f, warnIfMissed: false);
   await tester.pump(const Duration(milliseconds: 50));
 }

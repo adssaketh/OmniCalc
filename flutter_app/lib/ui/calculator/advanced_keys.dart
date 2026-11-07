@@ -241,6 +241,15 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         _Adv('Y', 'var Y', () => c.handleInput('Y'), labelSize: 14, textSm: true, role: _Role.tertiary, mono: true),
         _Adv('→', 'exit', c.exitGroup, labelSize: 14, textSm: true, role: _Role.primary),
         _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
+        // Phase 7b: the result keys of the unit
+        layered('S⇔D', 'fraction ⇔ dec', main: c.toggleForm, shift: c.toggleMixedFraction, shiftLabel: 'ab/c⇔d/c', size: 12),
+        _Adv('FACT', 'prime factors', c.factorResult, labelSize: 12, textSm: true),
+        inp('÷R', 'remainder', '÷R', textSm: true),
+        layered('ENG', 'engineering', main: () => c.engShift(right: true), shift: () => c.engShift(right: false), shiftLabel: '←', size: 12),
+        inp('Ans', 'last result', 'Ans', textSm: true),
+        tpl('Rnd', 'round', 'Rnd('),
+        tpl('Pol', 'to polar', 'Pol('),
+        tpl('Rec', 'to rect.', 'Rec('),
       ];
     case AdvancedTab.chemistry:
       // Phase 6. The functions take their text in quotes, e.g. molar("H2O"), amass("Fe"), atomic("Fe"), atomicsym(26).

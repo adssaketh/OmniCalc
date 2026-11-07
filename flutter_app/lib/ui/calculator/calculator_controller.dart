@@ -8,6 +8,10 @@ import '../../editor/linear.dart';
 import '../../editor/nodes.dart';
 import '../../editor/rich_layout.dart' show CaretHit;
 import '../../engine/calc_error.dart';
+import '../../engine/casio/config.dart';
+import '../../engine/casio/cval.dart' show CasioError;
+import '../../engine/casio/engine.dart';
+import '../../engine/casio/format.dart';
 import '../../engine/chemistry/calc_functions.dart';
 import '../../engine/evaluator.dart';
 import '../../engine/types.dart';
@@ -88,7 +92,9 @@ class CalculatorController extends ChangeNotifier {
     int decimalPrecision = -1,
     bool soundEnabled = true,
     bool hapticEnabled = true,
-  })  : _clipboard = clipboard ?? _systemClipboard,
+    CasioEngine? engine,
+  })  : engine = engine ?? CasioEngine(),
+        _clipboard = clipboard ?? _systemClipboard,
         _angleMode = angleMode,
         _decimalPrecision = decimalPrecision,
         _soundEnabled = soundEnabled,
@@ -96,6 +102,9 @@ class CalculatorController extends ChangeNotifier {
         _equation = MathEvaluator.getYDefinition();
 
   final FeedbackService feedback;
+
+  /// The Casio calculation engine (shared with the rest of the app so that Ans and the variables persist).
+  final CasioEngine engine;
   AddHistory? onAddHistory;
 
   /// When set it is used instead of [onAddHistory] and also receives the rich tree.
@@ -120,8 +129,11 @@ class CalculatorController extends ChangeNotifier {
     required bool soundEnabled,
     required bool hapticEnabled,
     required List<HistoryItem> history,
+    CasioConfig? casio,
   }) {
-    final changed = angleMode != _angleMode ||
+    final cfg = casio ?? engine.config.copyWith(angle: angleMode == AngleMode.rad ? CasioAngle.rad : CasioAngle.deg, legacyPrecision: decimalPrecision);
+    final changed = cfg != engine.config ||
+        angleMode != _angleMode ||
         decimalPrecision != _decimalPrecision ||
         !identical(history, _history);
     _angleMode = angleMode;
@@ -129,7 +141,11 @@ class CalculatorController extends ChangeNotifier {
     _soundEnabled = soundEnabled;
     _hapticEnabled = hapticEnabled;
     _history = history;
-    if (changed) _livePreviewKey = null;
+    engine.config = cfg;
+    if (changed) {
+      _livePreviewKey = null;
+      _forms = const <CasioShown>[];
+    }
   }
 
   // -- State ------------------------------------------------------------------------------------------------------
@@ -173,6 +189,16 @@ class CalculatorController extends ChangeNotifier {
   AdvancedTab _advancedTab = AdvancedTab.calculus;
   bool _copied = false;
   bool _hasEvaluated = false;
+
+  /// The last `=` came from the Casio engine; its forms (S⇔D cycles through them) and whether it was an error.
+  List<CasioShown> _forms = const <CasioShown>[];
+  int _formIndex = 0;
+  bool _resultError = false;
+  bool _continuesAns = false;
+  String? _resultRemainder;
+  Map<String, String> _resultExtra = const <String, String>{};
+  bool _resultFactorable = false;
+  String _answerDisplay = '';
   bool _isEqualsPressed = false;
   // Phase 8a: the SHIFT / ALPHA / INS prefixes of the ES keys and the Syntax ERROR line
   bool _shift = false;
@@ -230,7 +256,20 @@ class CalculatorController extends ChangeNotifier {
   }
 
   /// After pressing = the display holds either a number or an error message; messages are shown small and in full.
-  bool get isErrorResult => _hasEvaluated && !_reErrorResult.hasMatch(_expression.trim());
+  bool get isErrorResult =>
+      _hasEvaluated && (_resultError || (_forms.isEmpty && !_reErrorResult.hasMatch(_expression.trim())));
+
+  /// What the answer line shows after `=` (fractions as `7⌟6`, √ and π forms, DMS, recurring decimals, `3 R 2`).
+  ExprDoc get resultDoc => _answerDisplay.isEmpty ? _doc : ExprDoc.plain(_answerDisplay);
+
+  /// The other forms of the last result exist (S⇔D has something to switch to).
+  bool get canToggleForm => _hasEvaluated && _forms.length > 1;
+
+  /// `Pol`/`Rec` second outputs, for example {'θ': '45'} (empty for other results).
+  Map<String, String> get resultExtra => _resultExtra;
+
+  /// The result is a positive integer of at most 10 digits that FACT may factor.
+  bool get canFactor => _hasEvaluated && _resultFactorable;
 
   /// `playSound`: click sound and haptic tick, each only when enabled.
   void playSound([ClickType type = ClickType.num]) {
@@ -265,7 +304,9 @@ class CalculatorController extends ChangeNotifier {
       _lastAnswer = '';
       if (const ['+', '−', '×', '÷', '^', '%'].contains(token) || token.startsWith('^')) {
         _expression = prev + token;
+        _continuesAns = true;
       } else {
+        _continuesAns = false;
         _expression = token;
       }
       notifyListeners();
@@ -646,7 +687,7 @@ class CalculatorController extends ChangeNotifier {
 
   /// Small answer under the expression while typing; mirrors what = would calculate (`livePreview`).
   String get livePreview {
-    final key = '$_hasEvaluated|$_expression|$_equation|${_angleMode.id}|$_decimalPrecision';
+    final key = '$_hasEvaluated|$_expression|$_equation|${_angleMode.id}|$_decimalPrecision|${engine.config.hashCode}';
     if (key == _livePreviewKey) return _livePreviewValue;
     _livePreviewKey = key;
     _livePreviewValue = _computeLivePreview();
@@ -665,7 +706,7 @@ class CalculatorController extends ChangeNotifier {
       final closeCount = _count(exprToEval, ')');
       if (openCount > closeCount) exprToEval += ')' * (openCount - closeCount);
       if (hasEquation && isPlainNumber) exprToEval = 'y($trimmed)';
-      final formatted = MathEvaluator.formatResult(MathEvaluator.evaluate(exprToEval, _angleMode), _decimalPrecision);
+      final formatted = engine.evaluate(exprToEval, legacyAngle: _angleMode, commit: false).text;
       return formatted == trimmed ? '' : formatted;
     } catch (_) {
       return '';
@@ -722,8 +763,29 @@ class CalculatorController extends ChangeNotifier {
       }
 
       // atomicsym(26) is the one chemistry function whose answer is text (Phase 6); it only works as the whole expression
-      final formatted = ChemCalcFunctions.textResult(exprToEval) ??
-          MathEvaluator.formatResult(MathEvaluator.evaluate(exprToEval, _angleMode), _decimalPrecision);
+      final chemText = ChemCalcFunctions.textResult(exprToEval);
+      CasioOutcome? outcome;
+      if (chemText == null) {
+        outcome = engine.evaluate(exprToEval, continuesAns: _continuesAns, legacyAngle: _angleMode);
+      }
+      _continuesAns = false;
+      final String formatted;
+      final String reusable;
+      if (outcome == null) {
+        formatted = chemText!;
+        reusable = chemText;
+      } else {
+        final first = outcome.shown;
+        formatted = outcome.remainder != null ? '${first.display} R ${outcome.remainder}' : first.display;
+        reusable = first.expr;
+      }
+      _forms = outcome == null || outcome.legacy ? const <CasioShown>[] : outcome.forms;
+      _formIndex = 0;
+      _engExp = 0;
+      _resultError = false;
+      _resultRemainder = outcome?.remainder;
+      _resultExtra = outcome?.extra ?? const <String, String>{};
+      _resultFactorable = outcome?.factorable ?? false;
 
       _lastQuestion = shown;
       _lastAnswer = formatted;
@@ -737,14 +799,78 @@ class CalculatorController extends ChangeNotifier {
         onAddHistory?.call(expression: shown, result: formatted, mode: mode);
       }
 
-      _setPlain(formatted);
+      _setPlain(outcome?.remainder != null ? first0(outcome!) : reusable);
+      _answerDisplay = formatted == _expression ? '' : formatted;
       _hasEvaluated = true;
     } catch (err) {
-      final msg = err is CalcError ? err.message : 'Error';
+      final msg = err is CalcError || err is CasioError ? CasioEngine.messageOf(err) : 'Error';
       _lastQuestion = _expression;
       _lastAnswer = msg;
       _setPlain(msg);
+      _forms = const <CasioShown>[];
+      _resultError = true;
+      _resultFactorable = false;
+      _resultExtra = const <String, String>{};
+      _answerDisplay = '';
+      _continuesAns = false;
       _hasEvaluated = true;
+    }
+    notifyListeners();
+  }
+
+  /// With a remainder only the quotient continues into the next calculation (manual p.25).
+  String first0(CasioOutcome o) => o.shown.expr;
+
+  // -- S⇔D, mixed fractions, FACT ------------------------------------------------------------------------------------
+  /// S⇔D: the next form of the result (fraction ⇔ decimal, √ ⇔ decimal, π ⇔ decimal, recurring when Rdec is on).
+  void toggleForm() {
+    playSound(ClickType.op);
+    if (!canToggleForm || _resultRemainder != null) return;
+    _formIndex = (_formIndex + 1) % _forms.length;
+    _showForm(_forms[_formIndex]);
+  }
+
+  /// SHIFT S⇔D: improper ⇔ mixed fraction.
+  void toggleMixedFraction() {
+    playSound(ClickType.op);
+    if (!_hasEvaluated || _resultRemainder != null) return;
+    final v = engine.memory.ans;
+    final shown = CasioFormatter(engine.config).toggleMixed(v);
+    if (shown == null) return;
+    _showForm(shown);
+  }
+
+  void _showForm(CasioShown f) {
+    _setPlain(f.expr);
+    _answerDisplay = f.display == f.expr ? '' : f.display;
+    _lastAnswer = f.display;
+    notifyListeners();
+  }
+
+  int _engExp = 0;
+
+  /// ENG (right) and SHIFT ENG (left): the exponent of the shown result moves by multiples of 3 (manual p.24-25).
+  void engShift({required bool right}) {
+    playSound(ClickType.op);
+    if (!_hasEvaluated || _resultError || _resultRemainder != null || engine.memory.ans.v == 0) return;
+    _engExp = CasioFormatter.nextEng(_engExp, right: right);
+    _showForm(CasioFormatter(engine.config).eng(engine.memory.ans.v, _engExp));
+  }
+
+  /// FACT: prime factorization of the last result.
+  void factorResult() {
+    playSound(ClickType.op);
+    if (!_hasEvaluated || _resultRemainder != null) return;
+    try {
+      final text = engine.factorize();
+      _answerDisplay = text;
+      _lastAnswer = text;
+    } catch (_) {
+      _resultError = true;
+      _answerDisplay = '';
+      _setPlain('Math ERROR');
+      _lastAnswer = 'Math ERROR';
+      _forms = const <CasioShown>[];
     }
     notifyListeners();
   }
@@ -754,6 +880,7 @@ class CalculatorController extends ChangeNotifier {
     playSound(ClickType.op);
     try {
       // The expression is evaluated first, whatever the action: when it does not evaluate nothing happens.
+      if (_hasEvaluated && _resultError) throw const CalcError('error on the display');
       final currentVal = MathEvaluator.evaluate(_expression, _angleMode);
       switch (action) {
         case MemoryAction.mc:

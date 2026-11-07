@@ -1,0 +1,1058 @@
+[
+ {
+  "expr": "10÷0",
+  "mode": "deg",
+  "old": "ERROR Division by zero",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "10÷0",
+  "mode": "rad",
+  "old": "ERROR Division by zero",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "10/0",
+  "mode": "deg",
+  "old": "ERROR Division by zero",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "10/0",
+  "mode": "rad",
+  "old": "ERROR Division by zero",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "2^3^2",
+  "mode": "deg",
+  "old": "512",
+  "new": "64.0",
+  "id": "D-PRI-2",
+  "manual": "p.96"
+ },
+ {
+  "expr": "2^3^2",
+  "mode": "rad",
+  "old": "512",
+  "new": "64.0",
+  "id": "D-PRI-2",
+  "manual": "p.96"
+ },
+ {
+  "expr": "5.5.5",
+  "mode": "deg",
+  "old": "27.5",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "5.5.5",
+  "mode": "rad",
+  "old": "27.5",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "..5",
+  "mode": "deg",
+  "old": "5",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "..5",
+  "mode": "rad",
+  "old": "5",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": ".5+.5",
+  "mode": "deg",
+  "old": "10",
+  "new": "1.0",
+  "id": "D-NUM-1",
+  "manual": "p.17-18"
+ },
+ {
+  "expr": ".5+.5",
+  "mode": "rad",
+  "old": "10",
+  "new": "1.0",
+  "id": "D-NUM-1",
+  "manual": "p.17-18"
+ },
+ {
+  "expr": "2e",
+  "mode": "deg",
+  "old": "ERROR Unexpected token: e",
+  "new": "value 5.43656365691808",
+  "id": "D-MUL-1",
+  "manual": "p.96"
+ },
+ {
+  "expr": "2e",
+  "mode": "rad",
+  "old": "ERROR Unexpected token: e",
+  "new": "value 5.43656365691808",
+  "id": "D-MUL-1",
+  "manual": "p.96"
+ },
+ {
+  "expr": "2c",
+  "mode": "deg",
+  "old": "2",
+  "new": "599584916.0",
+  "id": "D-MUL-1",
+  "manual": "p.96"
+ },
+ {
+  "expr": "2c",
+  "mode": "rad",
+  "old": "2",
+  "new": "599584916.0",
+  "id": "D-MUL-1",
+  "manual": "p.96"
+ },
+ {
+  "expr": "tan(90)",
+  "mode": "deg",
+  "old": "ERROR Undefined (tan 90°)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "sec(90)",
+  "mode": "deg",
+  "old": "ERROR Undefined (sec 90°)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "csc(0)",
+  "mode": "deg",
+  "old": "ERROR Undefined (csc 0°)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "csc(0)",
+  "mode": "rad",
+  "old": "ERROR Undefined (csc 0°)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "cot(0)",
+  "mode": "deg",
+  "old": "ERROR Undefined (cot 0°)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "cot(0)",
+  "mode": "rad",
+  "old": "ERROR Undefined (cot 0°)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "asin(2)",
+  "mode": "deg",
+  "old": "ERROR Domain error (asin)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "asin(2)",
+  "mode": "rad",
+  "old": "ERROR Domain error (asin)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "acos(−2)",
+  "mode": "deg",
+  "old": "ERROR Domain error (acos)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "acos(−2)",
+  "mode": "rad",
+  "old": "ERROR Domain error (acos)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "acosh(0.5)",
+  "mode": "deg",
+  "old": "ERROR Domain error: acosh(x) requires x >= 1",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "acosh(0.5)",
+  "mode": "rad",
+  "old": "ERROR Domain error: acosh(x) requires x >= 1",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "atanh(1)",
+  "mode": "deg",
+  "old": "ERROR Domain error: atanh(x) requires -1 < x < 1",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "atanh(1)",
+  "mode": "rad",
+  "old": "ERROR Domain error: atanh(x) requires -1 < x < 1",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "csch(0)",
+  "mode": "deg",
+  "old": "ERROR Division by zero in csch(0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "csch(0)",
+  "mode": "rad",
+  "old": "ERROR Division by zero in csch(0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "coth(0)",
+  "mode": "deg",
+  "old": "ERROR Division by zero in coth(0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "coth(0)",
+  "mode": "rad",
+  "old": "ERROR Division by zero in coth(0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "ln(0)",
+  "mode": "deg",
+  "old": "ERROR Domain error (ln <= 0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "ln(0)",
+  "mode": "rad",
+  "old": "ERROR Domain error (ln <= 0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "ln(−1)",
+  "mode": "deg",
+  "old": "ERROR Domain error (ln <= 0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "ln(−1)",
+  "mode": "rad",
+  "old": "ERROR Domain error (ln <= 0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "log(0)",
+  "mode": "deg",
+  "old": "ERROR Domain error (log <= 0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "log(0)",
+  "mode": "rad",
+  "old": "ERROR Domain error (log <= 0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "log2(0)",
+  "mode": "deg",
+  "old": "ERROR Domain error (log2 <= 0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "log2(0)",
+  "mode": "rad",
+  "old": "ERROR Domain error (log2 <= 0)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "sqrt(−1)",
+  "mode": "deg",
+  "old": "ERROR Domain error (sqrt negative)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "sqrt(−1)",
+  "mode": "rad",
+  "old": "ERROR Domain error (sqrt negative)",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "³√27",
+  "mode": "deg",
+  "old": "5.196152422706632",
+  "new": "3.0",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "³√27",
+  "mode": "rad",
+  "old": "5.196152422706632",
+  "new": "3.0",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "³√(27)",
+  "mode": "deg",
+  "old": "5.196152422706632",
+  "new": "3.0",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "³√(27)",
+  "mode": "rad",
+  "old": "5.196152422706632",
+  "new": "3.0",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "³√2",
+  "mode": "deg",
+  "old": "1.4142135623730951",
+  "new": "1.25992104989487",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "³√2",
+  "mode": "rad",
+  "old": "1.4142135623730951",
+  "new": "1.25992104989487",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "root(0,5)",
+  "mode": "deg",
+  "old": "ERROR 0th root is undefined",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "root(0,5)",
+  "mode": "rad",
+  "old": "ERROR 0th root is undefined",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "root(3,−8)",
+  "mode": "deg",
+  "old": "0",
+  "new": "-2.0",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "root(3,−8)",
+  "mode": "rad",
+  "old": "0",
+  "new": "-2.0",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "logb(2,0)",
+  "mode": "deg",
+  "old": "ERROR Invalid syntax",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "logb(2,0)",
+  "mode": "rad",
+  "old": "ERROR Invalid syntax",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "(−8)^(1/3)",
+  "mode": "deg",
+  "old": "NaN",
+  "new": "-2.0",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "(−8)^(1/3)",
+  "mode": "rad",
+  "old": "NaN",
+  "new": "-2.0",
+  "id": "D-ROOT-1",
+  "manual": "p.38, p.99-100"
+ },
+ {
+  "expr": "2^1023",
+  "mode": "deg",
+  "old": "8.98846567431158e+307",
+  "new": "ERROR Math ERROR",
+  "id": "D-RANGE-1",
+  "manual": "p.97, p.99"
+ },
+ {
+  "expr": "2^1023",
+  "mode": "rad",
+  "old": "8.98846567431158e+307",
+  "new": "ERROR Math ERROR",
+  "id": "D-RANGE-1",
+  "manual": "p.97, p.99"
+ },
+ {
+  "expr": "2^1024",
+  "mode": "deg",
+  "old": "Infinity",
+  "new": "ERROR Math ERROR",
+  "id": "D-RANGE-1",
+  "manual": "p.97, p.99"
+ },
+ {
+  "expr": "2^1024",
+  "mode": "rad",
+  "old": "Infinity",
+  "new": "ERROR Math ERROR",
+  "id": "D-RANGE-1",
+  "manual": "p.97, p.99"
+ },
+ {
+  "expr": "0^0",
+  "mode": "deg",
+  "old": "1",
+  "new": "ERROR Math ERROR",
+  "id": "D-DOM-1",
+  "manual": "p.99-100"
+ },
+ {
+  "expr": "0^0",
+  "mode": "rad",
+  "old": "1",
+  "new": "ERROR Math ERROR",
+  "id": "D-DOM-1",
+  "manual": "p.99-100"
+ },
+ {
+  "expr": "0^−1",
+  "mode": "deg",
+  "old": "Infinity",
+  "new": "ERROR Math ERROR",
+  "id": "D-DOM-1",
+  "manual": "p.99-100"
+ },
+ {
+  "expr": "0^−1",
+  "mode": "rad",
+  "old": "Infinity",
+  "new": "ERROR Math ERROR",
+  "id": "D-DOM-1",
+  "manual": "p.99-100"
+ },
+ {
+  "expr": "−2^2",
+  "mode": "deg",
+  "old": "4",
+  "new": "-4.0",
+  "id": "D-PRI-1",
+  "manual": "p.96"
+ },
+ {
+  "expr": "−2^2",
+  "mode": "rad",
+  "old": "4",
+  "new": "-4.0",
+  "id": "D-PRI-1",
+  "manual": "p.96"
+ },
+ {
+  "expr": "2^3!",
+  "mode": "deg",
+  "old": "64",
+  "new": "40320.0",
+  "id": "D-PRI-2",
+  "manual": "p.96"
+ },
+ {
+  "expr": "2^3!",
+  "mode": "rad",
+  "old": "64",
+  "new": "40320.0",
+  "id": "D-PRI-2",
+  "manual": "p.96"
+ },
+ {
+  "expr": "5^2^0",
+  "mode": "deg",
+  "old": "5",
+  "new": "1.0",
+  "id": "D-PRI-2",
+  "manual": "p.96"
+ },
+ {
+  "expr": "5^2^0",
+  "mode": "rad",
+  "old": "5",
+  "new": "1.0",
+  "id": "D-PRI-2",
+  "manual": "p.96"
+ },
+ {
+  "expr": "170!",
+  "mode": "deg",
+  "old": "7.257415615307994e+306",
+  "new": "ERROR Math ERROR",
+  "id": "D-RANGE-1",
+  "manual": "p.97, p.99"
+ },
+ {
+  "expr": "170!",
+  "mode": "rad",
+  "old": "7.257415615307994e+306",
+  "new": "ERROR Math ERROR",
+  "id": "D-RANGE-1",
+  "manual": "p.97, p.99"
+ },
+ {
+  "expr": "171!",
+  "mode": "deg",
+  "old": "Infinity",
+  "new": "ERROR Math ERROR",
+  "id": "D-RANGE-1",
+  "manual": "p.97, p.99"
+ },
+ {
+  "expr": "171!",
+  "mode": "rad",
+  "old": "Infinity",
+  "new": "ERROR Math ERROR",
+  "id": "D-RANGE-1",
+  "manual": "p.97, p.99"
+ },
+ {
+  "expr": "(−1)!",
+  "mode": "deg",
+  "old": "ERROR Factorial requires non-negative integer",
+  "new": "Math ERROR",
+  "id": "D-DOM-1",
+  "manual": "p.99-100"
+ },
+ {
+  "expr": "(−1)!",
+  "mode": "rad",
+  "old": "ERROR Factorial requires non-negative integer",
+  "new": "Math ERROR",
+  "id": "D-DOM-1",
+  "manual": "p.99-100"
+ },
+ {
+  "expr": "2.5!",
+  "mode": "deg",
+  "old": "ERROR Factorial requires non-negative integer",
+  "new": "Math ERROR",
+  "id": "D-DOM-1",
+  "manual": "p.99-100"
+ },
+ {
+  "expr": "2.5!",
+  "mode": "rad",
+  "old": "ERROR Factorial requires non-negative integer",
+  "new": "Math ERROR",
+  "id": "D-DOM-1",
+  "manual": "p.99-100"
+ },
+ {
+  "expr": "nCr(5,6)",
+  "mode": "deg",
+  "old": "ERROR nCr requires integers with 0 <= r <= n",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "nCr(5,6)",
+  "mode": "rad",
+  "old": "ERROR nCr requires integers with 0 <= r <= n",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "nPr(3,5)",
+  "mode": "deg",
+  "old": "ERROR nPr requires integers with 0 <= r <= n",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "nPr(3,5)",
+  "mode": "rad",
+  "old": "ERROR nPr requires integers with 0 <= r <= n",
+  "new": "Math ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "gcd(12.4,18.2)",
+  "mode": "deg",
+  "old": "6",
+  "new": "ERROR Argument ERROR",
+  "id": "D-ARG-1",
+  "manual": "p.46-47"
+ },
+ {
+  "expr": "gcd(12.4,18.2)",
+  "mode": "rad",
+  "old": "6",
+  "new": "ERROR Argument ERROR",
+  "id": "D-ARG-1",
+  "manual": "p.46-47"
+ },
+ {
+  "expr": "(",
+  "mode": "deg",
+  "old": "ERROR Mismatched parentheses",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "(",
+  "mode": "rad",
+  "old": "ERROR Mismatched parentheses",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": ")",
+  "mode": "deg",
+  "old": "ERROR Mismatched parentheses",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": ")",
+  "mode": "rad",
+  "old": "ERROR Mismatched parentheses",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "()",
+  "mode": "deg",
+  "old": "ERROR Evaluation error",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "()",
+  "mode": "rad",
+  "old": "ERROR Evaluation error",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "2+",
+  "mode": "deg",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "2+",
+  "mode": "rad",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "+",
+  "mode": "deg",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "+",
+  "mode": "rad",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "2++",
+  "mode": "deg",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "2++",
+  "mode": "rad",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "×2",
+  "mode": "deg",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "×2",
+  "mode": "rad",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "abc",
+  "mode": "deg",
+  "old": "0",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "abc",
+  "mode": "rad",
+  "old": "0",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "2 3",
+  "mode": "deg",
+  "old": "6",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "2 3",
+  "mode": "rad",
+  "old": "6",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "2^",
+  "mode": "deg",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "2^",
+  "mode": "rad",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "1/",
+  "mode": "deg",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "1/",
+  "mode": "rad",
+  "old": "ERROR Invalid syntax",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "(1+2",
+  "mode": "deg",
+  "old": "ERROR Mismatched parentheses",
+  "new": "value 3.0",
+  "id": "D-PAREN-1",
+  "manual": "p.19, p.102"
+ },
+ {
+  "expr": "(1+2",
+  "mode": "rad",
+  "old": "ERROR Mismatched parentheses",
+  "new": "value 3.0",
+  "id": "D-PAREN-1",
+  "manual": "p.19, p.102"
+ },
+ {
+  "expr": "1+2)",
+  "mode": "deg",
+  "old": "ERROR Mismatched parentheses",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "1+2)",
+  "mode": "rad",
+  "old": "ERROR Mismatched parentheses",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "sin",
+  "mode": "deg",
+  "old": "ERROR Invalid function call",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "sin",
+  "mode": "rad",
+  "old": "ERROR Invalid function call",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "sin()",
+  "mode": "deg",
+  "old": "ERROR Invalid function call",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "sin()",
+  "mode": "rad",
+  "old": "ERROR Invalid function call",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "sin(",
+  "mode": "deg",
+  "old": "ERROR Mismatched parentheses",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "sin(",
+  "mode": "rad",
+  "old": "ERROR Mismatched parentheses",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "x",
+  "mode": "deg",
+  "old": "0",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "x",
+  "mode": "rad",
+  "old": "0",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "5 5",
+  "mode": "deg",
+  "old": "25",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "5 5",
+  "mode": "rad",
+  "old": "25",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "nCr(5)",
+  "mode": "deg",
+  "old": "ERROR nCr requires: nCr(n, r)",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "nCr(5)",
+  "mode": "rad",
+  "old": "ERROR nCr requires: nCr(n, r)",
+  "new": "Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "gcd(5)",
+  "mode": "deg",
+  "old": "ERROR gcd requires: gcd(a, b)",
+  "new": "Syntax ERROR",
+  "id": "D-ARG-1",
+  "manual": "p.46-47"
+ },
+ {
+  "expr": "gcd(5)",
+  "mode": "rad",
+  "old": "ERROR gcd requires: gcd(a, b)",
+  "new": "Syntax ERROR",
+  "id": "D-ARG-1",
+  "manual": "p.46-47"
+ },
+ {
+  "expr": "unknown(5)",
+  "mode": "deg",
+  "old": "5",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "unknown(5)",
+  "mode": "rad",
+  "old": "5",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "@",
+  "mode": "deg",
+  "old": "0",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "@",
+  "mode": "rad",
+  "old": "0",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "1,2",
+  "mode": "deg",
+  "old": "2",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ },
+ {
+  "expr": "1,2",
+  "mode": "rad",
+  "old": "2",
+  "new": "ERROR Syntax ERROR",
+  "id": "D-SYN-1",
+  "manual": "p.19, p.93-94"
+ }
+]

@@ -114,7 +114,7 @@ void main() {
       c.handleEvaluate();
       expect(c.syntaxError, isNull);
       expect(c.hasEvaluated, isTrue);
-      expect(c.lastAnswer, '0.25');
+      expect(c.lastAnswer, '1⌟4'); // D-FRAC-1: exact fraction (was 0.25)
     });
 
     test('an entirely empty fraction is a Syntax ERROR on its numerator', () {
@@ -132,7 +132,7 @@ void main() {
       c.moveCaretDown();
       c.handleInput('4');
       c.handleEvaluate();
-      expect(c.lastAnswer, '0.75');
+      expect(c.lastAnswer, '3⌟4'); // D-FRAC-1 (was 0.75)
     });
 
     test('2 then a square root multiplies: 2√9 = 6', () {
@@ -188,7 +188,7 @@ void main() {
       c.moveCaretDown();
       c.handleInput('2');
       c.handleEvaluate();
-      expect(c.lastAnswer, '1.5');
+      expect(c.lastAnswer, '3⌟2'); // D-FRAC-1 (was 1.5)
     });
 
     test('the history entry keeps the rich tree, and reloading it gives the structure back', () {
@@ -258,7 +258,7 @@ void main() {
       c.esPower('−1');
       expect(c.doc.linear, '4^(−1)');
       c.handleEvaluate();
-      expect(c.lastAnswer, '0.25');
+      expect(c.lastAnswer, '1⌟4'); // D-FRAC-1: exact fraction (was 0.25)
     });
 
     test('nesting is limited: the fifth structure is refused', () {
@@ -321,7 +321,7 @@ void main() {
       expect(c.insArmed, isFalse);
       expect(c.doc.linear, '1+sqrt(((7)÷(6)))');
       c.handleEvaluate();
-      expect(double.parse(c.lastAnswer), closeTo(1 + 1.0801234497346435, 1e-6));
+      expect(c.lastAnswer, '(6+√42)÷6'); // D-SURD-1: exact √ form (was 2.0801234497)
     });
 
     test('INS armed but the key has no wrap (fraction) just inserts and releases', () {

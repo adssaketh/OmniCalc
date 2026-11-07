@@ -5,10 +5,12 @@ import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../../engine/casio/config.dart';
 import '../../engine/types.dart';
 import '../../services/feedback_service.dart';
 import '../../services/link_service.dart';
 import '../../state/app_settings.dart';
+import '../../state/casio_settings.dart';
 import '../../state/navigation_state.dart';
 import '../../state/settings_store.dart';
 import '../../theme/glass.dart';
@@ -33,7 +35,21 @@ const String kRepoLabel = 'github.com/adssaketh/OmniCalc';
 const String kPrivacyPolicyUrl = 'https://github.com/adssaketh/OmniCalc/blob/main/PRIVACY.md';
 
 /// `ActiveSheet` of SettingsModal.tsx.
-enum SettingsSubSheet { none, theme, colorMode, angleMode, precision, vibration, privacy, resetConfirm }
+enum SettingsSubSheet {
+  none,
+  theme,
+  colorMode,
+  angleMode,
+  precision,
+  vibration,
+  privacy,
+  resetConfirm,
+  calcStyle,
+  percentStyle,
+  resultDisplay,
+  numberFormat,
+  fractionFormat
+}
 
 /// `ThemeOption`.
 class ThemeOption {
@@ -804,7 +820,18 @@ class _SettingsSheetState extends State<SettingsSheet> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    CasioRuntime.instance.addListener(_casioChanged);
+  }
+
+  void _casioChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
   void dispose() {
+    CasioRuntime.instance.removeListener(_casioChanged);
     _toastTimer?.cancel();
     if (_nav?.innerBack == _innerBack) _nav!.innerBack = null;
     super.dispose();
@@ -816,6 +843,7 @@ class _SettingsSheetState extends State<SettingsSheet> {
 
   void _reset(SettingsStore store) {
     store.update(resetSettings);
+    CasioRuntime.instance.reset();
     setState(() {
       _active = SettingsSubSheet.none;
       _showResetToast = true;
@@ -834,6 +862,7 @@ class _SettingsSheetState extends State<SettingsSheet> {
     final feedback = context.read<FeedbackService>();
     final links = context.read<LinkService>();
     final s = store.settings;
+    final cs = CasioRuntime.instance.settings;
     final isOpen = nav.isSettingsOpen;
     final sm = MediaQuery.sizeOf(context).width >= 640;
     final px = sm ? 20.0 : 16.0;
@@ -1119,6 +1148,62 @@ class _SettingsSheetState extends State<SettingsSheet> {
                         chevron: true,
                         onTap: () => _openSub(SettingsSubSheet.precision),
                       ),
+                      _SettingsRow(
+                        key: const ValueKey('row-calc-style'),
+                        icon: LucideIconId.calculator,
+                        title: 'Calculation style',
+                        subtitle: cs.useCasio ? 'Casio (default)' : 'OmniCalc (legacy)',
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.calcStyle),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-percent-style'),
+                        icon: LucideIconId.hash,
+                        title: 'Percent style',
+                        subtitle: cs.phonePercent ? 'OmniCalc (default)' : 'Casio postfix',
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.percentStyle),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-result-display'),
+                        icon: LucideIconId.hash,
+                        title: 'Result display',
+                        subtitle: cs.decimalFirst ? 'Decimal first (LineIO)' : 'Math (fractions, √ and π)',
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.resultDisplay),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-number-format'),
+                        icon: LucideIconId.hash,
+                        title: 'Number format',
+                        subtitle: casioNumberFormatLabel(cs),
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.numberFormat),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-fraction-format'),
+                        icon: LucideIconId.hash,
+                        title: 'Fraction format',
+                        subtitle: cs.mixedFractions ? 'Mixed (a b/c)' : 'Improper (d/c)',
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.fractionFormat),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-rdec'),
+                        icon: LucideIconId.hash,
+                        title: 'Recurring decimals (Rdec)',
+                        subtitle: 'S⇔D can show 1÷7 as 0.142857 with a bar over the period',
+                        trailing: M3Switch(key: const ValueKey('switch-rdec'), on: cs.recurring),
+                        onTap: () => CasioRuntime.instance.update((c) => c.copyWith(recurring: !c.recurring)),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-gra'),
+                        icon: LucideIconId.compass,
+                        title: 'Gradians (GRA)',
+                        subtitle: 'Angle unit with 400 grads in a full circle; overrides DEG and RAD',
+                        trailing: M3Switch(key: const ValueKey('switch-gra'), on: cs.gradians),
+                        onTap: () => CasioRuntime.instance.update((c) => c.copyWith(gradians: !c.gradians)),
+                      ),
                     ]),
                     const SizedBox(height: 20),
                     _Section(title: 'Feedback', children: [
@@ -1353,6 +1438,91 @@ class _SettingsSheetState extends State<SettingsSheet> {
           ],
           onSelect: (id) {
             update((c) => c.copyWith(decimalPrecision: id));
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<bool>(
+          isOpen: isOpen && _active == SettingsSubSheet.calcStyle,
+          title: 'Calculation style',
+          description: 'How an expression is read and its result shown',
+          selected: cs.useCasio,
+          options: const [
+            _ChoiceOption<bool>(true, 'Casio (default)', 'The fx-991ES PLUS rules: priorities, exact fractions, √ and π results, input-range errors.'),
+            _ChoiceOption<bool>(false, 'OmniCalc (legacy)', 'The original OmniCalc engine, unchanged.'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) => c.copyWith(useCasio: id));
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<bool>(
+          isOpen: isOpen && _active == SettingsSubSheet.percentStyle,
+          title: 'Percent style',
+          description: 'What the % key does after + and −',
+          selected: cs.phonePercent,
+          options: const [
+            _ChoiceOption<bool>(true, 'OmniCalc (default)', '100+10% = 110 and 200−10% = 180, as on a phone.'),
+            _ChoiceOption<bool>(false, 'Casio postfix', '% divides by 100: 100+10% = 100.1. 150×20% = 30 either way.'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) => c.copyWith(phonePercent: id));
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<bool>(
+          isOpen: isOpen && _active == SettingsSubSheet.resultDisplay,
+          title: 'Result display',
+          description: 'What = shows first; S⇔D switches to the other form',
+          selected: cs.decimalFirst,
+          options: const [
+            _ChoiceOption<bool>(false, 'Math (fractions, √ and π)', 'MthIO-MathO: 2÷3 gives a fraction, √2×√3 gives √6.'),
+            _ChoiceOption<bool>(true, 'Decimal first', 'LineIO: results start as decimals, S⇔D gives the exact form.'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) => c.copyWith(
+                decimalFirst: id, displayFormat: id ? CasioDisplayFormat.lineIO : CasioDisplayFormat.mathO));
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<int>(
+          isOpen: isOpen && _active == SettingsSubSheet.numberFormat,
+          title: 'Number format',
+          description: 'Fix, Sci, Norm 1 and Norm 2 of the calculator',
+          selected: casioNumberFormatId(cs),
+          options: [
+            const _ChoiceOption<int>(0, 'Norm 1', 'Exponent form below 10⁻² and from 10¹⁰'),
+            const _ChoiceOption<int>(1, 'Norm 2', 'Exponent form below 10⁻⁹ and from 10¹⁰'),
+            for (var d = 0; d <= 9; d++)
+              _ChoiceOption<int>(100 + d, 'Fix $d', '$d decimal places, e.g. ${(3.14159265358979).toStringAsFixed(d)}'),
+            for (var d = 1; d <= 9; d++) _ChoiceOption<int>(200 + d, 'Sci $d', '$d significant digits'),
+            const _ChoiceOption<int>(200, 'Sci 0', '10 significant digits'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) {
+              if (id == 0) return c.copyWith(numberFormat: CasioNumberFormat.norm1, digits: 0);
+              if (id == 1) return c.copyWith(numberFormat: CasioNumberFormat.norm2, digits: 0);
+              if (id >= 200) return c.copyWith(numberFormat: CasioNumberFormat.sci, digits: id - 200);
+              return c.copyWith(numberFormat: CasioNumberFormat.fix, digits: id - 100);
+            });
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<bool>(
+          isOpen: isOpen && _active == SettingsSubSheet.fractionFormat,
+          title: 'Fraction format',
+          description: 'How fraction results larger than 1 are written',
+          selected: cs.mixedFractions,
+          options: const [
+            _ChoiceOption<bool>(false, 'Improper (d/c)', '7⌟6'),
+            _ChoiceOption<bool>(true, 'Mixed (a b/c)', '1⌟1⌟6'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) => c.copyWith(mixedFractions: id));
             _closeSub();
           },
           onClose: _closeSub,
@@ -1612,3 +1782,18 @@ class _GithubPainter extends CustomPainter {
   @override
   bool shouldRepaint(_GithubPainter old) => old.color != color;
 }
+
+/// Id of the number-format choice: 0 Norm 1, 1 Norm 2, 100+n Fix n, 200+n Sci n (Sci 0 = 10 digits).
+int casioNumberFormatId(CasioSettings c) => switch (c.numberFormat) {
+      CasioNumberFormat.norm1 => 0,
+      CasioNumberFormat.norm2 => 1,
+      CasioNumberFormat.fix => 100 + c.digits,
+      CasioNumberFormat.sci => 200 + c.digits,
+    };
+
+String casioNumberFormatLabel(CasioSettings c) => switch (c.numberFormat) {
+      CasioNumberFormat.norm1 => 'Norm 1',
+      CasioNumberFormat.norm2 => 'Norm 2',
+      CasioNumberFormat.fix => 'Fix ${c.digits}',
+      CasioNumberFormat.sci => 'Sci ${c.digits}',
+    };

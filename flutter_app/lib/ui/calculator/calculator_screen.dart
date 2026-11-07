@@ -8,6 +8,7 @@ import '../../editor/expr_doc.dart';
 import '../../editor/rich_expression_view.dart';
 import '../../engine/types.dart';
 import '../../services/feedback_service.dart';
+import '../../state/casio_settings.dart';
 import '../../state/history_store.dart';
 import '../../state/navigation_state.dart';
 import '../../state/settings_store.dart';
@@ -53,12 +54,18 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     final history = context.read<HistoryStore>();
     _c = CalculatorController(
       feedback: context.read<FeedbackService>(),
+      engine: CasioRuntime.instance.engine,
       onAddHistoryRich: (
               {required expression, required result, required mode, rich}) =>
           history.add(
               expression: expression, result: result, mode: mode, rich: rich),
     );
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
+    CasioRuntime.instance.addListener(_casioChanged);
+  }
+
+  void _casioChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -79,6 +86,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   @override
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_onHardwareKey);
+    CasioRuntime.instance.removeListener(_casioChanged);
     final pinned = _pinned;
     final shown = _pinnedShown;
     if (pinned != null && shown) {
@@ -191,6 +199,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       soundEnabled: settings.soundEnabled,
       hapticEnabled: settings.hapticEnabled,
       history: history.items,
+      casio: CasioRuntime.instance.configFor(settings),
     );
 
     final size = MediaQuery.sizeOf(context);
@@ -626,7 +635,7 @@ class _PortraitDisplay extends StatelessWidget {
       final fit = Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: RichExpressionView(
-          doc: c.doc,
+          doc: c.hasEvaluated ? c.resultDoc : c.doc,
           max: 72,
           min: 26,
           color: c.hasEvaluated ? t.primary : t.onSurface,

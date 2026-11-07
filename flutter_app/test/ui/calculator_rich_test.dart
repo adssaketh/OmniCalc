@@ -108,7 +108,7 @@ void main() {
       expect(c.expression, '4^(-1)');
       expect(c.caretInGroup, isFalse);
       c.handleEvaluate();
-      expect(c.expression, '0.25');
+      expect(c.expression, '(1÷4)'); // D-FRAC-1: exact fraction (was 0.25)
     });
 
     test('a template with a power opens it with the caret inside', () {

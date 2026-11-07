@@ -251,7 +251,7 @@ void main() {
       final c = make();
       type(c, '10÷0');
       c.handleEvaluate();
-      expect(c.expression, 'Division by zero');
+      expect(c.expression, 'Math ERROR'); // intended difference: the unit's own message (docs/INTENDED_DIFFERENCES.md, D-ERR-1)
       expect(c.lastQuestion, '10÷0');
       expect(c.hasEvaluated, true);
       expect(c.isErrorResult, true);
@@ -358,7 +358,7 @@ void main() {
       c.handleMemory(MemoryAction.mc);
       expect(c.memory, 4);
       c.handleMemory(MemoryAction.mr);
-      expect(c.expression, 'Division by zero');
+      expect(c.expression, 'Math ERROR'); // intended difference: the unit's own message (docs/INTENDED_DIFFERENCES.md, D-ERR-1)
     });
   });
 
