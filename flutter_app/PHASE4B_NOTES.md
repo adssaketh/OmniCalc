@@ -50,7 +50,9 @@ raised and lowered, typed characters go inside them, and the engine still receiv
 - Structured nodes (fraction, root, integral...), placeholders and wrap-in-function are Part 9 / Phase 8a.
 
 ## Verification status
-**Nothing was compiled or run here** (no Dart SDK reachable from the sandbox). CI (analyze, test, APK) is the only check.
+**Not compiled in the authoring sandbox** (no Dart SDK reachable). CI is the check: the first push (`41c5177`) failed 5 tests whose
+expectations were wrong (test-font ascent/descent, display tracking of -0.025 em, landscape display lookup); fixed in `fef56dc`,
+and Flutter CI (analyze, all tests) is green on it. Not yet tried on a device.
 Tests added: `test/editor/linear_test.dart` (round trip over all golden expressions, 4000 random strings, structure,
 caret rules, JSON, Unicode), `expr_doc_test.dart`, `rich_layout_test.dart` (exact numbers with the Ahem test font),
 `rich_expression_view_test.dart` (parity with `AutoFitText`, taps, blink, semantics), `test/ui/calculator_rich_test.dart`
