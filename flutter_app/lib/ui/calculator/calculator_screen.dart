@@ -392,7 +392,8 @@ class _AngleBadge extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: vPad),
         child: Text(
-          controller.angleMode.id.toUpperCase(),
+          // from the store, not the controller: the controller only learns the new mode when the screen rebuilds
+          context.watch<SettingsStore>().settings.angleMode.id.toUpperCase(),
           style: calcText(size: size, weight: FontWeight.w700, color: t.primary, lineHeight: size * (size == 12 ? 16 / 12 : 20 / 14), mono: true),
         ),
       ),

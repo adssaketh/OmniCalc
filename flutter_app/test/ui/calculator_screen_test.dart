@@ -106,7 +106,7 @@ void main() {
       await pumpApp(tester);
       await settle(tester);
       await tester.sendKeyEvent(LogicalKeyboardKey.digit6, character: '6');
-      await tester.sendKeyEvent(LogicalKeyboardKey.asterisk, character: '*');
+      await tester.sendKeyEvent(LogicalKeyboardKey.numpadMultiply);
       await tester.sendKeyEvent(LogicalKeyboardKey.digit7, character: '7');
       await tester.pump();
       expect(shown(tester), '6×7');
