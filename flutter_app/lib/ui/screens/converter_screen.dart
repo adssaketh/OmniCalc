@@ -298,7 +298,9 @@ class _ConverterScreenState extends State<ConverterScreen> {
               Stack(
                 alignment: Alignment.centerRight,
                 children: [
-                  TextField(
+                  Material(
+                    type: MaterialType.transparency,
+                    child: TextField(
                     key: const ValueKey('converter-input'),
                     controller: _input,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
@@ -318,6 +320,7 @@ class _ConverterScreenState extends State<ConverterScreen> {
                         tabular: true,
                       ),
                     ),
+                  ),
                   ),
                   if (_input.text.isNotEmpty)
                     GestureDetector(
