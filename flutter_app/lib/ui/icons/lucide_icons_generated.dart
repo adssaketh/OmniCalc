@@ -1,11 +1,11 @@
 // GENERATED FILE - DO NOT EDIT.
-// Source of truth: lucide-react 0.546.0 (the web app's icon library), icons: copy, check, delete, corner-down-left, chevron-up, rotate-ccw, ruler, scale, thermometer, square, box, gauge, hard-drive, clock, activity, zap, compass, magnet, arrow-left-right, chevron-down, globe, landmark, piggy-bank, wallet, receipt, chart-line, refresh-cw, trending-up, triangle-alert.
+// Source of truth: lucide-react 0.546.0 (the web app's icon library), icons: copy, check, delete, corner-down-left, chevron-up, rotate-ccw, ruler, scale, thermometer, square, box, gauge, hard-drive, clock, activity, zap, compass, magnet, arrow-left-right, chevron-down, globe, landmark, piggy-bank, wallet, receipt, chart-line, refresh-cw, trending-up, triangle-alert, search, atom, orbit, sparkles, flame.
 // Regenerate with: node flutter_app/tools/gen_lucide_paths.mjs
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:ui';
 
-enum LucideIconId { copy, check, delete, cornerDownLeft, chevronUp, rotateCcw, ruler, scale, thermometer, square, box, gauge, hardDrive, clock, activity, zap, compass, magnet, arrowLeftRight, chevronDown, globe, landmark, piggyBank, wallet, receipt, lineChart, refreshCw, trendingUp, alertTriangle }
+enum LucideIconId { copy, check, delete, cornerDownLeft, chevronUp, rotateCcw, ruler, scale, thermometer, square, box, gauge, hardDrive, clock, activity, zap, compass, magnet, arrowLeftRight, chevronDown, globe, landmark, piggyBank, wallet, receipt, lineChart, refreshCw, trendingUp, alertTriangle, search, atom, orbit, sparkles, flame }
 
 /// lucide "copy"
 Path _lucideCopy() {
@@ -515,6 +515,89 @@ Path _lucideAlertTriangle() {
   return p;
 }
 
+/// lucide "search"
+Path _lucideSearch() {
+  final p = Path();
+  p.moveTo(21.0, 21.0);
+  p.lineTo(16.66, 16.66);
+  p.addOval(Rect.fromCircle(center: const Offset(11.0, 11.0), radius: 8.0));
+  return p;
+}
+
+/// lucide "atom"
+Path _lucideAtom() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 1.0));
+  p.moveTo(20.2, 20.2);
+  p.cubicTo(22.24, 18.17, 20.22, 12.84, 15.7, 8.3);
+  p.cubicTo(11.16, 3.78, 5.83, 1.76, 3.8, 3.8);
+  p.cubicTo(1.76, 5.83, 3.78, 11.16, 8.3, 15.7);
+  p.cubicTo(12.84, 20.22, 18.17, 22.24, 20.2, 20.2);
+  p.close();
+  p.moveTo(15.7, 15.7);
+  p.cubicTo(20.22, 11.16, 22.24, 5.83, 20.2, 3.8);
+  p.cubicTo(18.17, 1.76, 12.84, 3.78, 8.3, 8.3);
+  p.cubicTo(3.78, 12.84, 1.76, 18.17, 3.8, 20.2);
+  p.cubicTo(5.83, 22.24, 11.16, 20.22, 15.7, 15.7);
+  p.close();
+  return p;
+}
+
+/// lucide "orbit"
+Path _lucideOrbit() {
+  final p = Path();
+  p.moveTo(20.341, 6.484);
+  p.arcToPoint(const Offset(10.266, 21.85), radius: const Radius.elliptical(10.0, 10.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.moveTo(3.659, 17.516);
+  p.arcToPoint(const Offset(13.74, 2.152), radius: const Radius.elliptical(10.0, 10.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 3.0));
+  p.addOval(Rect.fromCircle(center: const Offset(19.0, 5.0), radius: 2.0));
+  p.addOval(Rect.fromCircle(center: const Offset(5.0, 19.0), radius: 2.0));
+  return p;
+}
+
+/// lucide "sparkles"
+Path _lucideSparkles() {
+  final p = Path();
+  p.moveTo(11.017, 2.814);
+  p.arcToPoint(const Offset(12.983, 2.814), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(14.034, 8.372);
+  p.arcToPoint(const Offset(15.628, 9.966), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(21.186, 11.017);
+  p.arcToPoint(const Offset(21.186, 12.983), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(15.628, 14.034);
+  p.arcToPoint(const Offset(14.034, 15.628), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(12.983, 21.186);
+  p.arcToPoint(const Offset(11.017, 21.186), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(9.966, 15.628);
+  p.arcToPoint(const Offset(8.372, 14.034), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(2.814, 12.983);
+  p.arcToPoint(const Offset(2.814, 11.017), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(8.372, 9.966);
+  p.arcToPoint(const Offset(9.966, 8.372), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  p.moveTo(20.0, 2.0);
+  p.lineTo(20.0, 6.0);
+  p.moveTo(22.0, 4.0);
+  p.lineTo(18.0, 4.0);
+  p.addOval(Rect.fromCircle(center: const Offset(4.0, 20.0), radius: 2.0));
+  return p;
+}
+
+/// lucide "flame"
+Path _lucideFlame() {
+  final p = Path();
+  p.moveTo(12.0, 3.0);
+  p.quadraticBezierTo(13.0, 7.0, 16.0, 9.5);
+  p.quadraticBezierTo(19.0, 12.0, 19.0, 15.0);
+  p.arcToPoint(const Offset(5.0, 15.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(6.0, 12.0), radius: const Radius.elliptical(5.0, 5.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(11.0, 12.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.cubicTo(11.0, 10.0, 9.5, 9.0, 9.5, 7.0);
+  p.quadraticBezierTo(9.5, 5.0, 12.0, 3.0);
+  return p;
+}
+
 /// Builders of the 24 x 24 stroke icons.
 final Map<LucideIconId, Path Function()> kLucideIconBuilders = <LucideIconId, Path Function()>{
   LucideIconId.copy: _lucideCopy,
@@ -546,4 +629,9 @@ final Map<LucideIconId, Path Function()> kLucideIconBuilders = <LucideIconId, Pa
   LucideIconId.refreshCw: _lucideRefreshCw,
   LucideIconId.trendingUp: _lucideTrendingUp,
   LucideIconId.alertTriangle: _lucideAlertTriangle,
+  LucideIconId.search: _lucideSearch,
+  LucideIconId.atom: _lucideAtom,
+  LucideIconId.orbit: _lucideOrbit,
+  LucideIconId.sparkles: _lucideSparkles,
+  LucideIconId.flame: _lucideFlame,
 };

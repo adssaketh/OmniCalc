@@ -1,7 +1,51 @@
 # Phase 5: tool screens (in steps)
 
-Phase 5 is split. **5a is the Converter, 5b is Currency, 5c (below) is the other five Finance tabs plus the converter swap-button fix.**
-Still to do: 5d Physics Lab, 5e Grapher, 5f History tape + Settings modal + Guide sheet (these replace `dev_settings_sheet.dart`).
+Phase 5 is split. **5a is the Converter, 5b is Currency, 5c is the other five Finance tabs plus the converter swap-button fix, 5d (below) is Physics Lab.**
+Still to do: 5e Grapher, 5f History tape + Settings modal + Guide sheet (these replace `dev_settings_sheet.dart`).
+
+# Phase 5d: Physics Lab
+
+## What is here (5d)
+- `lib/ui/screens/physics_screen.dart`: port of `PhysicsScreen.tsx` (five tabs: Constants, Kinematics & Projectiles, Special Relativity,
+  Quantum & Waves, Electromagnetism, with Atom / Orbit / Sparkles / Flame / Zap icons). `screens.dart` now builds it for
+  `CalculatorMode.physics`; the shell stand-in is no longer used by the app.
+  - Constants: search box (name, symbol, id, unit, case-insensitive), seven category chips (scrolling strip), the 29-row table
+    (symbol, name + one-line description, value, units, Copy and Calc buttons). Value column rule is the TS one
+    (`toExponential(6)` at >= 1e4 or <= 1e-3, else the plain number). Copy puts `value.toString()` on the clipboard and shows the
+    tick for 1.8 s; **Calc** goes through `NavigationState.selectResult` (loads the calculator with the number, as `handleSelectResult`).
+  - Projectile: four number fields, the trajectory card (ground line, 3 px path, apex dot) and the four results. The `<svg viewBox="0 0 400 120"
+    preserveAspectRatio="none">` is reproduced with a `CustomPainter` that scales x and y separately, so the strokes and the dot
+    stretch exactly like in the browser. Path and apex maths are `trajectorySvgPoints` / `trajectoryApex` (unit-tested).
+  - Relativity, Quantum (mode select, photon results, photoelectric card) and Electromagnetism: same fields, labels, colours, formats.
+  - Number fields keep the React controlled `type="number"` rules (clearing reads `0`; gravity falls back to 9.81, distance to 0.01;
+    text that is not a valid number reads as empty), same as the Finance fields.
+- `OptionSelect` got optional `fill`, `background`, `radius`, `padding` (defaults unchanged) for the full-width Quantum mode select.
+- Lucide: Search, Atom, Orbit, Sparkles, Flame added to the generator; 34 icons, `--check` passes against lucide-react 0.546.0.
+- Tests: `test/ui/screens/physics_screen_test.dart` (expected strings come from running `src/engine/physics.ts` and the screen's formulas
+  with tsx): value formatting, filter, trajectory geometry, every tab's defaults and edited values, mode picker, copy / Calc, layouts.
+
+## Deliberate differences (5d)
+- The Quantum mode picker opens a dialog list instead of the Android `<select>` list (same options), like the other pickers.
+- No number-input spinner / wheel; no row hover colour; the value cell is not `select-all`; `thead` is not sticky (in the web app it cannot
+  stick either: the table wrapper has no fixed height).
+- Focus ring (`focus:ring-2`) is drawn as a 2 px primary box-shadow ring.
+
+## Not done / open (5d)
+- 5e Grapher, 5f History / Settings / Guide.
+- No screenshot goldens and no device check.
+
+## Parity doubts (5d)
+1. **Search box and chip strip on sm and wider.** In CSS the strip keeps its natural width and the `flex-1` search box gets the rest,
+   but the box cannot go below its own padding (56 px); between 640 and about 900 px the strip therefore scrolls and the search box is
+   narrow. The width split is computed by hand to match this; not compared on a device.
+2. **Table column widths** are the content-proportional approximation of `table-layout: auto` used in 5c (name column takes the rest
+   and shrinks to its longest word; table at least 620 px wide, scrolls sideways below that).
+3. **Row divider colour.** The TSX sets `borderColor` on `<tbody className="divide-y">`; `border-color` is not inherited, so a browser may
+   draw the dividers in the row's text colour instead of `--m3-outline-variant`. Ported as `outline-variant`, like the Finance tables.
+4. The description line (`text-[10px]`) is assumed to inherit the table's `text-xs` line height (1.333) and to be mono, because only the
+   name has `font-sans`.
+5. Placeholder is the text colour at 30 % (Tailwind's 50 % times `placeholder:opacity-60`).
+
 
 # Phase 5c: Finance tabs (Loan, SIP & Compound, SWP, Tip, ROI) + swap button fix
 

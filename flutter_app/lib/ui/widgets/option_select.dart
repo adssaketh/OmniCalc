@@ -22,12 +22,25 @@ class OptionSelect extends StatelessWidget {
     required this.options,
     required this.onChanged,
     this.dialogTitle,
+    this.fill = false,
+    this.background,
+    this.radius = 12,
+    this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
   });
 
   final String value;
   final List<SelectOption> options;
   final ValueChanged<String> onChanged;
   final String? dialogTitle;
+
+  /// `w-full`: the closed button takes the whole width and the arrow sits at the right edge (Physics Lab). Otherwise it is
+  /// as wide as its label.
+  final bool fill;
+
+  /// Closed-button background; `surface-container-high` when null.
+  final Color? background;
+  final double radius;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +50,13 @@ class OptionSelect extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: () => _open(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(color: t.surfaceContainerHigh, borderRadius: const BorderRadius.all(Radius.circular(12))),
+        padding: padding,
+        decoration: BoxDecoration(color: background ?? t.surfaceContainerHigh, borderRadius: BorderRadius.all(Radius.circular(radius))),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: fill ? MainAxisSize.max : MainAxisSize.min,
           children: [
             Flexible(
+              fit: fill ? FlexFit.tight : FlexFit.loose,
               child: Text(
                 current.label,
                 maxLines: 1,

@@ -54,6 +54,12 @@ const ICONS = [
   ['trending-up', 'TrendingUp'],
   // Phase 5c: the SWP depletion warning (SWPCalculator.tsx); lucide's AlertTriangle is an alias of TriangleAlert.
   ['triangle-alert', 'AlertTriangle'],
+  // Phase 5d: Physics Lab (PhysicsScreen.tsx): tab strip (Atom, Orbit, Sparkles, Flame, Zap) and the constants search box.
+  ['search', 'Search'],
+  ['atom', 'Atom'],
+  ['orbit', 'Orbit'],
+  ['sparkles', 'Sparkles'],
+  ['flame', 'Flame'],
 ];
 const WANT_VERSION = /^0\.546\./;
 
