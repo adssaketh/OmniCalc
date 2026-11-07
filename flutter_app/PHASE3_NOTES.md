@@ -36,11 +36,14 @@
 - Launcher shortcuts / deep links (`initDeepLinks`): `NavigationState.openFromDeepLink` is ready, the Android side is not wired.
 - Converter tab icons (Phase 5, unchanged open point: Pressure and Frequency both use `Activity`).
 
-## Verified here (honest status)
-- `node tools/gen_theme_data.mjs --check`, `node tools/gen_svg_paths.mjs --check`, `npx tsx tools/gen_shell_vectors.ts --check`: all pass.
-- **NOT verified: any Dart code.** The sandbox cannot reach the Dart/Flutter hosts, so `flutter analyze` and `flutter test` have not been run.
-  Nothing here is claimed to compile or pass. Expect a few small compile fixes on the first run; send me the first errors.
-- **Not verified: pixel parity.** No screenshot of the web app or the Flutter app was compared.
+## Verified (honest status)
+- GitHub Actions run on `b813b36` (branch `flutter-rewrite`) is green: generator `--check`s, `flutter analyze`, `flutter test`
+  (4,466 tests passing, 6 skipped = the shell goldens without baselines), release APK build and signing.
+- It took five CI rounds to get there. Real bugs found and fixed: the bottom bar had unbounded height, the header stayed collapsed
+  after a screen change, and an unused field failed analyze. The rest were test mistakes (entrance spring needs two frames, a wrong
+  0.2 expectation, empty areas that cannot be hit in tests).
+- **Not verified: pixel parity.** No screenshot of the web app or the Flutter app was compared, and nothing ran on a device.
+  The shell goldens (`flutter test --tags golden`) still need baselines from the web app at 390 x 844.
 
 ## Parity doubts (please check on a device)
 1. **Masked progressive blur** ("Fade + blur"): done by painting the mask with `dstIn` inside a `BackdropFilter`. Unverified on device.
