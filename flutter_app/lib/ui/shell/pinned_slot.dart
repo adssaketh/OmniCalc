@@ -9,8 +9,17 @@ class PinnedSlotController extends ChangeNotifier {
   Widget? get widget => _widget;
   bool get isEmpty => _widget == null;
 
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
   void set(Widget? w) {
-    if (identical(_widget, w)) return;
+    // a screen may clear the slot in a post-frame callback after the shell (the owner) is gone
+    if (_disposed || identical(_widget, w)) return;
     _widget = w;
     notifyListeners();
   }

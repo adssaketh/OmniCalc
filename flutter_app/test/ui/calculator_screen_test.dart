@@ -11,7 +11,9 @@ import 'package:omnicalc/ui/calculator/auto_fit_text.dart';
 
 Future<({SettingsStore settings, HistoryStore history})> pumpApp(
   WidgetTester tester, {
-  Size size = const Size(400, 800),
+  // tall on purpose: the keypad is taller than the screen minus the bottom bar on a 400x800 view, so the lowest rows
+  // sit under the bar until the page is scrolled
+  Size size = const Size(400, 1200),
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;

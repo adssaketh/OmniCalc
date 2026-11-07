@@ -212,7 +212,9 @@ class AdvancedTabContent extends StatelessWidget {
               : const SizedBox.shrink(),
         ));
       }
-      return Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: cells);
+      final row = Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: cells);
+      // portrait rows sit in an unbounded-height column: IntrinsicHeight gives the equal-height CSS grid row
+      return landscape ? row : IntrinsicHeight(child: row);
     }
 
     final grid = landscape

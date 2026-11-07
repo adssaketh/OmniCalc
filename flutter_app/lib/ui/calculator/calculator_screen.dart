@@ -960,14 +960,18 @@ class _PortraitKeypad extends StatelessWidget {
           semanticLabel: sci ? 'Hide advanced symbols keys' : 'Show advanced symbols keys',
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FxTurn(key: ValueKey(sci), child: OmniCalcLogo(size: tw(w, 16, sm: 20))),
-                const SizedBox(width: 6),
-                _label(sci ? 'fx ON' : 'fx ADV', tw(w, 12, sm: 16), FontWeight.w700, sci ? t.onTertiaryContainer : t.primary,
-                    mono: true, letterSpacingEm: -0.025),
-              ],
+            // scaleDown only acts when the content is wider than the key (narrow phones, fallback fonts)
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FxTurn(key: ValueKey(sci), child: OmniCalcLogo(size: tw(w, 16, sm: 20))),
+                  const SizedBox(width: 6),
+                  _label(sci ? 'fx ON' : 'fx ADV', tw(w, 12, sm: 16), FontWeight.w700, sci ? t.onTertiaryContainer : t.primary,
+                      mono: true, letterSpacingEm: -0.025),
+                ],
+              ),
             ),
           ),
         ),
@@ -1315,13 +1319,16 @@ class _LandscapeKeys extends StatelessWidget {
           _EqualsKey(
             controller: c,
             radius: r,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _label('=', 24, FontWeight.w700, t.onPrimary),
-                const SizedBox(width: 6),
-                Opacity(opacity: 0.8, child: LucideIcon(LucideIconId.cornerDownLeft, color: t.onPrimary, size: 16)),
-              ],
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _label('=', 24, FontWeight.w700, t.onPrimary),
+                  const SizedBox(width: 6),
+                  Opacity(opacity: 0.8, child: LucideIcon(LucideIconId.cornerDownLeft, color: t.onPrimary, size: 16)),
+                ],
+              ),
             ),
           ),
         ),

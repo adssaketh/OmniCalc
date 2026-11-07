@@ -84,8 +84,8 @@ void main() {
       final h = await pumpApp(tester);
       h.history.add(expression: '1+1', result: '2');
       await tester.pump();
-      // the keypad's "1" key plus the badge
-      expect(find.text('1'), findsNWidgets(2));
+      // the keypad's "1" key, the bottom bar badge and the calculator header's history badge
+      expect(find.text('1'), findsNWidgets(3));
       await tester.tap(find.text('Recents'));
       await settle(tester);
       expect(navOf(tester).isHistoryOpen, isTrue);
@@ -100,7 +100,7 @@ void main() {
         h.history.add(expression: '$i', result: '$i');
       }
       await tester.pump();
-      expect(find.text('99+'), findsOneWidget);
+      expect(find.text('99+'), findsWidgets);
     });
 
     testWidgets('physics and grapher tabs follow the settings', (tester) async {
@@ -111,10 +111,12 @@ void main() {
 
     testWidgets('the calculator keeps the header merged (no separate Header pill)', (tester) async {
       await pumpApp(tester);
-      expect(find.byType(Header), findsNothing);
+      expect(find.byType(Header), findsOneWidget);
+      expect(tester.widget<Header>(find.byType(Header)).embedded, isTrue);
       await tester.tap(find.text('Converter'));
       await settle(tester);
       expect(find.byType(Header), findsOneWidget);
+      expect(tester.widget<Header>(find.byType(Header)).embedded, isFalse);
     });
 
     testWidgets('the header collapses past 36 px and expands under 10 px', (tester) async {
