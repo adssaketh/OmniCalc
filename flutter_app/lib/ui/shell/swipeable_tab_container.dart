@@ -449,6 +449,7 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
       children: [
         tabBar,
         Listener(
+          behavior: HitTestBehavior.translucent,
           onPointerDown: _onPointerDown,
           onPointerMove: _onPointerMove,
           onPointerUp: _onPointerUp,

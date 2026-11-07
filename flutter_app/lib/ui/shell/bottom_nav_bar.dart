@@ -146,7 +146,8 @@ class _BottomNavBarState extends State<BottomNavBar> with TickerProviderStateMix
                                   ),
                                 ),
                               ),
-                              Row(
+                              IntrinsicHeight(
+                                child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   for (var i = 0; i < items.length; i++) ...[
@@ -161,6 +162,7 @@ class _BottomNavBarState extends State<BottomNavBar> with TickerProviderStateMix
                                     ),
                                   ],
                                 ],
+                              ),
                               ),
                             ],
                           );
