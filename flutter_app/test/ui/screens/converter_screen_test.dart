@@ -107,6 +107,8 @@ void main() {
 
   testWidgets('tapping a comparison tile selects the target unit', (tester) async {
     await pumpConverter(tester);
+    await tester.ensureVisible(find.byKey(const ValueKey('compare-ft')));
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.tap(find.byKey(const ValueKey('compare-ft')));
     await tester.pump(const Duration(milliseconds: 200));
     expect(convertedText(tester), '3.28084');
@@ -125,6 +127,8 @@ void main() {
 
   testWidgets('temperature tab resets the units and shows the text formula', (tester) async {
     final fb = await pumpConverter(tester);
+    await tester.ensureVisible(find.text('Temperature'));
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Temperature'));
     await tester.pump(const Duration(milliseconds: 600));
     expect(convertedText(tester), '33.8');
