@@ -34,6 +34,14 @@ Still to do: 5e Grapher, 5f History tape + Settings modal + Guide sheet (these r
 - 5e Grapher, 5f History / Settings / Guide.
 - No screenshot goldens and no device check.
 
+## Verification status (5d)
+CI (gen checks, lucide check, analyze, 4,711 tests passed and 6 skipped, APK) is green on `dc17d04`. Not run on a device. The first run
+(`7f54b50`) failed on tests: two wrong expectations of mine (a value just above 1e-3 prints plain; the test font is wide enough to squeeze
+the search box to its minimum) and a **shell bug the new screen exposed**: `SwipeableTabContainer._shouldIgnoreSwipe` cast every scroll
+viewport under the content to `RenderViewportBase`, which throws for the private viewport of `SingleChildScrollView`. It now reads `axis` and
+`offset` from that one too, with two regression tests in `swipeable_tab_container_test.dart` (the Finance tables and Physics chip strip/table
+are `SingleChildScrollView`s). Run: `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
+
 ## Parity doubts (5d)
 1. **Search box and chip strip on sm and wider.** In CSS the strip keeps its natural width and the `flex-1` search box gets the rest,
    but the box cannot go below its own padding (56 px); between 640 and about 900 px the strip therefore scrolls and the search box is
