@@ -61,7 +61,7 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(RichExpressionLeaf)).width, closeTo(60, 1e-9)); // Ahem: 1 em per glyph
+    expect(tester.getSize(find.byType(RichExpressionLeaf)).width, closeTo(58.5, 1e-9)); // Ahem: 1 em per glyph, less the -0.025 em tracking of the display text
   });
 
   testWidgets('a tap reports the caret place', (tester) async {

@@ -7,6 +7,13 @@ import 'package:omnicalc/editor/rich_layout.dart';
 // That makes the expected numbers exact.
 TextStyle style(double s) => TextStyle(fontSize: s, color: const Color(0xFF000000));
 
+// the real ascent of the test font at 1 em (read from the engine, not assumed)
+final double ascentEm = (TextPainter(text: TextSpan(text: 'x', style: style(100)), textDirection: TextDirection.ltr)
+          ..layout())
+        .computeDistanceToActualBaseline(TextBaseline.alphabetic) /
+    100;
+final double descentEm = 1 - ascentEm;
+
 RowLayout lay(String linear, {double size = 100}) => layoutRow(
       parseLinear(linear).nodes,
       baseSize: size,
@@ -37,16 +44,16 @@ void main() {
     test('a superscript is smaller, raised, and makes the line taller above', () {
       final row = lay('x^2');
       expect(row.width, closeTo(100 + 62, 1e-9));
-      // child ascent 0.8 * 62 = 49.6, raised by 0.38 * 100 = 38
-      expect(row.ascent, closeTo(87.6, 1e-9));
-      expect(row.descent, closeTo(20, 1e-9));
+      // child ascent 62 * ascentEm, raised by 0.38 * 100 = 38
+      expect(row.ascent, closeTo(62 * ascentEm + 38, 1e-9));
+      expect(row.descent, closeTo(100 * descentEm, 1e-9));
     });
 
     test('a subscript is lowered and makes the line taller below', () {
       final row = lay('x_2');
-      // child descent 0.2 * 62 = 12.4, lowered by 0.25 * 100 = 25
-      expect(row.descent, closeTo(37.4, 1e-9));
-      expect(row.ascent, closeTo(80, 1e-9));
+      // child descent 62 * descentEm, lowered by 0.25 * 100 = 25
+      expect(row.descent, closeTo(62 * descentEm + 25, 1e-9));
+      expect(row.ascent, closeTo(100 * ascentEm, 1e-9));
     });
 
     test('nested groups shrink further and add up', () {
@@ -87,7 +94,7 @@ void main() {
       final row = lay('x^2');
       final g = caretGeometry(row, const [1], 1);
       expect(g.x, closeTo(162, 1e-9));
-      expect(g.baselineY, closeTo(87.6 - 38, 1e-9));
+      expect(g.baselineY, closeTo(62 * ascentEm, 1e-9));
       expect(g.size, closeTo(62, 1e-9));
       expect(caretGeometry(row, const [1], 0).x, closeTo(100, 1e-9));
     });

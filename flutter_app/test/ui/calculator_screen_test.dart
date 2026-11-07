@@ -162,7 +162,7 @@ void main() {
       await tapKey(tester, '8');
       await tapKey(tester, '×');
       await tapKey(tester, '8');
-      expect(find.text('8×8'), findsOneWidget);
+      expect(shown(tester), '8×8');
     });
 
     testWidgets('a tablet in portrait builds', (tester) async {
