@@ -5,11 +5,11 @@
  *   node flutter_app/tools/gen_svg_paths.mjs            # (re)write lib/ui/icons/svg_paths_generated.dart
  *   node flutter_app/tools/gen_svg_paths.mjs --check    # fail if the committed file differs from a fresh generation
  *
- * Sources: src/components/NavIcons.tsx and src/components/OmniCalcLogo.tsx (every d="..." attribute, in file order).
+ * Sources: src/components/NavIcons.tsx, OmniCalcLogo.tsx and SettingsModal.tsx (every d="..." attribute, in file order).
  * The order is pinned by EXPECTED_* below: if someone reorders or adds a path in the TSX the script fails loudly
  * instead of silently drawing the wrong shape.
  *
- * Supported commands (absolute): M L H V C Q T A Z, which is every command those two files use. Anything else throws.
+ * Supported commands: M L H V C Q T A Z, absolute and relative (lower case). Anything else (S, for one) throws.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -50,6 +50,10 @@ const EXPECTED_LOGO = [
   'M 566 740 C 600', // 3 equals pill bottom glow
 ];
 
+const EXPECTED_SETTINGS = [
+  'M12 .297c-6.63', // 0  GitHub mark (Settings > About > Source code), filled
+];
+
 function extract(file) {
   const t = fs.readFileSync(path.join(root, 'src', 'components', file), 'utf8');
   return [...t.matchAll(/\bd="([^"]+)"/g)].map((m) => m[1].replace(/\s+/g, ' ').trim());
@@ -76,16 +80,23 @@ function toDart(d, name) {
   let sy = 0;
   let lastQ = null; // last quadratic control point, for T
   let cmd = null;
-  const next = () => num(tokens[i++]);
   const isCmd = (t) => /^[A-Za-z]$/.test(t);
+  // Lower-case commands are relative to the current point: every x / y read below is shifted by it.
+  let rel = false;
+  const nextX = () => num(tokens[i++]) + (rel ? cx : 0);
+  const nextY = () => num(tokens[i++]) + (rel ? cy : 0);
+  const next = () => num(tokens[i++]); // plain number (arc radii, rotation and flags are never relative)
   while (i < tokens.length) {
     if (isCmd(tokens[i])) cmd = tokens[i++];
     else if (cmd === 'M') cmd = 'L'; // extra coordinate pairs after a moveto are lineto
-    if (!'MLHVCQTAZ'.includes(cmd)) throw new Error(`Unsupported command ${cmd} in ${name}`);
+    else if (cmd === 'm') cmd = 'l';
+    if (!'MLHVCQTAZmlhvcqtaz'.includes(cmd)) throw new Error(`Unsupported command ${cmd} in ${name}`);
+    rel = cmd === cmd.toLowerCase();
+    cmd = cmd.toUpperCase();
     switch (cmd) {
       case 'M': {
-        const x = next();
-        const y = next();
+        const x = nextX();
+        const y = nextY();
         lines.push(`  p.moveTo(${fmt(x)}, ${fmt(y)});`);
         cx = sx = x;
         cy = sy = y;
@@ -93,8 +104,8 @@ function toDart(d, name) {
         break;
       }
       case 'L': {
-        const x = next();
-        const y = next();
+        const x = nextX();
+        const y = nextY();
         lines.push(`  p.lineTo(${fmt(x)}, ${fmt(y)});`);
         cx = x;
         cy = y;
@@ -102,21 +113,21 @@ function toDart(d, name) {
         break;
       }
       case 'H': {
-        const x = next();
+        const x = nextX();
         lines.push(`  p.lineTo(${fmt(x)}, ${fmt(cy)});`);
         cx = x;
         lastQ = null;
         break;
       }
       case 'V': {
-        const y = next();
+        const y = nextY();
         lines.push(`  p.lineTo(${fmt(cx)}, ${fmt(y)});`);
         cy = y;
         lastQ = null;
         break;
       }
       case 'C': {
-        const [x1, y1, x2, y2, x, y] = [next(), next(), next(), next(), next(), next()];
+        const [x1, y1, x2, y2, x, y] = [nextX(), nextY(), nextX(), nextY(), nextX(), nextY()];
         lines.push(`  p.cubicTo(${fmt(x1)}, ${fmt(y1)}, ${fmt(x2)}, ${fmt(y2)}, ${fmt(x)}, ${fmt(y)});`);
         cx = x;
         cy = y;
@@ -124,7 +135,7 @@ function toDart(d, name) {
         break;
       }
       case 'Q': {
-        const [x1, y1, x, y] = [next(), next(), next(), next()];
+        const [x1, y1, x, y] = [nextX(), nextY(), nextX(), nextY()];
         lines.push(`  p.quadraticBezierTo(${fmt(x1)}, ${fmt(y1)}, ${fmt(x)}, ${fmt(y)});`);
         lastQ = [x1, y1];
         cx = x;
@@ -132,7 +143,7 @@ function toDart(d, name) {
         break;
       }
       case 'T': {
-        const [x, y] = [next(), next()];
+        const [x, y] = [nextX(), nextY()];
         const [qx, qy] = lastQ ? [2 * cx - lastQ[0], 2 * cy - lastQ[1]] : [cx, cy];
         lines.push(`  p.quadraticBezierTo(${fmt(qx)}, ${fmt(qy)}, ${fmt(x)}, ${fmt(y)});`);
         lastQ = [qx, qy];
@@ -141,7 +152,9 @@ function toDart(d, name) {
         break;
       }
       case 'A': {
-        const [rx, ry, rot, large, sweep, x, y] = [next(), next(), next(), next(), next(), next(), next()];
+        const [rx, ry, rot, large, sweep] = [next(), next(), next(), next(), next()];
+        const x = nextX();
+        const y = nextY();
         lines.push(
           `  p.arcToPoint(const Offset(${fmt(x)}, ${fmt(y)}), radius: const Radius.elliptical(${fmt(rx)}, ${fmt(ry)}), ` +
             `rotation: ${fmt(rot)}, largeArc: ${large === 1}, clockwise: ${sweep === 1});`,
@@ -181,8 +194,9 @@ function build(listName, paths, expected, file) {
 
 const nav = extract('NavIcons.tsx');
 const logo = extract('OmniCalcLogo.tsx');
+const settingsPaths = extract('SettingsModal.tsx');
 const text = `// GENERATED FILE - DO NOT EDIT.
-// Source of truth: src/components/NavIcons.tsx and src/components/OmniCalcLogo.tsx (the d="..." path strings).
+// Source of truth: src/components/NavIcons.tsx, OmniCalcLogo.tsx and SettingsModal.tsx (the d="..." path strings).
 // Regenerate with: node flutter_app/tools/gen_svg_paths.mjs
 // ignore_for_file: prefer_const_constructors
 
@@ -191,6 +205,8 @@ import 'dart:ui';
 ${build('kNavIconPathBuilders', nav, EXPECTED_NAV, 'NavIcons.tsx')}
 
 ${build('kLogoPathBuilders', logo, EXPECTED_LOGO, 'OmniCalcLogo.tsx')}
+
+${build('kSettingsPathBuilders', settingsPaths, EXPECTED_SETTINGS, 'SettingsModal.tsx')}
 `;
 
 if (check) {
@@ -199,9 +215,9 @@ if (check) {
     console.error('svg_paths_generated.dart is out of date. Run: node flutter_app/tools/gen_svg_paths.mjs');
     process.exit(1);
   }
-  console.log(`OK: ${nav.length} icon paths and ${logo.length} logo paths match the web source.`);
+  console.log(`OK: ${nav.length} icon paths, ${logo.length} logo paths and ${settingsPaths.length} settings path match the web source.`);
 } else {
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, text);
-  console.log(`Wrote ${path.relative(root, outFile)}: ${nav.length} icon paths, ${logo.length} logo paths.`);
+  console.log(`Wrote ${path.relative(root, outFile)}: ${nav.length} icon paths, ${logo.length} logo paths, ${settingsPaths.length} settings path.`);
 }

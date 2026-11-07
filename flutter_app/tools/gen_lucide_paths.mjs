@@ -64,6 +64,25 @@ const ICONS = [
   ['zoom-in', 'ZoomIn'],
   ['zoom-out', 'ZoomOut'],
   ['crosshair', 'Crosshair'],
+  // Phase 5f: History tape (HistoryTapeModal.tsx), Settings (SettingsModal.tsx) and the Guide (GuideSheet.tsx). Atom,
+  // Sparkles, Compass, LineChart, Check, Copy, CornerDownLeft, RotateCcw and ChevronDown were already here.
+  ['x', 'X'],
+  ['trash-2', 'Trash2'],
+  ['download', 'Download'],
+  ['calculator', 'Calculator'],
+  ['file-text', 'FileText'],
+  ['arrow-left', 'ArrowLeft'],
+  ['palette', 'Palette'],
+  ['sun', 'Sun'],
+  ['moon', 'Moon'],
+  ['laptop', 'Laptop'],
+  ['hash', 'Hash'],
+  ['volume-2', 'Volume2'],
+  ['smartphone', 'Smartphone'],
+  ['shield-check', 'ShieldCheck'],
+  ['chevron-right', 'ChevronRight'],
+  ['external-link', 'ExternalLink'],
+  ['play', 'Play'],
 ];
 const WANT_VERSION = /^0\.546\./;
 

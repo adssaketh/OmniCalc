@@ -16,17 +16,19 @@ import '../../theme/glass.dart';
 import '../../theme/motion.dart';
 import '../../theme/tokens.dart';
 import 'bottom_nav_bar.dart';
-import 'dev_settings_sheet.dart';
 import 'header.dart';
 import 'measure_size.dart';
 import 'navigation_rail.dart';
 import 'pinned_slot.dart';
 
-/// Builds the screen of a mode. Phases 4 and 5 supply the real ones.
+/// Builds the screen of a mode.
 typedef ScreenBuilder = Widget Function(BuildContext context, CalculatorMode mode);
 
 /// Layer above the shell (History tape, Settings, Guide): shown on top of everything, driven by [NavigationState].
 typedef OverlayBuilder = List<Widget> Function(BuildContext context, NavigationState nav);
+
+/// No layers: the shell on its own (tests of the shell itself). The app passes `appOverlays`.
+List<Widget> noOverlays(BuildContext context, NavigationState nav) => const <Widget>[];
 
 /// Screen sizing of `useOrientation` + `isLargeScreen` (App.tsx).
 class ShellLayout {
@@ -55,7 +57,7 @@ class AppShell extends StatefulWidget {
     super.key,
     required this.feedback,
     this.screenBuilder = placeholderScreen,
-    this.overlayBuilder = devOverlays,
+    this.overlayBuilder = noOverlays,
   });
 
   final FeedbackService feedback;

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'engine/currency.dart';
 import 'services/feedback_service.dart';
+import 'services/link_service.dart';
 import 'state/app_settings.dart';
 import 'state/history_store.dart';
 import 'state/navigation_state.dart';
@@ -11,6 +12,7 @@ import 'state/settings_store.dart';
 import 'theme/app_theme.dart';
 import 'theme/dynamic_colors.dart';
 import 'theme/tokens.dart';
+import 'ui/overlays/overlays.dart';
 import 'ui/screens/screens.dart';
 import 'ui/shell/app_shell.dart';
 import 'ui/shell/pinned_slot.dart';
@@ -36,6 +38,7 @@ class OmniCalcApp extends StatefulWidget {
     required this.systemColorsSource,
     required this.feedback,
     this.currencyService,
+    this.linkService = const PlatformLinkService(),
   });
 
   final SettingsStore settings;
@@ -46,6 +49,9 @@ class OmniCalcApp extends StatefulWidget {
   /// Live forex rates for the Currency tab. Null: the real service (network + `shared_preferences` cache). Tests pass a
   /// fake so no request leaves the test.
   final CurrencyService? currencyService;
+
+  /// Opens the links of Settings > About and the privacy sheet in the browser. Tests pass a [RecordingLinkService].
+  final LinkService linkService;
 
   @override
   State<OmniCalcApp> createState() => _OmniCalcAppState();
@@ -123,6 +129,7 @@ class _OmniCalcAppState extends State<OmniCalcApp> with WidgetsBindingObserver {
         ChangeNotifierProvider<PinnedSlotController>.value(value: _pinned),
         Provider<FeedbackService>.value(value: widget.feedback),
         Provider<CurrencyService>.value(value: _currency),
+        Provider<LinkService>.value(value: widget.linkService),
       ],
       child: M3Theme(
         tokens: resolved.tokens,
@@ -130,7 +137,7 @@ class _OmniCalcAppState extends State<OmniCalcApp> with WidgetsBindingObserver {
           title: 'OmniCalc',
           debugShowCheckedModeBanner: false,
           theme: buildThemeData(resolved.tokens),
-          home: AppShell(feedback: widget.feedback, screenBuilder: appScreenBuilder),
+          home: AppShell(feedback: widget.feedback, screenBuilder: appScreenBuilder, overlayBuilder: appOverlays),
         ),
       ),
     );

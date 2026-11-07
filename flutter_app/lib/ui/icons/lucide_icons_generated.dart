@@ -1,11 +1,11 @@
 // GENERATED FILE - DO NOT EDIT.
-// Source of truth: lucide-react 0.546.0 (the web app's icon library), icons: copy, check, delete, corner-down-left, chevron-up, rotate-ccw, ruler, scale, thermometer, square, box, gauge, hard-drive, clock, activity, zap, compass, magnet, arrow-left-right, chevron-down, globe, landmark, piggy-bank, wallet, receipt, chart-line, refresh-cw, trending-up, triangle-alert, search, atom, orbit, sparkles, flame, zoom-in, zoom-out, crosshair.
+// Source of truth: lucide-react 0.546.0 (the web app's icon library), icons: copy, check, delete, corner-down-left, chevron-up, rotate-ccw, ruler, scale, thermometer, square, box, gauge, hard-drive, clock, activity, zap, compass, magnet, arrow-left-right, chevron-down, globe, landmark, piggy-bank, wallet, receipt, chart-line, refresh-cw, trending-up, triangle-alert, search, atom, orbit, sparkles, flame, zoom-in, zoom-out, crosshair, x, trash-2, download, calculator, file-text, arrow-left, palette, sun, moon, laptop, hash, volume-2, smartphone, shield-check, chevron-right, external-link, play.
 // Regenerate with: node flutter_app/tools/gen_lucide_paths.mjs
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:ui';
 
-enum LucideIconId { copy, check, delete, cornerDownLeft, chevronUp, rotateCcw, ruler, scale, thermometer, square, box, gauge, hardDrive, clock, activity, zap, compass, magnet, arrowLeftRight, chevronDown, globe, landmark, piggyBank, wallet, receipt, lineChart, refreshCw, trendingUp, alertTriangle, search, atom, orbit, sparkles, flame, zoomIn, zoomOut, crosshair }
+enum LucideIconId { copy, check, delete, cornerDownLeft, chevronUp, rotateCcw, ruler, scale, thermometer, square, box, gauge, hardDrive, clock, activity, zap, compass, magnet, arrowLeftRight, chevronDown, globe, landmark, piggyBank, wallet, receipt, lineChart, refreshCw, trendingUp, alertTriangle, search, atom, orbit, sparkles, flame, zoomIn, zoomOut, crosshair, x, trash2, download, calculator, fileText, arrowLeft, palette, sun, moon, laptop, hash, volume2, smartphone, shieldCheck, chevronRight, externalLink, play }
 
 /// lucide "copy"
 Path _lucideCopy() {
@@ -637,6 +637,299 @@ Path _lucideCrosshair() {
   return p;
 }
 
+/// lucide "x"
+Path _lucideX() {
+  final p = Path();
+  p.moveTo(18.0, 6.0);
+  p.lineTo(6.0, 18.0);
+  p.moveTo(6.0, 6.0);
+  p.lineTo(18.0, 18.0);
+  return p;
+}
+
+/// lucide "trash-2"
+Path _lucideTrash2() {
+  final p = Path();
+  p.moveTo(10.0, 11.0);
+  p.lineTo(10.0, 17.0);
+  p.moveTo(14.0, 11.0);
+  p.lineTo(14.0, 17.0);
+  p.moveTo(19.0, 6.0);
+  p.lineTo(19.0, 20.0);
+  p.arcToPoint(const Offset(17.0, 22.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(7.0, 22.0);
+  p.arcToPoint(const Offset(5.0, 20.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(5.0, 6.0);
+  p.moveTo(3.0, 6.0);
+  p.lineTo(21.0, 6.0);
+  p.moveTo(8.0, 6.0);
+  p.lineTo(8.0, 4.0);
+  p.arcToPoint(const Offset(10.0, 2.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(14.0, 2.0);
+  p.arcToPoint(const Offset(16.0, 4.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(16.0, 6.0);
+  return p;
+}
+
+/// lucide "download"
+Path _lucideDownload() {
+  final p = Path();
+  p.moveTo(12.0, 15.0);
+  p.lineTo(12.0, 3.0);
+  p.moveTo(21.0, 15.0);
+  p.lineTo(21.0, 19.0);
+  p.arcToPoint(const Offset(19.0, 21.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(5.0, 21.0);
+  p.arcToPoint(const Offset(3.0, 19.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.0, 15.0);
+  p.moveTo(7.0, 10.0);
+  p.lineTo(12.0, 15.0);
+  p.lineTo(17.0, 10.0);
+  return p;
+}
+
+/// lucide "calculator"
+Path _lucideCalculator() {
+  final p = Path();
+  p.addRRect(RRect.fromRectXY(Rect.fromLTWH(4.0, 2.0, 16.0, 20.0), 2.0, 2.0));
+  p.moveTo(8.0, 6.0);
+  p.lineTo(16.0, 6.0);
+  p.moveTo(16.0, 14.0);
+  p.lineTo(16.0, 18.0);
+  p.moveTo(16.0, 10.0);
+  p.lineTo(16.01, 10.0);
+  p.moveTo(12.0, 10.0);
+  p.lineTo(12.01, 10.0);
+  p.moveTo(8.0, 10.0);
+  p.lineTo(8.01, 10.0);
+  p.moveTo(12.0, 14.0);
+  p.lineTo(12.01, 14.0);
+  p.moveTo(8.0, 14.0);
+  p.lineTo(8.01, 14.0);
+  p.moveTo(12.0, 18.0);
+  p.lineTo(12.01, 18.0);
+  p.moveTo(8.0, 18.0);
+  p.lineTo(8.01, 18.0);
+  return p;
+}
+
+/// lucide "file-text"
+Path _lucideFileText() {
+  final p = Path();
+  p.moveTo(15.0, 2.0);
+  p.lineTo(6.0, 2.0);
+  p.arcToPoint(const Offset(4.0, 4.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(4.0, 20.0);
+  p.arcToPoint(const Offset(6.0, 22.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(18.0, 22.0);
+  p.arcToPoint(const Offset(20.0, 20.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 7.0);
+  p.close();
+  p.moveTo(14.0, 2.0);
+  p.lineTo(14.0, 6.0);
+  p.arcToPoint(const Offset(16.0, 8.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 8.0);
+  p.moveTo(10.0, 9.0);
+  p.lineTo(8.0, 9.0);
+  p.moveTo(16.0, 13.0);
+  p.lineTo(8.0, 13.0);
+  p.moveTo(16.0, 17.0);
+  p.lineTo(8.0, 17.0);
+  return p;
+}
+
+/// lucide "arrow-left"
+Path _lucideArrowLeft() {
+  final p = Path();
+  p.moveTo(12.0, 19.0);
+  p.lineTo(5.0, 12.0);
+  p.lineTo(12.0, 5.0);
+  p.moveTo(19.0, 12.0);
+  p.lineTo(5.0, 12.0);
+  return p;
+}
+
+/// lucide "palette"
+Path _lucidePalette() {
+  final p = Path();
+  p.moveTo(12.0, 22.0);
+  p.arcToPoint(const Offset(12.0, 2.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(22.0, 11.0), radius: const Radius.elliptical(10.0, 9.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(17.0, 16.0), radius: const Radius.elliptical(5.0, 5.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(14.75, 16.0);
+  p.arcToPoint(const Offset(13.35, 18.8), radius: const Radius.elliptical(1.75, 1.75), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(13.65, 19.2);
+  p.arcToPoint(const Offset(12.25, 22.0), radius: const Radius.elliptical(1.75, 1.75), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  p.addOval(Rect.fromCircle(center: const Offset(13.5, 6.5), radius: 0.5));
+  p.addOval(Rect.fromCircle(center: const Offset(17.5, 10.5), radius: 0.5));
+  p.addOval(Rect.fromCircle(center: const Offset(6.5, 12.5), radius: 0.5));
+  p.addOval(Rect.fromCircle(center: const Offset(8.5, 7.5), radius: 0.5));
+  return p;
+}
+
+/// lucide "sun"
+Path _lucideSun() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 4.0));
+  p.moveTo(12.0, 2.0);
+  p.lineTo(12.0, 4.0);
+  p.moveTo(12.0, 20.0);
+  p.lineTo(12.0, 22.0);
+  p.moveTo(4.93, 4.93);
+  p.lineTo(6.34, 6.34);
+  p.moveTo(17.66, 17.66);
+  p.lineTo(19.07, 19.07);
+  p.moveTo(2.0, 12.0);
+  p.lineTo(4.0, 12.0);
+  p.moveTo(20.0, 12.0);
+  p.lineTo(22.0, 12.0);
+  p.moveTo(6.34, 17.66);
+  p.lineTo(4.93, 19.07);
+  p.moveTo(19.07, 4.93);
+  p.lineTo(17.66, 6.34);
+  return p;
+}
+
+/// lucide "moon"
+Path _lucideMoon() {
+  final p = Path();
+  p.moveTo(20.985, 12.486);
+  p.arcToPoint(const Offset(11.512, 3.014), radius: const Radius.elliptical(9.0, 9.0), rotation: 0.0, largeArc: true, clockwise: true);
+  p.cubicTo(11.917, 2.992, 12.129, 3.474, 11.914, 3.817);
+  p.arcToPoint(const Offset(20.182, 12.085), radius: const Radius.elliptical(6.0, 6.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.cubicTo(20.526, 11.87, 21.007, 12.081, 20.985, 12.486);
+  return p;
+}
+
+/// lucide "laptop"
+Path _lucideLaptop() {
+  final p = Path();
+  p.moveTo(18.0, 5.0);
+  p.arcToPoint(const Offset(20.0, 7.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(20.0, 15.526);
+  p.arcToPoint(const Offset(20.212, 16.423), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(21.28, 18.55);
+  p.arcToPoint(const Offset(20.38, 20.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.62, 20.0);
+  p.arcToPoint(const Offset(2.72, 18.55), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.788, 16.423);
+  p.arcToPoint(const Offset(4.0, 15.526), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(4.0, 7.0);
+  p.arcToPoint(const Offset(6.0, 5.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  p.moveTo(20.054, 15.987);
+  p.lineTo(3.946, 15.987);
+  return p;
+}
+
+/// lucide "hash"
+Path _lucideHash() {
+  final p = Path();
+  p.moveTo(4.0, 9.0);
+  p.lineTo(20.0, 9.0);
+  p.moveTo(4.0, 15.0);
+  p.lineTo(20.0, 15.0);
+  p.moveTo(10.0, 3.0);
+  p.lineTo(8.0, 21.0);
+  p.moveTo(16.0, 3.0);
+  p.lineTo(14.0, 21.0);
+  return p;
+}
+
+/// lucide "volume-2"
+Path _lucideVolume2() {
+  final p = Path();
+  p.moveTo(11.0, 4.702);
+  p.arcToPoint(const Offset(9.797, 4.204), radius: const Radius.elliptical(0.705, 0.705), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(6.413, 7.587);
+  p.arcToPoint(const Offset(5.416, 8.0), radius: const Radius.elliptical(1.4, 1.4), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.0, 8.0);
+  p.arcToPoint(const Offset(2.0, 9.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(2.0, 15.0);
+  p.arcToPoint(const Offset(3.0, 16.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(5.416, 16.0);
+  p.arcToPoint(const Offset(6.413, 16.413), radius: const Radius.elliptical(1.4, 1.4), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(9.796, 19.797);
+  p.arcToPoint(const Offset(11.0, 19.298), radius: const Radius.elliptical(0.705, 0.705), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  p.moveTo(16.0, 9.0);
+  p.arcToPoint(const Offset(16.0, 15.0), radius: const Radius.elliptical(5.0, 5.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.moveTo(19.364, 18.364);
+  p.arcToPoint(const Offset(19.364, 5.636), radius: const Radius.elliptical(9.0, 9.0), rotation: 0.0, largeArc: false, clockwise: false);
+  return p;
+}
+
+/// lucide "smartphone"
+Path _lucideSmartphone() {
+  final p = Path();
+  p.addRRect(RRect.fromRectXY(Rect.fromLTWH(5.0, 2.0, 14.0, 20.0), 2.0, 2.0));
+  p.moveTo(12.0, 18.0);
+  p.lineTo(12.01, 18.0);
+  return p;
+}
+
+/// lucide "shield-check"
+Path _lucideShieldCheck() {
+  final p = Path();
+  p.moveTo(20.0, 13.0);
+  p.cubicTo(20.0, 18.0, 16.5, 20.5, 12.34, 21.95);
+  p.arcToPoint(const Offset(11.67, 21.94), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.cubicTo(7.5, 20.5, 4.0, 18.0, 4.0, 13.0);
+  p.lineTo(4.0, 6.0);
+  p.arcToPoint(const Offset(5.0, 5.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.cubicTo(7.0, 5.0, 9.5, 3.8, 11.24, 2.28);
+  p.arcToPoint(const Offset(12.76, 2.28), radius: const Radius.elliptical(1.17, 1.17), rotation: 0.0, largeArc: false, clockwise: true);
+  p.cubicTo(14.51, 3.81, 17.0, 5.0, 19.0, 5.0);
+  p.arcToPoint(const Offset(20.0, 6.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  p.moveTo(9.0, 12.0);
+  p.lineTo(11.0, 14.0);
+  p.lineTo(15.0, 10.0);
+  return p;
+}
+
+/// lucide "chevron-right"
+Path _lucideChevronRight() {
+  final p = Path();
+  p.moveTo(9.0, 18.0);
+  p.lineTo(15.0, 12.0);
+  p.lineTo(9.0, 6.0);
+  return p;
+}
+
+/// lucide "external-link"
+Path _lucideExternalLink() {
+  final p = Path();
+  p.moveTo(15.0, 3.0);
+  p.lineTo(21.0, 3.0);
+  p.lineTo(21.0, 9.0);
+  p.moveTo(10.0, 14.0);
+  p.lineTo(21.0, 3.0);
+  p.moveTo(18.0, 13.0);
+  p.lineTo(18.0, 19.0);
+  p.arcToPoint(const Offset(16.0, 21.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(5.0, 21.0);
+  p.arcToPoint(const Offset(3.0, 19.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.0, 8.0);
+  p.arcToPoint(const Offset(5.0, 6.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(11.0, 6.0);
+  return p;
+}
+
+/// lucide "play"
+Path _lucidePlay() {
+  final p = Path();
+  p.moveTo(5.0, 5.0);
+  p.arcToPoint(const Offset(8.008, 3.272), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(20.005, 10.27);
+  p.arcToPoint(const Offset(20.008, 13.728), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(8.008, 20.728);
+  p.arcToPoint(const Offset(5.0, 19.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  return p;
+}
+
 /// Builders of the 24 x 24 stroke icons.
 final Map<LucideIconId, Path Function()> kLucideIconBuilders = <LucideIconId, Path Function()>{
   LucideIconId.copy: _lucideCopy,
@@ -676,4 +969,21 @@ final Map<LucideIconId, Path Function()> kLucideIconBuilders = <LucideIconId, Pa
   LucideIconId.zoomIn: _lucideZoomIn,
   LucideIconId.zoomOut: _lucideZoomOut,
   LucideIconId.crosshair: _lucideCrosshair,
+  LucideIconId.x: _lucideX,
+  LucideIconId.trash2: _lucideTrash2,
+  LucideIconId.download: _lucideDownload,
+  LucideIconId.calculator: _lucideCalculator,
+  LucideIconId.fileText: _lucideFileText,
+  LucideIconId.arrowLeft: _lucideArrowLeft,
+  LucideIconId.palette: _lucidePalette,
+  LucideIconId.sun: _lucideSun,
+  LucideIconId.moon: _lucideMoon,
+  LucideIconId.laptop: _lucideLaptop,
+  LucideIconId.hash: _lucideHash,
+  LucideIconId.volume2: _lucideVolume2,
+  LucideIconId.smartphone: _lucideSmartphone,
+  LucideIconId.shieldCheck: _lucideShieldCheck,
+  LucideIconId.chevronRight: _lucideChevronRight,
+  LucideIconId.externalLink: _lucideExternalLink,
+  LucideIconId.play: _lucidePlay,
 };

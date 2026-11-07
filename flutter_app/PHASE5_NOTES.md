@@ -1,7 +1,53 @@
 # Phase 5: tool screens (in steps)
 
-Phase 5 is split. **5a is the Converter, 5b is Currency, 5c is the other five Finance tabs plus the converter swap-button fix, 5d is Physics Lab, 5e (below) is the Grapher.**
-Still to do: 5f History tape + Settings modal + Guide sheet (these replace `dev_settings_sheet.dart`).
+Phase 5 is split. **5a is the Converter, 5b is Currency, 5c is the other five Finance tabs plus the converter swap-button fix, 5d is Physics Lab, 5e is the Grapher, 5f (below) is History tape + Settings + Guide.**
+Phase 5 is complete with 5f. Still to do: Phase 6 (see the master prompt).
+
+# Phase 5f: History tape, Settings, Guide
+
+## What is here (5f)
+- `lib/ui/widgets/m3_sheet.dart`: `Sheet.tsx` (`M3Sheet`): scrim at 45 %, spring slide, panel `surface-container-low`, radius 32 (top only on
+  phones), handle with drag-to-close (6 px to start, closes past 110 px or a flick over 0.6 px/ms after 24 px, else springs back in 260 ms),
+  centred card from 640 px wide, `fixedHeight` (88vh, 880 max from sm) for Settings and Guide. Also `SpringReveal`.
+- `lib/ui/overlays/history_tape_sheet.dart`: `HistoryTapeModal.tsx`: filters All / Calculator / Physics with counts, cards (time, mode badge,
+  plain or rich expression, result, Copy, Formula, Use), export, two-step clear, empty state.
+- `lib/ui/overlays/settings_sheet.dart`: `SettingsModal.tsx`: theme, colour mode, AMOLED switch, bar preview, scroll edge effect, fade
+  height, bar style with the glass options (transparency slider, blur, edge), angle unit, precision, sound, haptic, vibration strength
+  and test buttons, Physics / Grapher switches, About (version, guide, GitHub, privacy sheet), reset with the confirm sheet and the toast.
+  Sub-lists close first on back (`NavigationState.innerBack`).
+- `lib/ui/overlays/guide_sheet.dart` + generated `guide_content.dart`: `GuideSheet.tsx` and `guideContent.ts`: accordion (starts on "diff"),
+  live results through the Dart engine, Try (switches the angle unit, loads the expression, closes guide and history).
+- `tools/gen_guide.ts`: writes `guide_content.dart` and `test/golden/guide.json` (42 examples run through the real TS engine the way
+  `runExample` does). `--check` mode like the other generators. `gen_lucide_paths.mjs` (now 54 icons) and `gen_svg_paths.mjs` were extended.
+- `lib/services/link_service.dart` (`url_launcher`, plus `RecordingLinkService` for tests), `lib/ui/overlays/overlays.dart` (`appOverlays`).
+- `dev_settings_sheet.dart` is deleted. `AppShell` defaults to no overlays; `main.dart` passes `appOverlays`.
+
+## Deliberate differences (5f)
+1. **Export history** copies the text to the clipboard (`clipboardHistoryExporter`); the web app starts a `.txt` download from a blob, which
+   most likely does nothing inside the Capacitor WebView. The text is byte for byte the same (`[time] expr = result (mode)` per line).
+2. **Time** on history cards and in the export is 24-hour `HH:mm:ss`; the web app uses `toLocaleTimeString`, i.e. the device locale.
+3. **Links** (GitHub, privacy "Standalone Policy" -> PRIVACY.md on GitHub) open with `url_launcher`; the web app uses `<a href>` / `window.open`.
+4. No text selection inside the guide examples and no `break-all`; the history result text may wrap on a very narrow phone.
+5. Semantic labels of settings rows are simplified (the subtitle is read as the row's value).
+
+## Not done / open (5f)
+- Phase 6 items in the master prompt.
+- No screenshot goldens and no device check.
+
+## Verification status (5f)
+Flutter 3.47.9 in the chat sandbox: `flutter analyze` has no errors or warnings (20 infos, none in 5f files; the others were there before),
+the **full suite ran locally: 4,859 passed and 6 skipped** (was 4,770: +89 new). New: guide golden (46: all 42 guide results equal the TS
+engine, plus the y(x) setup, the define-an-equation example and angle handling), history sheet (13), settings sheet (17), guide sheet (7),
+`M3Sheet` (6). `gen_guide.ts --check`, `gen_lucide_paths.mjs --check` and `gen_svg_paths.mjs --check` pass. CI and a device run are still to do.
+The overlay tests use the Flutter test font (wider than the real one), so two use a 630 px wide view; the real phone layout is not compared.
+Run: `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
+
+## Parity doubts (5f)
+1. **Export on Capacitor.** If the web blob download does work in the Android WebView, the file route (share sheet or Downloads) should replace the clipboard.
+2. **Narrow header.** With the "Clear All?" pill showing, the history title column gets narrow on a 360 px phone; the web markup is the same
+   (`min-w-0 flex-1`, no truncation) so I kept it, but I did not see it on a device.
+3. **Spring and drag feel** of the sheet handle, and the glass preview and blur on a real GPU, are not compared with the web app.
+4. **Time format** (difference 2): confirm 24-hour is acceptable, or tell me to follow the device locale.
 
 # Phase 5e: Grapher
 

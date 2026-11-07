@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:omnicalc/main.dart';
 import 'package:omnicalc/services/feedback_service.dart';
+import 'package:omnicalc/services/link_service.dart';
 import 'package:omnicalc/state/app_settings.dart';
 import 'package:omnicalc/state/history_store.dart';
 import 'package:omnicalc/state/navigation_state.dart';
@@ -20,6 +21,7 @@ Future<Harness> pumpApp(
   WidgetTester tester, {
   Size size = const Size(400, 800),
   AppSettings settings = const AppSettings(),
+  LinkService linkService = const PlatformLinkService(),
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -32,6 +34,7 @@ Future<Harness> pumpApp(
     history: history,
     systemColorsSource: const FakeSystemColorsSource(null),
     feedback: feedback,
+    linkService: linkService,
     currencyService: offlineCurrencyService(),
   ));
   // the bar's entrance spring starts on the frame after the first one, so it needs two pumps
@@ -189,7 +192,7 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
       await settle(tester);
       expect(navOf(tester).isSettingsOpen, isTrue);
-      expect(find.text('Settings (Phase 3 preview)'), findsOneWidget);
+      expect(find.byKey(const ValueKey('settings-scroll')), findsOneWidget);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
       await settle(tester);
