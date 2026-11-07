@@ -121,6 +121,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     } else if (logical.keyLabel.length == 1) {
       key = logical.keyLabel.toLowerCase();
     }
+    // numpad keys keep working when the platform reports no character for them
+    if (key == null && event.physicalKey == PhysicalKeyboardKey.numpadMultiply) key = '*';
+    if (key == null && event.physicalKey == PhysicalKeyboardKey.numpadDivide) key = '/';
     if (key == null) return false;
 
     if ((ctrl || meta) && (key == 'v' || key == 'V')) {
