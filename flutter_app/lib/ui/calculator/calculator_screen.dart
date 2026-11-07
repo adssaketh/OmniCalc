@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../../editor/expr_doc.dart';
+import '../../editor/rich_expression_view.dart';
 import '../../engine/types.dart';
 import '../../services/feedback_service.dart';
 import '../../state/history_store.dart';
@@ -20,7 +22,6 @@ import '../shell/intrinsic_cache.dart';
 import '../shell/pinned_slot.dart';
 import '../shell/swipeable_tab_container.dart';
 import 'advanced_keys.dart';
-import 'auto_fit_text.dart';
 import 'calc_style.dart';
 import 'calculator_controller.dart';
 
@@ -52,8 +53,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     final history = context.read<HistoryStore>();
     _c = CalculatorController(
       feedback: context.read<FeedbackService>(),
-      onAddHistory: ({required expression, required result, required mode}) =>
-          history.add(expression: expression, result: result, mode: mode),
+      onAddHistoryRich: ({required expression, required result, required mode, rich}) =>
+          history.add(expression: expression, result: result, mode: mode, rich: rich),
     );
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
   }
@@ -112,6 +113,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       key = 'Escape';
     } else if (logical == LogicalKeyboardKey.delete) {
       key = 'Delete';
+    } else if (logical == LogicalKeyboardKey.arrowLeft) {
+      key = 'ArrowLeft';
+    } else if (logical == LogicalKeyboardKey.arrowRight) {
+      key = 'ArrowRight';
     } else if (logical == LogicalKeyboardKey.arrowUp) {
       key = 'ArrowUp';
     } else if (logical == LogicalKeyboardKey.arrowDown) {
@@ -375,6 +380,34 @@ class _CopyButton extends StatelessWidget {
   }
 }
 
+/// Leaves the superscript / subscript the caret is in (the "exit" key of the rich editor). Shown only while the
+/// caret is inside a group, in the badge row, so the keypad and the layout stay as they were.
+class _ExitGroupChip extends StatelessWidget {
+  const _ExitGroupChip({required this.t, required this.size, required this.onTap});
+
+  final M3Tokens t;
+  final double size;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return M3Key(
+      foreground: t.primary,
+      background: t.surfaceContainerHigh,
+      borderRadius: BorderRadius.circular(9999),
+      onTap: onTap,
+      semanticLabel: 'Exit power or subscript',
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        child: Text(
+          '→',
+          style: calcText(size: size, weight: FontWeight.w700, color: t.primary, lineHeight: size * (size == 12 ? 16 / 12 : 20 / 14), mono: true),
+        ),
+      ),
+    );
+  }
+}
+
 class _AngleBadge extends StatelessWidget {
   const _AngleBadge({required this.t, required this.controller, required this.onTap, required this.size, required this.vPad});
 
@@ -471,11 +504,14 @@ class _PortraitDisplay extends StatelessWidget {
     } else {
       final fit = Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
-        child: AutoFitText(
-          text: c.expression,
+        child: RichExpressionView(
+          doc: c.doc,
           max: 72,
           min: 26,
           color: c.hasEvaluated ? t.primary : t.onSurface,
+          showCaret: c.caretVisible,
+          caretColor: t.primary,
+          onCaretHit: c.placeCaret,
         ),
       );
       answer = c.hasEvaluated ? M3ResultUpdate(trigger: '${c.expression}|${c.lastQuestion}', child: fit) : fit;
@@ -519,6 +555,14 @@ class _PortraitDisplay extends StatelessWidget {
                               size: smallText ? 14 : 12,
                               vPad: 4,
                             ),
+                            if (c.caretInGroup) ...[
+                              const SizedBox(width: 8),
+                              _ExitGroupChip(
+                                t: t,
+                                size: smallText ? 14 : 12,
+                                onTap: c.exitGroup,
+                              ),
+                            ],
                             if (c.openParensCount > 0) ...[
                               const SizedBox(width: 8),
                               _PulsingBadge(
@@ -1111,17 +1155,41 @@ class _LandscapeDisplay extends StatelessWidget {
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => nav.loadExpression(h.expression),
-                        child: Text.rich(
-                          TextSpan(children: [
-                            TextSpan(text: h.expression, style: TextStyle(color: withAlphaFraction(t.onSurfaceVariant, 0.7))),
-                            const TextSpan(text: ' = '),
-                            TextSpan(text: h.result, style: const TextStyle(fontWeight: FontWeight.w600)),
-                          ]),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.right,
-                          style: calcText(size: 12, weight: FontWeight.w400, color: t.onSurfaceVariant, lineHeight: 16, mono: true),
-                        ),
+                        child: h.rich != null
+                            // entries with superscripts / subscripts keep their look; older entries are plain text
+                            ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Flexible(
+                                    child: RichExpressionView(
+                                      doc: ExprDoc.fromJson(h.rich) ?? ExprDoc.plain(h.expression),
+                                      fit: false,
+                                      max: 12,
+                                      lineHeightPx: 16,
+                                      weight: FontWeight.w400,
+                                      letterSpacingEm: 0,
+                                      color: withAlphaFraction(t.onSurfaceVariant, 0.7),
+                                    ),
+                                  ),
+                                  Text(
+                                    ' = ${h.result}',
+                                    maxLines: 1,
+                                    style: calcText(size: 12, weight: FontWeight.w600, color: t.onSurfaceVariant, lineHeight: 16, mono: true),
+                                  ),
+                                ],
+                              )
+                            : Text.rich(
+                                TextSpan(children: [
+                                  TextSpan(text: h.expression, style: TextStyle(color: withAlphaFraction(t.onSurfaceVariant, 0.7))),
+                                  const TextSpan(text: ' = '),
+                                  TextSpan(text: h.result, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                ]),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.right,
+                                style: calcText(size: 12, weight: FontWeight.w400, color: t.onSurfaceVariant, lineHeight: 16, mono: true),
+                              ),
                       ),
                     ),
                 ],
@@ -1150,18 +1218,15 @@ class _LandscapeDisplay extends StatelessWidget {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             reverse: true,
-            child: Text(
-              c.expression,
-              maxLines: 1,
-              softWrap: false,
-              style: calcText(
-                size: exprSize,
-                weight: FontWeight.w700,
-                color: t.onSurface,
-                lineHeight: _tailwindLineHeight(exprSize),
-                mono: true,
-                letterSpacingEm: -0.025,
-              ),
+            child: RichExpressionView(
+              doc: c.doc,
+              fit: false,
+              max: exprSize,
+              lineHeightPx: _tailwindLineHeight(exprSize),
+              color: t.onSurface,
+              showCaret: c.caretVisible,
+              caretColor: t.primary,
+              onCaretHit: c.placeCaret,
             ),
           ),
         ),

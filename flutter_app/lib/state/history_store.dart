@@ -12,6 +12,7 @@ class HistoryItem {
     required this.result,
     required this.timestamp,
     this.mode,
+    this.rich,
   });
 
   final String id;
@@ -22,6 +23,10 @@ class HistoryItem {
   final int timestamp;
   final String? mode;
 
+  /// The expression as a rich node tree (see `nodesToJson`), saved when it has superscripts or subscripts. Entries from
+  /// before the rich editor have none and show their plain text.
+  final List<Object>? rich;
+
   static HistoryItem? fromJson(Object? raw) {
     if (raw is! Map) return null;
     final id = raw['id'];
@@ -30,12 +35,14 @@ class HistoryItem {
     final timestamp = raw['timestamp'];
     if (id is! String || expression is! String || result is! String || timestamp is! num) return null;
     final mode = raw['mode'];
+    final rich = raw['rich'];
     return HistoryItem(
       id: id,
       expression: expression,
       result: result,
       timestamp: timestamp.round(),
       mode: mode is String ? mode : null,
+      rich: rich is List ? List<Object>.from(rich) : null,
     );
   }
 
@@ -45,6 +52,7 @@ class HistoryItem {
         'result': result,
         'timestamp': timestamp,
         if (mode != null) 'mode': mode,
+        if (rich != null) 'rich': rich,
       };
 }
 
@@ -95,13 +103,21 @@ class HistoryStore extends ChangeNotifier {
   }
 
   /// `handleAddHistory`: newest first, at most 100 entries (`[newItem, ...prev.slice(0, 99)]`).
-  void add({required String expression, required String result, String? mode, String? id, int? timestamp}) {
+  void add({
+    required String expression,
+    required String result,
+    String? mode,
+    String? id,
+    int? timestamp,
+    List<Object>? rich,
+  }) {
     final item = HistoryItem(
       id: id ?? newId(),
       expression: expression,
       result: result,
       timestamp: timestamp ?? DateTime.now().millisecondsSinceEpoch,
       mode: mode,
+      rich: rich,
     );
     _items = [item, ..._items.take(99)];
     _persist();

@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../../editor/expr_doc.dart';
+import '../../editor/linear.dart';
+import '../../editor/rich_layout.dart' show CaretHit;
 import '../../engine/calc_error.dart';
 import '../../engine/evaluator.dart';
 import '../../engine/types.dart';
@@ -26,6 +29,14 @@ enum MemoryAction { mc, mr, mPlus, mMinus, ms }
 
 /// Receives a finished calculation (`onAddHistory`).
 typedef AddHistory = void Function({required String expression, required String result, required String mode});
+
+/// `onAddHistory` plus the rich node tree of the expression (null when it has no superscripts or subscripts).
+typedef AddHistoryRich = void Function({
+  required String expression,
+  required String result,
+  required String mode,
+  List<Object>? rich,
+});
 
 /// Writes text to the clipboard (`navigator.clipboard.writeText`).
 typedef ClipboardWriter = Future<void> Function(String text);
@@ -65,6 +76,7 @@ class CalculatorController extends ChangeNotifier {
   CalculatorController({
     required this.feedback,
     this.onAddHistory,
+    this.onAddHistoryRich,
     ClipboardWriter? clipboard,
     AngleMode angleMode = AngleMode.deg,
     int decimalPrecision = -1,
@@ -79,6 +91,9 @@ class CalculatorController extends ChangeNotifier {
 
   final FeedbackService feedback;
   AddHistory? onAddHistory;
+
+  /// When set it is used instead of [onAddHistory] and also receives the rich tree.
+  AddHistoryRich? onAddHistoryRich;
   final ClipboardWriter _clipboard;
 
   // -- Settings that come from outside (props of the React component) --------------------------------------------
@@ -112,7 +127,29 @@ class CalculatorController extends ChangeNotifier {
   }
 
   // -- State ------------------------------------------------------------------------------------------------------
-  String _expression = '0';
+  /// The expression as a node tree with a caret. [_expression] is its engine string: reading it serializes the tree
+  /// (cached), assigning it parses the text back (lossless, see editor/linear.dart), so every handler below that works
+  /// on the text keeps working unchanged.
+  ExprDoc _doc = ExprDoc.plain('0');
+  String get _expression => _doc.linear;
+  set _expression(String v) => _doc = ExprDoc.fromLinear(v);
+
+  /// Results and messages are shown exactly as they are: no `^` or `_` in them is read as a superscript.
+  void _setPlain(String v) => _doc = ExprDoc.plain(v);
+
+  /// What a handler that appends text to the old string decided: when the caret is at the end of the tree only the
+  /// new tail is added to it (so a group the user has just left stays closed), otherwise the text is read afresh.
+  void _set(String prev, String next) {
+    if (_doc.atRootEnd && next.length >= prev.length && next.startsWith(prev)) {
+      _doc.insertLinear(next.substring(prev.length));
+    } else {
+      _expression = next;
+    }
+  }
+
+  /// Typing happens inside the tree (not at the end of the text): the caret is in a group or was moved.
+  bool get _treeMode => !_hasEvaluated && !_doc.atRootEnd;
+
   String _lastQuestion = '';
   String _lastAnswer = '';
 
@@ -179,6 +216,10 @@ class CalculatorController extends ChangeNotifier {
   // -- Handlers ---------------------------------------------------------------------------------------------------
   void handleInput(String token) {
     playSound(ClickType.num);
+    if (_treeMode) {
+      _treeInput(token);
+      return;
+    }
     final prev = _expression;
     if (_hasEvaluated) {
       _hasEvaluated = false;
@@ -210,13 +251,58 @@ class CalculatorController extends ChangeNotifier {
       }
     }
 
-    _expression = prev + token;
+    _set(prev, prev + token);
     notifyListeners();
+  }
+
+  // -- Typing inside the tree (caret in a superscript / subscript, or moved away from the end) ------------------------
+  /// Inserts text at the caret. Opening another group deeper than [kMaxNesting] levels is refused.
+  void _treeInsert(String text) {
+    if (text.contains('^') && _doc.depth >= kMaxNesting) {
+      notifyListeners();
+      return;
+    }
+    _doc.insertLinear(text);
+    notifyListeners();
+  }
+
+  void _treeInput(String token) {
+    if (token == '.') {
+      final lastSegment = _doc.textBeforeCaret.split(_reSegmentSplit).last;
+      if (lastSegment.contains('.')) {
+        notifyListeners();
+        return;
+      }
+    }
+    _treeInsert(token);
+  }
+
+  /// `×` is added before a function or template unless the caret is at the start of its list or after an operator.
+  void _treeCall(String text) {
+    final pc = _doc.prevChar;
+    final glue = pc.isEmpty || _operatorChars.contains(pc) ? '' : '×';
+    _treeInsert('$glue$text');
+  }
+
+  void _treeParentheses() {
+    final pc = _doc.prevChar;
+    final prev = _expression;
+    if (_count(prev, '(') > _count(prev, ')') && pc.isNotEmpty && !_operatorChars.contains(pc)) {
+      _treeInsert(')');
+    } else if (pc.isEmpty || const ['+', '−', '×', '÷', '(', '^', '%', ',', ' '].contains(pc)) {
+      _treeInsert('(');
+    } else {
+      _treeInsert('×(');
+    }
   }
 
   /// Insert a function such as `sin(`.
   void handleFunction(String fnName) {
     playSound(ClickType.op);
+    if (_treeMode) {
+      _treeCall('$fnName(');
+      return;
+    }
     final prev = _expression;
     if (_hasEvaluated) {
       _hasEvaluated = false;
@@ -229,9 +315,9 @@ class CalculatorController extends ChangeNotifier {
     if (prev == '0') {
       _expression = '$fnName(';
     } else if (_operatorChars.contains(_lastChar(prev))) {
-      _expression = '$prev$fnName(';
+      _set(prev, '$prev$fnName(');
     } else {
-      _expression = '$prev×$fnName(';
+      _set(prev, '$prev×$fnName(');
     }
     notifyListeners();
   }
@@ -239,6 +325,10 @@ class CalculatorController extends ChangeNotifier {
   /// Insert a template such as `diff(`, `integrate(`, `sum(`.
   void handleInsertTemplate(String template) {
     playSound(ClickType.op);
+    if (_treeMode) {
+      _treeCall(template);
+      return;
+    }
     final prev = _expression;
     if (_hasEvaluated || prev == '0') {
       _hasEvaluated = false;
@@ -249,15 +339,19 @@ class CalculatorController extends ChangeNotifier {
       return;
     }
     if (_operatorChars.contains(_lastChar(prev))) {
-      _expression = '$prev$template';
+      _set(prev, '$prev$template');
     } else {
-      _expression = '$prev×$template';
+      _set(prev, '$prev×$template');
     }
     notifyListeners();
   }
 
   void handleParentheses() {
     playSound(ClickType.op);
+    if (_treeMode) {
+      _treeParentheses();
+      return;
+    }
     final prev = _expression;
     if (_hasEvaluated) {
       _hasEvaluated = false;
@@ -270,11 +364,15 @@ class CalculatorController extends ChangeNotifier {
     final last = _lastChar(prev);
 
     if (openCount > closeCount && !_operatorChars.contains(last)) {
-      _expression = '$prev)';
+      _set(prev, '$prev)');
     } else if (const ['+', '−', '×', '÷', '(', '^', '%', ',', ' '].contains(last) || prev == '0') {
-      _expression = prev == '0' ? '(' : '$prev(';
+      if (prev == '0') {
+        _expression = '(';
+      } else {
+        _set(prev, '$prev(');
+      }
     } else {
-      _expression = '$prev×(';
+      _set(prev, '$prev×(');
     }
     notifyListeners();
   }
@@ -295,28 +393,68 @@ class CalculatorController extends ChangeNotifier {
 
   void handleBackspace() {
     playSound(ClickType.op);
-    final prev = _expression;
     if (_hasEvaluated) {
       _hasEvaluated = false;
       _expression = '0';
       notifyListeners();
       return;
     }
-    if (prev.length <= 1) {
-      _expression = '0';
-      notifyListeners();
-      return;
-    }
-    for (final token in _multiCharTokens) {
-      if (prev.endsWith(token)) {
-        final cut = prev.substring(0, prev.length - token.length);
-        _expression = cut.isEmpty ? '0' : cut;
-        notifyListeners();
-        return;
-      }
-    }
-    _expression = prev.substring(0, prev.length - 1);
+    // On the tree: one character or token before the caret; an empty group goes away; a group with content is entered
+    // first. For text without groups this removes exactly what the old string handler removed.
+    _doc.backspace(_multiCharTokens);
+    if (_doc.root.isEmpty) _expression = '0';
     notifyListeners();
+  }
+
+  // -- Rich editor: caret and groups --------------------------------------------------------------------------------
+  /// The expression tree the display draws.
+  ExprDoc get doc => _doc;
+
+  /// The caret is inside a superscript or subscript (the exit chip shows).
+  bool get caretInGroup => !_hasEvaluated && _doc.inGroup;
+
+  /// The display draws the caret while the user is editing the structure: inside a group, away from the end, or when
+  /// the expression has groups. Plain arithmetic shows no caret, as before.
+  bool get caretVisible => !_hasEvaluated && (_doc.inGroup || !_doc.atRootEnd || _doc.hasGroups);
+
+  /// Subscript key (hardware `_`): a lowered group at the caret, caret inside. After a result it continues from the
+  /// result, like `^` does.
+  void handleSub() {
+    playSound(ClickType.num);
+    if (_hasEvaluated) {
+      _hasEvaluated = false;
+      _lastQuestion = '';
+      _lastAnswer = '';
+    }
+    _doc.insertGroup(sup: false);
+    notifyListeners();
+  }
+
+  /// Arrow keys and taps. Not while a result is shown (it is a result, not something being edited).
+  bool moveCaretLeft() {
+    if (_hasEvaluated || !_doc.moveLeft()) return false;
+    notifyListeners();
+    return true;
+  }
+
+  bool moveCaretRight() {
+    if (_hasEvaluated || !_doc.moveRight()) return false;
+    notifyListeners();
+    return true;
+  }
+
+  /// The exit key: leave the superscript / subscript and carry on in the line it belongs to.
+  bool exitGroup() {
+    if (_hasEvaluated || !_doc.exitGroup()) return false;
+    playSound(ClickType.op);
+    notifyListeners();
+    return true;
+  }
+
+  /// A tap on the display.
+  void placeCaret(CaretHit hit) {
+    if (_hasEvaluated) return;
+    if (_doc.setCaret(hit.path, hit.offset)) notifyListeners();
   }
 
   // -- Live preview -------------------------------------------------------------------------------------------------
@@ -396,15 +534,22 @@ class CalculatorController extends ChangeNotifier {
       _lastQuestion = shown;
       _lastAnswer = formatted;
 
-      onAddHistory?.call(expression: shown, result: formatted, mode: _isScientific ? 'scientific' : 'standard');
+      final mode = _isScientific ? 'scientific' : 'standard';
+      // the rich tree is kept with the entry only when it is exactly what was calculated
+      final rich = (shown == _expression && _doc.hasGroups) ? _doc.toJson() : null;
+      if (onAddHistoryRich != null) {
+        onAddHistoryRich!.call(expression: shown, result: formatted, mode: mode, rich: rich);
+      } else {
+        onAddHistory?.call(expression: shown, result: formatted, mode: mode);
+      }
 
-      _expression = formatted;
+      _setPlain(formatted);
       _hasEvaluated = true;
     } catch (err) {
       final msg = err is CalcError ? err.message : 'Error';
       _lastQuestion = _expression;
       _lastAnswer = msg;
-      _expression = msg;
+      _setPlain(msg);
       _hasEvaluated = true;
     }
     notifyListeners();
@@ -420,7 +565,7 @@ class CalculatorController extends ChangeNotifier {
         case MemoryAction.mc:
           _memory = 0;
         case MemoryAction.mr:
-          _expression = MathEvaluator.formatResult(_memory, _decimalPrecision);
+          _setPlain(MathEvaluator.formatResult(_memory, _decimalPrecision));
           _hasEvaluated = true;
         case MemoryAction.ms:
           _memory = currentVal;
@@ -453,13 +598,21 @@ class CalculatorController extends ChangeNotifier {
     });
   }
 
+  /// The tree of a history entry: the saved rich tree when it still matches the entry's text, otherwise the text read
+  /// afresh (entries from before the editor have no tree).
+  ExprDoc _docOf(HistoryItem item) {
+    final rich = item.rich == null ? null : ExprDoc.fromJson(item.rich);
+    if (rich != null && rich.linear == item.expression) return rich;
+    return ExprDoc.fromLinear(item.expression);
+  }
+
   // -- History tape stepping (Arrow Up / Down) ----------------------------------------------------------------------
   void handleHistoryStep(int direction) {
     if (_history.isEmpty) return;
     final nextIdx = _historyIndex + direction;
     if (nextIdx >= 0 && nextIdx < _history.length) {
       _historyIndex = nextIdx;
-      _expression = _history[nextIdx].expression;
+      _doc = _docOf(_history[nextIdx]);
       _lastQuestion = '';
       _lastAnswer = _history[nextIdx].result;
       _hasEvaluated = false;
@@ -518,7 +671,8 @@ class CalculatorController extends ChangeNotifier {
   /// The `paste` listener: plain-looking maths replaces the expression; anything else is ignored (returns false).
   bool handlePaste(String? pastedText) {
     if (pastedText == null || pastedText.isEmpty) return false;
-    final cleaned = pastedText.trim().replaceAll(RegExp(r'\s+'), '');
+    // x², x⁻¹, H₂O: Unicode superscript / subscript digits become `^` / `_` groups before the usual check
+    final cleaned = normalizeUnicodeScripts(pastedText.trim().replaceAll(RegExp(r'\s+'), ''));
     if (!_rePasteAllowed.hasMatch(cleaned)) return false;
     final mapped = cleaned.replaceAll('*', '×').replaceAll('/', '÷').replaceAll('-', '−');
     _expression = mapped;
@@ -627,6 +781,12 @@ class CalculatorController extends ChangeNotifier {
     }
     if (key == 'Escape' || key == 'Delete') {
       handleClear();
+      return true;
+    }
+    if (key == 'ArrowLeft') return moveCaretLeft();
+    if (key == 'ArrowRight') return moveCaretRight();
+    if (key == '_') {
+      handleSub();
       return true;
     }
     if (key == 'ArrowUp') {

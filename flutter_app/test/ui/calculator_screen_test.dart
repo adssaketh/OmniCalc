@@ -7,7 +7,7 @@ import 'package:omnicalc/state/app_settings.dart';
 import 'package:omnicalc/state/history_store.dart';
 import 'package:omnicalc/state/settings_store.dart';
 import 'package:omnicalc/theme/dynamic_colors.dart';
-import 'package:omnicalc/ui/calculator/auto_fit_text.dart';
+import 'package:omnicalc/editor/rich_expression_view.dart';
 
 Future<({SettingsStore settings, HistoryStore history})> pumpApp(
   WidgetTester tester, {
@@ -37,7 +37,7 @@ Future<void> settle(WidgetTester tester) async {
 }
 
 /// The text the big display currently shows.
-String shown(WidgetTester tester) => tester.renderObject<RenderAutoFitText>(find.byType(AutoFitText)).text;
+String shown(WidgetTester tester) => tester.renderObject<RenderRichExpression>(find.byType(RichExpressionLeaf)).text;
 
 Future<void> tapKey(WidgetTester tester, String label) async {
   await tester.tap(find.text(label).first);
@@ -49,7 +49,7 @@ void main() {
     testWidgets('the answer card is pinned and the keypad is there', (tester) async {
       await pumpApp(tester);
       await settle(tester);
-      expect(find.byType(AutoFitText), findsOneWidget);
+      expect(find.byType(RichExpressionLeaf), findsOneWidget);
       expect(shown(tester), '0');
       for (final k in ['AC', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '−', '1', '2', '3', '+', '0', '.', 'fx ADV', 'MC', 'MR', 'M+', 'M-', 'DEG']) {
         expect(find.text(k), findsWidgets, reason: k);
@@ -168,7 +168,7 @@ void main() {
     testWidgets('a tablet in portrait builds', (tester) async {
       await pumpApp(tester, size: const Size(820, 1180));
       await settle(tester);
-      expect(find.byType(AutoFitText), findsOneWidget);
+      expect(find.byType(RichExpressionLeaf), findsOneWidget);
       await tapKey(tester, 'fx ADV');
       await settle(tester);
       expect(find.text('Advanced Scientific Operations'), findsOneWidget);
