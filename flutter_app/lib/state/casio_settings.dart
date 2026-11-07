@@ -25,6 +25,9 @@ class CasioSettings {
     this.recurring = true,
     this.commaDecimal = false,
     this.gradians = false,
+    this.complexPolar = false,
+    this.statFreq = false,
+    this.tableFg = false,
   });
 
   /// "Calculation style: Casio (default)"; false is "OmniCalc (legacy)".
@@ -45,6 +48,15 @@ class CasioSettings {
   /// Angle unit Gra (OmniCalc's own angle setting has only DEG and RAD).
   final bool gradians;
 
+  /// SETUP ▸ Complex: r∠θ (true) or a+bi (false).
+  final bool complexPolar;
+
+  /// SETUP ▸ STAT: Frequency column on (STAT itself arrives in Phase 7d-2).
+  final bool statFreq;
+
+  /// SETUP ▸ Table: f(x),g(x) (true) or f(x) (false) (TABLE itself arrives in Phase 7d-2).
+  final bool tableFg;
+
   CasioSettings copyWith({
     bool? useCasio,
     bool? phonePercent,
@@ -56,6 +68,9 @@ class CasioSettings {
     bool? recurring,
     bool? commaDecimal,
     bool? gradians,
+    bool? complexPolar,
+    bool? statFreq,
+    bool? tableFg,
   }) =>
       CasioSettings(
         useCasio: useCasio ?? this.useCasio,
@@ -68,6 +83,9 @@ class CasioSettings {
         recurring: recurring ?? this.recurring,
         commaDecimal: commaDecimal ?? this.commaDecimal,
         gradians: gradians ?? this.gradians,
+        complexPolar: complexPolar ?? this.complexPolar,
+        statFreq: statFreq ?? this.statFreq,
+        tableFg: tableFg ?? this.tableFg,
       );
 
   Map<String, Object?> toJson() => <String, Object?>{
@@ -81,6 +99,9 @@ class CasioSettings {
         'recurring': recurring,
         'commaDecimal': commaDecimal,
         'gradians': gradians,
+        'complexPolar': complexPolar,
+        'statFreq': statFreq,
+        'tableFg': tableFg,
       };
 
   factory CasioSettings.fromJson(Map<String, Object?> j) {
@@ -105,6 +126,9 @@ class CasioSettings {
       recurring: b('recurring', d.recurring),
       commaDecimal: b('commaDecimal', d.commaDecimal),
       gradians: b('gradians', d.gradians),
+      complexPolar: b('complexPolar', d.complexPolar),
+      statFreq: b('statFreq', d.statFreq),
+      tableFg: b('tableFg', d.tableFg),
     );
   }
 
@@ -121,6 +145,9 @@ class CasioSettings {
         decimalFirst: decimalFirst,
         legacyPrecision: decimalPrecision,
         useCasio: useCasio,
+        complexFormat: complexPolar ? CasioComplexFormat.polar : CasioComplexFormat.rect,
+        statFreq: statFreq,
+        tableFg: tableFg,
       );
 }
 

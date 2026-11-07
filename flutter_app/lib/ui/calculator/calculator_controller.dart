@@ -9,6 +9,8 @@ import '../../editor/linear.dart';
 import '../../editor/nodes.dart';
 import '../../editor/rich_layout.dart' show CaretHit;
 import '../../engine/calc_error.dart';
+import '../../engine/casio/base_n.dart';
+import '../../engine/casio/complex.dart';
 import '../../engine/casio/config.dart';
 import '../../engine/casio/cval.dart' show CVal, CasioError, CasioErrorKind;
 import '../../engine/casio/engine.dart';
@@ -40,7 +42,10 @@ void _casioWorker(List<Object?> msg) {
 enum _SessionStage { none, prompt, continueScreen, result, error }
 
 /// `AdvancedTab` of CalculatorScreen.tsx.
-enum AdvancedTab { calculus, trig, powers, prob, constants, chemistry, es }
+enum AdvancedTab { calculus, trig, powers, prob, constants, chemistry, es, modes }
+
+/// The calculation mode of the MODE menu (manual p.9). EQN is a separate screen (a dialog), so it is not listed here.
+enum CasioMode { comp, cmplx, baseN }
 
 /// `ADVANCED_TABS` (id, label, badge).
 const List<({AdvancedTab id, String label, String badge})> advancedTabDefs = [
@@ -53,6 +58,8 @@ const List<({AdvancedTab id, String label, String badge})> advancedTabDefs = [
   (id: AdvancedTab.chemistry, label: 'Chemistry', badge: 'mol'),
   // Phase 8a: the natural-display keys (fraction, roots, SHIFT / ALPHA, arrows), again appended last.
   (id: AdvancedTab.es, label: 'ES', badge: 'a/b'),
+  // Phase 7d: MODE menu, CMPLX keys, BASE-N keys, again appended last.
+  (id: AdvancedTab.modes, label: 'Modes', badge: 'MODE'),
 ];
 
 /// Memory ribbon actions (`handleMemory`).
@@ -208,6 +215,64 @@ class CalculatorController extends ChangeNotifier {
   double _memory = 0;
   bool _isScientific = false;
   AdvancedTab _advancedTab = AdvancedTab.calculus;
+
+  // -- MODE (Phase 7d) ------------------------------------------------------------------------------------------------
+  CasioMode _mode = CasioMode.comp;
+  BaseMode _baseMode = BaseMode.dec;
+  CasioComplexEngine? _cx;
+  final CasioBaseN _bn = CasioBaseN();
+  BaseNOutcome? _bnResult;
+
+  /// Set by the screen: opens the MODE menu.
+  VoidCallback? onOpenModeMenu;
+
+  CasioMode get mode => _mode;
+  BaseMode get baseMode => _baseMode;
+  CasioComplexEngine get complexEngine => _cx ??= CasioComplexEngine(engine.memory);
+
+  /// MODE ▸ COMP / CMPLX / BASE-N. Ans and the variables stay; the entry line starts over (manual p.9, p.35).
+  void setMode(CasioMode m) {
+    playSound(ClickType.toggle);
+    _clearModifiers();
+    _syntaxError = null;
+    if (_busy) return;
+    _mode = m;
+    _bnResult = null;
+    _setPlain('0');
+    _forms = const <CasioShown>[];
+    _formIndex = 0;
+    _answerDisplay = '';
+    _lastQuestion = '';
+    _lastAnswer = '';
+    _resultError = false;
+    _hasEvaluated = false;
+    _continuesAns = false;
+    notifyListeners();
+  }
+
+  /// DEC / HEX / BIN / OCT of BASE-N: later entries are read in that base, and a result on screen is shown in it (manual p.66-68).
+  void setBaseMode(BaseMode b) {
+    playSound(ClickType.toggle);
+    if (_mode != CasioMode.baseN) return;
+    _baseMode = b;
+    final r = _bnResult;
+    if (_hasEvaluated && !_resultError && r != null) {
+      try {
+        final text = r.textIn(b);
+        _setPlain(text);
+        _answerDisplay = '';
+        _lastAnswer = text;
+      } catch (e) {
+        _commitError(e);
+      }
+    }
+    notifyListeners();
+  }
+
+  void openModeMenu() {
+    playSound(ClickType.toggle);
+    onOpenModeMenu?.call();
+  }
   bool _copied = false;
   bool _hasEvaluated = false;
 
@@ -252,6 +317,8 @@ class CalculatorController extends ChangeNotifier {
   /// has its own badge, so D / R / G are not repeated here; the ones for modes that do not exist yet (STAT, CMPLX, MAT,
   /// VCT, FIX, SCI, STO, RCL, Disp) join in the phases that add those modes.
   List<String> get annunciators => [
+        if (_mode == CasioMode.cmplx) 'CMPLX',
+        if (_mode == CasioMode.baseN) ...['BASE', _baseMode.label],
         if (_shift) 'S',
         if (_alpha) 'A',
         if (_memory != 0) 'M',
@@ -1136,6 +1203,11 @@ class CalculatorController extends ChangeNotifier {
       }
 
       // atomicsym(26) is the one chemistry function whose answer is text (Phase 6); it only works as the whole expression
+      if (_mode != CasioMode.comp) {
+        _evaluateMode(exprToEval, shown);
+        notifyListeners();
+        return;
+      }
       final chemText = ChemCalcFunctions.textResult(exprToEval);
       if (chemText == null && !_hasEvaluated && CasioEngine.hasCasioCalculus(exprToEval)) {
         // ∫ d/dx Σ ∏ run in the background; AC interrupts
@@ -1158,6 +1230,47 @@ class CalculatorController extends ChangeNotifier {
       _commitError(err);
     }
     notifyListeners();
+  }
+
+  /// `=` in CMPLX or BASE-N (Phase 7d).
+  void _evaluateMode(String expr, String shown) {
+    try {
+      if (_mode == CasioMode.cmplx) {
+        final o = complexEngine.evaluate(expr, engine.config);
+        final forms = [for (final f in o.forms) CasioShown(f.text, f.expr)];
+        _commitCustom(forms, shown);
+      } else {
+        final o = _bn.evaluate(expr, _baseMode);
+        _bnResult = o;
+        final t = o.text;
+        _commitCustom([CasioShown(t, t)], shown);
+      }
+    } catch (err) {
+      _commitError(err);
+    }
+  }
+
+  void _commitCustom(List<CasioShown> forms, String shown) {
+    _continuesAns = false;
+    final first = forms.first;
+    _forms = forms;
+    _formIndex = 0;
+    _engExp = 0;
+    _resultError = false;
+    _resultRemainder = null;
+    _resultExtra = const <String, String>{};
+    _resultFactorable = false;
+    _lastQuestion = shown;
+    _lastAnswer = first.display;
+    final hMode = _isScientific ? 'scientific' : 'standard';
+    if (onAddHistoryRich != null) {
+      onAddHistoryRich!.call(expression: shown, result: first.display, mode: hMode, rich: null);
+    } else {
+      onAddHistory?.call(expression: shown, result: first.display, mode: hMode);
+    }
+    _setPlain(first.expr);
+    _answerDisplay = first.display == first.expr ? '' : first.display;
+    _hasEvaluated = true;
   }
 
   void _commitResult(CasioOutcome? outcome, String? chemText, String shown) {

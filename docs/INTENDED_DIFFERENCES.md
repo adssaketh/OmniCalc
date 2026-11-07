@@ -9,6 +9,8 @@ The legacy style keeps the old result for all of them.
 
 - **Exact forms (D-EXACT-1):** `√2×√3` shows `√6`, `1/3+1/2` shows `5⌟6`, `π÷6` shows `π÷6` (manual p.21-22). The number inside is the same as the old decimal, `S⇔D` shows the decimal.
 - **Rounding at the 10th digit (D-ROUND-1):** results show 10 significant digits (the legacy formatter showed 12), calculation uses 15 (manual p.97).
+- **New modes (D-MODE-1, Phase 7d-1):** CMPLX, BASE-N and EQN did not exist in the legacy engine, so nothing it calculated changes. COMP (the default mode) is untouched; `i`, `∠`, `Abs(` of a complex number and the logic words only mean something inside CMPLX or BASE-N.
+- **EQN is a screen of its own (D-MODE-2):** on the real calculator EQN replaces the whole display; here it opens as a dialog from the MODE menu, so the calculation mode (COMP, CMPLX or BASE-N) on the main display stays as it was.
 - **Percent:** unchanged. "Percent style: OmniCalc" is the default; `100+10%` = 110.
 
 ## D-ARG-1 Integer-only functions

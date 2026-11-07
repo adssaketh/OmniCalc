@@ -1,6 +1,6 @@
 # fx-991ES PLUS coverage matrix
 
-Status after **Phase 7c** (COMP engine, calculus, SOLVE, CALC). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
+Status after **Phase 7d-1** (COMP engine, calculus, SOLVE, CALC, MODE menu, CMPLX, BASE-N, EQN). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
 `test/casio/coverage_test.dart` reads this table: a row marked Done or Partial must name an existing test file, and a row
 marked Deferred must name the phase that will do it.
 
@@ -28,8 +28,8 @@ total is the whole inventory.
 | A14 | `SHIFT` | Done | 8a | test/ui/calculator_es_test.dart |
 | A15 | `ALPHA` | Done | 8a | test/ui/calculator_es_test.dart |
 | A16 | REPLAY pad (◀ ▶ ▲ ▼) | Done | 8a | test/ui/calculator_es_test.dart |
-| A17 | `MODE` | Deferred | 7d | - |
-| A18 | `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec; complex, STAT, TABLE, Disp, CONT remain) | Partial | 7d | test/casio/casio_settings_test.dart |
+| A17 | `MODE` menu (COMP, CMPLX, BASE-N, EQN work; STAT, MATRIX, VECTOR, TABLE are listed as next phase) | Partial | 7d-2 | test/ui/calculator_modes_test.dart |
+| A18 | `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec, complex format, STAT frequency and TABLE format settings; Disp and CONT remain) | Partial | 7e | test/casio/casio_settings_test.dart |
 | A19 | `CLR` Setup / Memory / All | Deferred | 7e | - |
 | A20 | `STO` | Done | 7b | test/casio/casio_engine_test.dart |
 | A21 | `RCL` (a variable can be typed; no RCL key yet) | Partial | 7e | test/casio/casio_engine_test.dart |
@@ -45,7 +45,7 @@ total is the whole inventory.
 | A31 | `←` (ENG left shift) | Done | 7b | test/casio/casio_controller_test.dart |
 | A32 | `π` | Done | 7b | test/casio/casio_engine_test.dart |
 | A33 | `e` | Done | 7b | test/casio/casio_engine_test.dart |
-| A34 | `i` | Deferred | 7d | - |
+| A34 | `i` | Done | 7d-1 | test/casio/complex_test.dart |
 | A35 | `DRG▸` (the ° ʳ ᵍ marks are done; the menu key is not) | Partial | 7e | test/casio/casio_engine_test.dart |
 | A36 | `÷R` | Done | 7b | test/casio/guide_examples_test.dart |
 | A37 | `GCD(` | Done | 7b | test/casio/guide_examples_test.dart |
@@ -99,6 +99,30 @@ total is the whole inventory.
 | F04 | `∏` | Done | 7c | test/casio/calculus_test.dart |
 | F05 | `SOLVE` | Done | 7c | test/casio/solve_calc_test.dart |
 | F06 | `CALC` | Done | 7c | test/casio/solve_calc_test.dart |
+| H01 | CMPLX `+ − × ÷` with exact parts | Done | 7d-1 | test/casio/complex_test.dart |
+| H02 | CMPLX powers (integer exponents exact, others principal value) and √ of a complex number | Done | 7d-1 | test/casio/complex_test.dart |
+| H03 | `∠` polar entry (priority 8) | Done | 7d-1 | test/casio/complex_test.dart |
+| H04 | `Abs(` of a complex number | Done | 7d-1 | test/casio/complex_test.dart |
+| H05 | `arg(` (−180° < θ ≤ 180°) | Done | 7d-1 | test/casio/complex_test.dart |
+| H06 | `Conjg(` | Done | 7d-1 | test/casio/complex_test.dart |
+| H07 | `▸r∠θ` | Done | 7d-1 | test/casio/complex_test.dart |
+| H08 | `▸a+bi` | Done | 7d-1 | test/casio/complex_test.dart |
+| H09 | SETUP complex format a+bi / r∠θ | Done | 7d-1 | test/casio/complex_test.dart |
+| H10 | Linear Display: a and bi (or r and θ) on separate lines (engine gives the lines; the screen shows one line) | Partial | 7e | test/casio/complex_test.dart |
+| H11 | CALC in CMPLX | Deferred | 7e | - |
+| J01 | DEC, HEX, BIN, OCT calculation and result conversion | Done | 7d-1 | test/casio/base_n_test.dart |
+| J02 | number-mode prefixes `d h b o` | Done | 7d-1 | test/casio/base_n_test.dart |
+| J03 | `and or xor xnor` | Done | 7d-1 | test/casio/base_n_test.dart |
+| J04 | `Not(` | Done | 7d-1 | test/casio/base_n_test.dart |
+| J05 | `Neg(` | Done | 7d-1 | test/casio/base_n_test.dart |
+| J06 | ranges (BIN 16 bits, others 32 bits), two's complement, zero-padded output | Done | 7d-1 | test/casio/base_n_test.dart |
+| J07 | letters A–F, no fractions (quotient cut off) | Done | 7d-1 | test/casio/base_n_test.dart |
+| K01 | EQN simultaneous, 2 unknowns | Done | 7d-1 | test/casio/eqn_test.dart |
+| K02 | EQN simultaneous, 3 unknowns | Done | 7d-1 | test/casio/eqn_test.dart |
+| K03 | EQN quadratic with X/Y-Value Minimum or Maximum | Done | 7d-1 | test/casio/eqn_test.dart |
+| K04 | EQN cubic | Done | 7d-1 | test/casio/eqn_test.dart |
+| K05 | no-solution and infinite-solutions messages | Done | 7d-1 | test/casio/eqn_test.dart |
+| K06 | Coefficient Editor, one solution per `=` with ▲▼ scrolling (a dialog that lists every solution at once) | Partial | 7e | test/casio/eqn_test.dart |
 
-Sections H to R (CMPLX, STAT, BASE-N, EQN, MATRIX, VECTOR, TABLE, INEQ, VERIF, DIST, persistence) are Deferred to 7d
-(H to N) and 7e (O to R). Their rows are added to this file when each phase starts, one row per inventory item.
+Sections I (STAT) and L to N (MATRIX, VECTOR, TABLE) are Deferred to 7d-2, and O to R (INEQ, VERIF, DIST, persistence) to 7e.
+Their rows are added to this file when each phase starts, one row per inventory item.

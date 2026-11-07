@@ -483,10 +483,10 @@ void main() {
       expect(c.advancedTab, AdvancedTab.trig);
       c.handleKeyDown('[');
       c.handleKeyDown('[');
-      // the ES tab (Phase 8a) is the last one, so going back from the first tab wraps to it; Chemistry (Phase 6) is before it
-      expect(c.advancedTab, AdvancedTab.es);
+      // the Modes tab (Phase 7d) is the last one, so going back from the first tab wraps to it; ES (Phase 8a) is before it
+      expect(c.advancedTab, AdvancedTab.modes);
       c.handleKeyDown('[');
-      expect(c.advancedTab, AdvancedTab.chemistry);
+      expect(c.advancedTab, AdvancedTab.es);
       c.handleKeyDown(']');
       c.handleKeyDown(']');
       expect(c.advancedTab, AdvancedTab.calculus);

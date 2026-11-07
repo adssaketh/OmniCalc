@@ -19,7 +19,7 @@ List<String> casioVariablesIn(Node n) {
     switch (m) {
       case NName(:final name):
         if (kVariableNames.contains(name) && !seen.contains(name)) seen.add(name);
-      case NNum():
+      case NNum() || NVal():
         break;
       case NNeg():
         walk(m.a);
@@ -57,7 +57,7 @@ bool _hasForbidden(Node root) {
   void walk(Node m) {
     if (found) return;
     switch (m) {
-      case NName() || NNum():
+      case NName() || NNum() || NVal():
         break;
       case NNeg():
         walk(m.a);

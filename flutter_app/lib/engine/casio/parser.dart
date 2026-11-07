@@ -101,6 +101,12 @@ class NDms extends Node {
   final Node? s;
 }
 
+/// A value that is already known (Phase 7d: the CMPLX engine hands real sub-results back to the real evaluator).
+class NVal extends Node {
+  const NVal(this.value, super.pos);
+  final CVal value;
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Lexer
 // ---------------------------------------------------------------------------------------------------------------------
@@ -126,7 +132,7 @@ const List<String> _names = <String>[
   'sin', 'cos', 'tan', 'log2', 'logb', 'log', 'ln', 'exp', 'sqrt', 'cbrt', 'root', 'abs', 'round', 'floor', 'ceil', 'sign',
   'sgn', 'nPr', 'nCr', 'mod', 'gcd', 'lcm', 'Pol', 'Rec', 'Rnd', 'Intg', 'Int', 'GCD', 'LCM', 'CONST', 'CONV', 'RanInt#',
   'Ran#', 'PreAns', 'Ans', 'hbar', 'eps0', 'mu0', 'sigma', 'atm', 'phi', 'ke', 'NA', 'kB', 'qe', 'me', 'mp', 'mn', 'au', 'DMS',
-  'm_e', 'm_p', 'm_n', 'k_B', 'N_A', 'q_e',
+  'm_e', 'm_p', 'm_n', 'k_B', 'N_A', 'q_e', 'arg', 'conjg',
 ];
 
 const Set<String> _constWords = <String>{
@@ -139,13 +145,14 @@ const Set<String> _funcSet = <String>{
   'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh', 'sec', 'csc', 'cot',
   'sech', 'csch', 'coth', 'ln', 'log', 'log2', 'logb', 'exp', 'sqrt', 'cbrt', 'root', 'abs', 'round', 'floor', 'ceil',
   'sign', 'sgn', 'npr', 'ncr', 'mod', 'gcd', 'lcm', 'pol', 'rec', 'rnd', 'intg', 'int', 'const', 'conv', 'ranint#', 'dms',
-  'integral', 'deriv', 'sumx', 'prodx',
+  'integral', 'deriv', 'sumx', 'prodx', 'arg', 'conjg',
 };
 
 /// ∫, d/dx, Σ and ∏ (Phase 7c). They always have their argument list in parentheses.
 const Set<String> kCalculusNames = <String>{'integral', 'deriv', 'sumx', 'prodx'};
 
-List<_Tok> _lex(String src) {
+/// [complex]: CMPLX mode. `i` is the imaginary unit and `∠` the polar-coordinate symbol (priority 8, manual p.96).
+List<_Tok> _lex(String src, {bool complex = false}) {
   final out = <_Tok>[];
   var i = 0;
   final n = src.length;
@@ -328,6 +335,10 @@ List<_Tok> _lex(String src) {
       case '∏':
         out.add(_Tok(_T.id, 'prodx', i++));
         continue;
+      case '∠':
+        if (!complex) throw CasioError(CasioErrorKind.syntax, i);
+        out.add(_Tok(_T.op, '∠', i++));
+        continue;
       case '→':
         out.add(_Tok(_T.op, '→', i++));
         // the letter after STO names a variable, so `→E` is the variable E (not Euler's e)
@@ -368,6 +379,11 @@ List<_Tok> _lex(String src) {
         i += best.length;
         continue;
       }
+      // CMPLX: the imaginary unit (only where no longer name starts with the letter)
+      if (complex && c == 'i') {
+        out.add(_Tok(_T.id, 'i', i++));
+        continue;
+      }
       // single letters: variables, e, E, c, h, g, G, R
       if (c == 'e') {
         out.add(_Tok(_T.id, 'e', i++));
@@ -404,13 +420,15 @@ String _canonical(String name, String raw) {
 // ---------------------------------------------------------------------------------------------------------------------
 
 class CasioParser {
-  CasioParser._(this._toks);
+  CasioParser._(this._toks, this._complex);
 
   final List<_Tok> _toks;
+  final bool _complex;
   var _p = 0;
 
-  static Node parse(String src) {
-    final parser = CasioParser._(_lex(src));
+  /// [complex] turns on `i` and `∠` (the CMPLX mode, Phase 7d).
+  static Node parse(String src, {bool complex = false}) {
+    final parser = CasioParser._(_lex(src, complex: complex), complex);
     final node = parser._parseSequence();
     if (parser._cur.t != _T.end) throw CasioError(CasioErrorKind.syntax, parser._cur.pos);
     return node;
@@ -466,10 +484,10 @@ class CasioParser {
     return left;
   }
 
-  // 8: nPr nCr (infix)
+  // 8: nPr nCr (infix), ∠ (CMPLX)
   Node _parsePerm() {
     var left = _parseImplicit();
-    while (_cur.t == _T.id && (_cur.s == 'nPr' || _cur.s == 'nCr')) {
+    while ((_cur.t == _T.id && (_cur.s == 'nPr' || _cur.s == 'nCr')) || (_cur.t == _T.op && _cur.s == '∠')) {
       final op = _next();
       final right = _parseImplicit();
       left = NBin(op.s, left, right, op.pos);
@@ -607,7 +625,7 @@ class CasioParser {
     final lower = name.toLowerCase();
     // plain names
     if (name == 'π' || name == 'e' || name == 'Ans' || name == 'PreAns' || name == 'Ran#' || _variables.contains(name) ||
-        _constWords.contains(name)) {
+        _constWords.contains(name) || (_complex && name == 'i')) {
       return NName(name, t.pos);
     }
     if (!_funcSet.contains(lower)) throw CasioError(CasioErrorKind.syntax, t.pos);

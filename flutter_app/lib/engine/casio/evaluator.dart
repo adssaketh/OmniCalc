@@ -112,8 +112,26 @@ class CasioEvaluator {
         return last;
       case NDms():
         return _dmsLiteral(n);
+      case NVal():
+        return n.value;
     }
   }
+
+  // ----- building blocks for the CMPLX engine (Phase 7d): the same arithmetic, exact forms and ranges --------------------
+
+  CVal addV(CVal a, CVal b) => _add(a, b);
+  CVal subV(CVal a, CVal b) => _add(a, b, sub: true);
+  CVal mulV(CVal a, CVal b) => _mul(a, b);
+  CVal divV(CVal a, CVal b) => _div(a, b);
+  CVal negV(CVal a) => _neg(a);
+  CVal sqrtV(CVal a) => _sqrt(a);
+  CVal trigV(String fn, CVal a) => _trig(fn, a);
+
+  /// Radians to the current angle unit (an exact form when the angle is a nice one).
+  CVal angleResultV(double rad) => _angleResult(rad);
+
+  /// A 15-digit decimal checked against the calculation range.
+  CVal decV(double v) => _check(CVal.dec(v));
 
   // ----- literals and names ----------------------------------------------------------------------------------------
 
@@ -893,7 +911,7 @@ class CasioEvaluator {
   static bool _anyNode(Node n, bool Function(Node) test) {
     if (test(n)) return true;
     switch (n) {
-      case NNum() || NName():
+      case NNum() || NName() || NVal():
         return false;
       case NNeg():
         return _anyNode(n.a, test);

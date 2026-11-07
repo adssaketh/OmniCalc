@@ -10,6 +10,9 @@ enum CasioDisplayFormat { mathO, lineO, lineIO }
 
 enum CasioNumberFormat { norm1, norm2, fix, sci }
 
+/// SETUP ▸ Complex: a+bi or r∠θ (manual p.13).
+enum CasioComplexFormat { rect, polar }
+
 class CasioConfig {
   const CasioConfig({
     this.angle = CasioAngle.deg,
@@ -23,6 +26,9 @@ class CasioConfig {
     this.decimalFirst = false,
     this.legacyPrecision = -1,
     this.useCasio = true,
+    this.complexFormat = CasioComplexFormat.rect,
+    this.statFreq = false,
+    this.tableFg = false,
   });
 
   final CasioAngle angle;
@@ -54,6 +60,15 @@ class CasioConfig {
   /// "Calculation style: Casio (default)" or false for "OmniCalc (legacy)" (the untouched TypeScript-port evaluator).
   final bool useCasio;
 
+  /// SETUP ▸ Complex.
+  final CasioComplexFormat complexFormat;
+
+  /// SETUP ▸ STAT ▸ Frequency column on / off (used by STAT in Phase 7d-2).
+  final bool statFreq;
+
+  /// SETUP ▸ Table ▸ f(x),g(x) (true) or f(x) (false) (used by TABLE in Phase 7d-2).
+  final bool tableFg;
+
   @override
   bool operator ==(Object other) =>
       other is CasioConfig &&
@@ -67,11 +82,14 @@ class CasioConfig {
       other.commaDecimal == commaDecimal &&
       other.decimalFirst == decimalFirst &&
       other.legacyPrecision == legacyPrecision &&
-      other.useCasio == useCasio;
+      other.useCasio == useCasio &&
+      other.complexFormat == complexFormat &&
+      other.statFreq == statFreq &&
+      other.tableFg == tableFg;
 
   @override
   int get hashCode => Object.hash(angle, displayFormat, numberFormat, digits, mixedFractions, recurring, phonePercent,
-      commaDecimal, decimalFirst, legacyPrecision, useCasio);
+      commaDecimal, decimalFirst, legacyPrecision, useCasio, complexFormat, statFreq, tableFg);
 
   CasioConfig copyWith({
     CasioAngle? angle,
@@ -85,6 +103,9 @@ class CasioConfig {
     bool? decimalFirst,
     int? legacyPrecision,
     bool? useCasio,
+    CasioComplexFormat? complexFormat,
+    bool? statFreq,
+    bool? tableFg,
   }) =>
       CasioConfig(
         angle: angle ?? this.angle,
@@ -98,6 +119,9 @@ class CasioConfig {
         decimalFirst: decimalFirst ?? this.decimalFirst,
         legacyPrecision: legacyPrecision ?? this.legacyPrecision,
         useCasio: useCasio ?? this.useCasio,
+        complexFormat: complexFormat ?? this.complexFormat,
+        statFreq: statFreq ?? this.statFreq,
+        tableFg: tableFg ?? this.tableFg,
       );
 }
 

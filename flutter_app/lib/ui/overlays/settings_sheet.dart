@@ -37,6 +37,9 @@ const String kPrivacyPolicyUrl = 'https://github.com/adssaketh/OmniCalc/blob/mai
 /// `ActiveSheet` of SettingsModal.tsx.
 enum SettingsSubSheet {
   none,
+  complexFormat,
+  statFreq,
+  tableFormat,
   theme,
   colorMode,
   angleMode,
@@ -1197,6 +1200,30 @@ class _SettingsSheetState extends State<SettingsSheet> {
                         onTap: () => CasioRuntime.instance.update((c) => c.copyWith(recurring: !c.recurring)),
                       ),
                       _SettingsRow(
+                        key: const ValueKey('row-complex-format'),
+                        icon: LucideIconId.hash,
+                        title: 'Complex format',
+                        subtitle: cs.complexPolar ? 'Polar (r∠θ)' : 'Rectangular (a+bi)',
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.complexFormat),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-stat-freq'),
+                        icon: LucideIconId.hash,
+                        title: 'STAT frequency column',
+                        subtitle: cs.statFreq ? 'On (FREQ)' : 'Off',
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.statFreq),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-table-format'),
+                        icon: LucideIconId.hash,
+                        title: 'TABLE format',
+                        subtitle: cs.tableFg ? 'f(x), g(x)' : 'f(x)',
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.tableFormat),
+                      ),
+                      _SettingsRow(
                         key: const ValueKey('row-gra'),
                         icon: LucideIconId.compass,
                         title: 'Gradians (GRA)',
@@ -1523,6 +1550,51 @@ class _SettingsSheetState extends State<SettingsSheet> {
           ],
           onSelect: (id) {
             CasioRuntime.instance.update((c) => c.copyWith(mixedFractions: id));
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<bool>(
+          isOpen: isOpen && _active == SettingsSubSheet.complexFormat,
+          title: 'Complex format',
+          description: 'How CMPLX results are written (▸r∠θ and ▸a+bi override it for one result)',
+          selected: cs.complexPolar,
+          options: const [
+            _ChoiceOption<bool>(false, 'Rectangular (a+bi)', '1+i'),
+            _ChoiceOption<bool>(true, 'Polar (r∠θ)', '√2∠45'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) => c.copyWith(complexPolar: id));
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<bool>(
+          isOpen: isOpen && _active == SettingsSubSheet.statFreq,
+          title: 'STAT frequency column',
+          description: 'Used by the STAT mode (coming in the next phase)',
+          selected: cs.statFreq,
+          options: const [
+            _ChoiceOption<bool>(false, 'Off', 'The data editor has no FREQ column'),
+            _ChoiceOption<bool>(true, 'On', 'The data editor has a FREQ column'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) => c.copyWith(statFreq: id));
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<bool>(
+          isOpen: isOpen && _active == SettingsSubSheet.tableFormat,
+          title: 'TABLE format',
+          description: 'Used by the TABLE mode (coming in the next phase)',
+          selected: cs.tableFg,
+          options: const [
+            _ChoiceOption<bool>(false, 'f(x)', 'One function'),
+            _ChoiceOption<bool>(true, 'f(x), g(x)', 'Two functions'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) => c.copyWith(tableFg: id));
             _closeSub();
           },
           onClose: _closeSub,

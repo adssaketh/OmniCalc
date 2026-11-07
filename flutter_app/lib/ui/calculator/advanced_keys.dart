@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../theme/motion.dart';
 import '../../theme/tokens.dart';
+import '../../engine/casio/base_n.dart';
 import 'calc_style.dart';
 import 'calculator_controller.dart';
 
@@ -252,6 +253,41 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         tpl('Rnd', 'round', 'Rnd('),
         tpl('Pol', 'to polar', 'Pol('),
         tpl('Rec', 'to rect.', 'Rec('),
+      ];
+    case AdvancedTab.modes:
+      // Phase 7d. The MODE key opens the menu (COMP, CMPLX, BASE-N, EQN). The CMPLX keys work in CMPLX mode, the BASE-N keys in BASE-N mode.
+      _Adv baseKey(String label, BaseMode m) => _Adv(label, 'base', () => c.setBaseMode(m),
+          kind: c.mode == CasioMode.baseN && c.baseMode == m ? _Kind.active : _Kind.normal, labelSize: 12, textSm: false, role: _Role.primary);
+      return [
+        _Adv('MODE', c.mode == CasioMode.cmplx ? 'CMPLX' : (c.mode == CasioMode.baseN ? 'BASE-N' : 'COMP'), c.openModeMenu,
+            labelSize: 12, textSm: true, role: _Role.primary),
+        inp('i', 'imaginary', 'i', textSm: true),
+        inp('∠', 'polar angle', '∠', textSm: true),
+        tpl('Abs', 'modulus', 'Abs('),
+        tpl('arg', 'argument', 'arg('),
+        tpl('Conjg', 'conjugate', 'Conjg('),
+        inp('▸r∠θ', 'to polar', '▸r∠θ', textSm: false),
+        inp('▸a+bi', 'to rect.', '▸a+bi', textSm: false),
+        baseKey('DEC', BaseMode.dec),
+        baseKey('HEX', BaseMode.hex),
+        baseKey('BIN', BaseMode.bin),
+        baseKey('OCT', BaseMode.oct),
+        inp('and', 'logic', 'and', textSm: true),
+        inp('or', 'logic', 'or', textSm: true),
+        inp('xor', 'logic', 'xor', textSm: true),
+        inp('xnor', 'logic', 'xnor', textSm: true),
+        inp('Not', 'complement', 'Not(', textSm: true),
+        inp('Neg', 'negate', 'Neg(', textSm: true),
+        inp('d', 'dec number', 'd', textSm: true),
+        inp('h', 'hex number', 'h', textSm: true),
+        inp('b', 'bin number', 'b', textSm: true),
+        inp('o', 'oct number', 'o', textSm: true),
+        inp('A', 'hex digit', 'A', textSm: true),
+        inp('B', 'hex digit', 'B', textSm: true),
+        inp('C', 'hex digit', 'C', textSm: true),
+        inp('D', 'hex digit', 'D', textSm: true),
+        inp('E', 'hex digit', 'E', textSm: true),
+        inp('F', 'hex digit', 'F', textSm: true),
       ];
     case AdvancedTab.chemistry:
       // Phase 6. The functions take their text in quotes, e.g. molar("H2O"), amass("Fe"), atomic("Fe"), atomicsym(26).
