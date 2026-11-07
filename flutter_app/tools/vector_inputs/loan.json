@@ -1,0 +1,159 @@
+[
+ {
+  "p": 2500000,
+  "r": 8.5,
+  "t": 20,
+  "o": null
+ },
+ {
+  "p": 100000,
+  "r": 0,
+  "t": 1,
+  "o": null
+ },
+ {
+  "p": 100000,
+  "r": 12,
+  "t": 0.5,
+  "o": null
+ },
+ {
+  "p": 500000,
+  "r": 9.5,
+  "t": 5,
+  "o": null
+ },
+ {
+  "p": 0,
+  "r": 5,
+  "t": 5,
+  "o": null
+ },
+ {
+  "p": 1000,
+  "r": 5,
+  "t": 0,
+  "o": null
+ },
+ {
+  "p": 2500000,
+  "r": 8.5,
+  "t": 20,
+  "o": {
+   "includeProcessingFee": true
+  }
+ },
+ {
+  "p": 2500000,
+  "r": 8.5,
+  "t": 20,
+  "o": {
+   "includeProcessingFee": true,
+   "processingFeeType": "flat",
+   "processingFeeValue": 5000
+  }
+ },
+ {
+  "p": 2500000,
+  "r": 8.5,
+  "t": 20,
+  "o": {
+   "includeProcessingFee": true,
+   "processingFeeValue": 2,
+   "applyGstOnProcessingFee": false
+  }
+ },
+ {
+  "p": 2500000,
+  "r": 8.5,
+  "t": 20,
+  "o": {
+   "applyGstOnInterest": true
+  }
+ },
+ {
+  "p": 2500000,
+  "r": 8.5,
+  "t": 20,
+  "o": {
+   "applyGstOnInterest": true,
+   "gstRateInterest": 12,
+   "includeProcessingFee": true,
+   "processingFeeValue": 0.5,
+   "gstRateProcessingFee": 5
+  }
+ },
+ {
+  "p": 1234567,
+  "r": 7.35,
+  "t": 7.5,
+  "o": null
+ },
+ {
+  "p": 50000,
+  "r": 18,
+  "t": 2.25,
+  "o": null
+ },
+ {
+  "p": 100000,
+  "r": 12,
+  "t": 0.04,
+  "o": null
+ },
+ {
+  "p": 100000,
+  "r": 0,
+  "t": 0.04,
+  "o": null
+ },
+ {
+  "p": -5000,
+  "r": 5,
+  "t": 5,
+  "o": null
+ },
+ {
+  "p": 100000,
+  "r": -3,
+  "t": 2,
+  "o": null
+ },
+ {
+  "p": 1000000000,
+  "r": 30,
+  "t": 30,
+  "o": null
+ },
+ {
+  "p": 100000,
+  "r": 10,
+  "t": 1.5,
+  "o": {
+   "includeProcessingFee": true,
+   "processingFeeType": "percent",
+   "processingFeeValue": 1,
+   "applyGstOnInterest": true
+  }
+ },
+ {
+  "p": 100000,
+  "r": 10,
+  "t": 3,
+  "o": {
+   "includeProcessingFee": false,
+   "processingFeeValue": 9,
+   "applyGstOnProcessingFee": true
+  }
+ },
+ {
+  "p": 300000,
+  "r": 9,
+  "t": 2,
+  "o": {
+   "includeProcessingFee": true,
+   "processingFeeType": "flat",
+   "processingFeeValue": 400000
+  }
+ }
+]
