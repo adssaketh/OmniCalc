@@ -202,6 +202,7 @@ class _ConverterScreenState extends State<ConverterScreen> {
 
     return CachedIntrinsicHeight(
       estimate: 760,
+      measureNatural: true,
       child: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(

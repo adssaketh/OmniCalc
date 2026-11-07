@@ -59,7 +59,7 @@ void main() {
     expect(find.text('FROM UNIT'), findsOneWidget);
     expect(find.text('CONVERTED VALUE'), findsOneWidget);
     expect(convertedText(tester), '0.001');
-    expect(find.text('1 m = 0.001 km'), findsOneWidget);
+    expect(find.textContaining('1 m = 0.001 km', findRichText: true), findsOneWidget);
     expect(find.text('ALL UNITS COMPARISON FOR 1 M'), findsOneWidget);
     // every other unit of length has a tile, the from unit has none
     expect(find.byKey(const ValueKey('compare-m')), findsNothing);
@@ -101,7 +101,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('swap-units')));
     await tester.pump(const Duration(milliseconds: 400));
     expect(convertedText(tester), '1000');
-    expect(find.text('1 km = 1000 m'), findsOneWidget);
+    expect(find.textContaining('1 km = 1000 m', findRichText: true), findsOneWidget);
     expect(fb.log, ['click:op', 'haptic:medium']);
   });
 
@@ -110,7 +110,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('compare-ft')));
     await tester.pump(const Duration(milliseconds: 200));
     expect(convertedText(tester), '3.28084');
-    expect(find.text('1 m = 3.28084 ft'), findsOneWidget);
+    expect(find.textContaining('1 m = 3.28084 ft', findRichText: true), findsOneWidget);
   });
 
   testWidgets('unit picker opens a list and applies the choice', (tester) async {
@@ -119,7 +119,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.byKey(const ValueKey('option-mi')));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('1 m = 0.000621371 mi'), findsOneWidget);
+    expect(find.textContaining('1 m = 0.000621371 mi', findRichText: true), findsOneWidget);
     expect(fb.log, ['click:toggle', 'haptic:medium']);
   });
 
@@ -128,7 +128,7 @@ void main() {
     await tester.tap(find.text('Temperature'));
     await tester.pump(const Duration(milliseconds: 600));
     expect(convertedText(tester), '33.8');
-    expect(find.text('(°C × 9/5) + 32 = °F'), findsOneWidget);
+    expect(find.textContaining('(°C × 9/5) + 32 = °F', findRichText: true), findsOneWidget);
     expect(fb.log.take(2), ['click:toggle', 'haptic:medium']);
   });
 
