@@ -8,11 +8,14 @@ environment:
 
 # Packages are added in the phase that first uses them, so nothing unused can break dependency resolution.
 # Phase 2: http + shared_preferences (currency rates fetch and cache).
+# Phase 3: provider (state), dynamic_color (Material You palette plugin; read over its method channel).
 dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.0
   shared_preferences: ^2.2.0
+  provider: ^6.1.2
+  dynamic_color: ^1.8.1
 
 dev_dependencies:
   flutter_test:

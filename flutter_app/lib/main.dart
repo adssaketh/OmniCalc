@@ -1,16 +1,129 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-// Phase 1 stub so the project compiles. The real shell arrives in Phase 3, the calculator screen in Phase 4.
-void main() => runApp(const _Phase1App());
+import 'services/feedback_service.dart';
+import 'state/app_settings.dart';
+import 'state/history_store.dart';
+import 'state/navigation_state.dart';
+import 'state/settings_store.dart';
+import 'theme/app_theme.dart';
+import 'theme/dynamic_colors.dart';
+import 'theme/tokens.dart';
+import 'ui/shell/app_shell.dart';
+import 'ui/shell/pinned_slot.dart';
 
-class _Phase1App extends StatelessWidget {
-  const _Phase1App();
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final settings = await SettingsStore.load();
+  final history = await HistoryStore.load();
+  runApp(OmniCalcApp(
+    settings: settings,
+    history: history,
+    systemColorsSource: const PlatformSystemColorsSource(),
+    feedback: PlatformFeedbackService(),
+  ));
+}
+
+/// Root of the app: the stores, the resolved theme (settings + system brightness + Material You colours) and the shell.
+class OmniCalcApp extends StatefulWidget {
+  const OmniCalcApp({
+    super.key,
+    required this.settings,
+    required this.history,
+    required this.systemColorsSource,
+    required this.feedback,
+  });
+
+  final SettingsStore settings;
+  final HistoryStore history;
+  final SystemColorsSource systemColorsSource;
+  final FeedbackService feedback;
+
+  @override
+  State<OmniCalcApp> createState() => _OmniCalcAppState();
+}
+
+class _OmniCalcAppState extends State<OmniCalcApp> with WidgetsBindingObserver {
+  final NavigationState _nav = NavigationState();
+  final PinnedSlotController _pinned = PinnedSlotController();
+  SystemColors? _systemColors;
+  late Brightness _platformBrightness;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _platformBrightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    widget.settings.addListener(_onSettings);
+    _refreshSystemColors();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    widget.settings.removeListener(_onSettings);
+    _nav.dispose();
+    _pinned.dispose();
+    super.dispose();
+  }
+
+  void _onSettings() => setState(() {});
+
+  /// `matchMedia('(prefers-color-scheme: dark)')` change.
+  @override
+  void didChangePlatformBrightness() {
+    setState(() => _platformBrightness = WidgetsBinding.instance.platformDispatcher.platformBrightness);
+    _refreshSystemColors();
+  }
+
+  /// `appStateChange` (the app became active again).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshSystemColors();
+  }
+
+  Future<void> _refreshSystemColors() async {
+    final colors = await widget.systemColorsSource.getSystemColors();
+    if (!mounted || colors == null) return;
+    setState(() => _systemColors = colors);
+    widget.settings.applyDynamicAutoDefault();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(body: Center(child: Text('OmniCalc (Flutter) - Phase 1: engine only'))),
+    final settings = widget.settings.settings;
+    final isDark = switch (settings.colorMode) {
+      ColorMode.system => _platformBrightness == Brightness.dark,
+      ColorMode.dark => true,
+      ColorMode.light => false,
+    };
+    final resolved = resolveTheme(themeId: settings.theme, isDark: isDark, system: _systemColors);
+
+    // Status bar: page colour behind it; Capacitor's `Style.Dark` means light icons.
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: resolved.pageSurface,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+    ));
+
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<SettingsStore>.value(value: widget.settings),
+        ChangeNotifierProvider<HistoryStore>.value(value: widget.history),
+        ChangeNotifierProvider<NavigationState>.value(value: _nav),
+        ChangeNotifierProvider<PinnedSlotController>.value(value: _pinned),
+        Provider<FeedbackService>.value(value: widget.feedback),
+      ],
+      child: M3Theme(
+        tokens: resolved.tokens,
+        child: MaterialApp(
+          title: 'OmniCalc',
+          debugShowCheckedModeBanner: false,
+          theme: buildThemeData(resolved.tokens),
+          home: AppShell(feedback: widget.feedback),
+        ),
+      ),
     );
   }
 }

@@ -38,6 +38,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Generated tables match the web source (theme tokens, SVG paths)
+        run: |
+          node tools/gen_theme_data.mjs --check
+          node tools/gen_svg_paths.mjs --check
+
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
