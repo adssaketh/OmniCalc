@@ -43,6 +43,15 @@ const ICONS = [
   ['magnet', 'Magnet'],
   ['arrow-left-right', 'ArrowLeftRight'],
   ['chevron-down', 'ChevronDown'],
+  // Phase 5b: finance tab strip (FinanceScreen.tsx) and the currency screen (CurrencyConverter.tsx).
+  ['globe', 'Globe'],
+  ['landmark', 'Landmark'],
+  ['piggy-bank', 'PiggyBank'],
+  ['wallet', 'Wallet'],
+  ['receipt', 'Receipt'],
+  ['chart-line', 'LineChart'], // lucide's LineChart is an alias of ChartLine,
+  ['refresh-cw', 'RefreshCw'],
+  ['trending-up', 'TrendingUp'],
 ];
 const WANT_VERSION = /^0\.546\./;
 

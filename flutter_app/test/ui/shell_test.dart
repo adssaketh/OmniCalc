@@ -12,6 +12,8 @@ import 'package:omnicalc/ui/shell/app_shell.dart';
 import 'package:omnicalc/ui/shell/header.dart';
 import 'package:provider/provider.dart';
 
+import '../support/fake_currency.dart';
+
 typedef Harness = ({SettingsStore settings, HistoryStore history, SilentFeedbackService feedback});
 
 Future<Harness> pumpApp(
@@ -30,6 +32,7 @@ Future<Harness> pumpApp(
     history: history,
     systemColorsSource: const FakeSystemColorsSource(null),
     feedback: feedback,
+    currencyService: offlineCurrencyService(),
   ));
   // the bar's entrance spring starts on the frame after the first one, so it needs two pumps
   await tester.pump(const Duration(milliseconds: 16));

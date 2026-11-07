@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'engine/currency.dart';
 import 'services/feedback_service.dart';
 import 'state/app_settings.dart';
 import 'state/history_store.dart';
@@ -34,12 +35,17 @@ class OmniCalcApp extends StatefulWidget {
     required this.history,
     required this.systemColorsSource,
     required this.feedback,
+    this.currencyService,
   });
 
   final SettingsStore settings;
   final HistoryStore history;
   final SystemColorsSource systemColorsSource;
   final FeedbackService feedback;
+
+  /// Live forex rates for the Currency tab. Null: the real service (network + `shared_preferences` cache). Tests pass a
+  /// fake so no request leaves the test.
+  final CurrencyService? currencyService;
 
   @override
   State<OmniCalcApp> createState() => _OmniCalcAppState();
@@ -48,6 +54,7 @@ class OmniCalcApp extends StatefulWidget {
 class _OmniCalcAppState extends State<OmniCalcApp> with WidgetsBindingObserver {
   final NavigationState _nav = NavigationState();
   final PinnedSlotController _pinned = PinnedSlotController();
+  late final CurrencyService _currency = widget.currencyService ?? CurrencyService();
   SystemColors? _systemColors;
   late Brightness _platformBrightness;
 
@@ -115,6 +122,7 @@ class _OmniCalcAppState extends State<OmniCalcApp> with WidgetsBindingObserver {
         ChangeNotifierProvider<NavigationState>.value(value: _nav),
         ChangeNotifierProvider<PinnedSlotController>.value(value: _pinned),
         Provider<FeedbackService>.value(value: widget.feedback),
+        Provider<CurrencyService>.value(value: _currency),
       ],
       child: M3Theme(
         tokens: resolved.tokens,
