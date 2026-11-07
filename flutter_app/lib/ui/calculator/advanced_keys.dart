@@ -50,6 +50,9 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
   _Adv tpl(String label, String sub, String template) => _Adv(label, sub, () => c.handleInsertTemplate(template));
   _Adv inp(String label, String sub, String token, {bool textSm = false}) =>
       _Adv(label, sub, () => c.handleInput(token), textSm: textSm, labelSize: textSm ? 14 : null);
+  // The exit key (Phase 4b): leaves the superscript / subscript the caret is in. It stands where `sgn` (Calculus tab; still
+  // in Powers and Probability) and `%` (Powers tab; still on the main keypad) used to be, so no function is lost.
+  _Adv exitKey() => _Adv('→', 'exit power', () => c.exitGroup(), labelSize: 14, textSm: true, role: _Role.primary);
   _Adv formula(String label, String template) =>
       _Adv(label, 'formula', () => c.handleInsertTemplate(template), kind: _Kind.formula, labelSize: 11, role: _Role.primary, subSize: 9, subOpacity: 0.75);
 
@@ -62,7 +65,7 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         tpl('∏', 'product', 'prod('),
         tpl('lim', 'limit', 'limit('),
         fn('|x|', 'abs', 'abs'),
-        fn('sgn', 'sign', 'sign'),
+        exitKey(),
         fn('ln', 'base e', 'ln'),
         _Adv('x', 'var x', () => c.handleInput('x'), labelSize: 14, textSm: true, role: _Role.primary, mono: true),
         _Adv('y', 'y = f(x)', c.handleYKey, labelSize: 14, textSm: true, role: _Role.tertiary, mono: true),
@@ -120,7 +123,7 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         fn('log₂', 'base 2', 'log2'),
         tpl('log_b', 'any base', 'logb('),
         fn('sgn', 'sign', 'sign'),
-        inp('%', 'percent', '%'),
+        exitKey(),
         _Adv('( )', 'brackets', c.handleParentheses),
         inp(',', 'comma', ', ', textSm: true),
       ];

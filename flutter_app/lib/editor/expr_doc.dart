@@ -103,8 +103,8 @@ class ExprDoc {
         case SupNode(:final children):
           final inner = serializeNodes(children);
           b.write(inner == '2' ? ' squared ' : ' to the power of ${_spoken(children)} ');
-        case SubNode(:final children):
-          b.write(' subscript ${_spoken(children)} ');
+        case SubNode(:final children, :final bare):
+          b.write(bare ? ' base ${_spoken(children)} ' : ' subscript ${_spoken(children)} ');
       }
     }
     return b.toString();
@@ -239,6 +239,17 @@ class ExprDoc {
           if (before.endsWith(t)) {
             cut = t.length;
             break;
+          }
+        }
+        // `log₂(` / `log_b(` are the characters l o g, the lowered base and the parenthesis: one piece
+        if (cut == 1 && n.ch == '(' && offset >= 5) {
+          final base = cur[offset - 2];
+          if (base is SubNode &&
+              base.bare &&
+              cur[offset - 3] == const CharNode('g') &&
+              cur[offset - 4] == const CharNode('o') &&
+              cur[offset - 5] == const CharNode('l')) {
+            cut = 5;
           }
         }
         cur.removeRange(offset - cut, offset);

@@ -56,6 +56,13 @@ void main() {
       expect(row.ascent, closeTo(100 * ascentEm, 1e-9));
     });
 
+    test('the base of log₂ is lowered like a subscript', () {
+      final row = lay('log2(8)');
+      final base = row.pieces.whereType<GroupPiece>().single;
+      expect(base.row.size, closeTo(62, 1e-9));
+      expect(base.dy, closeTo(-0.25 * 100, 1e-9));
+    });
+
     test('nested groups shrink further and add up', () {
       final one = lay('x^(y^2)');
       final two = lay('x^y');

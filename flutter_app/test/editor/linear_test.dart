@@ -232,4 +232,41 @@ void main() {
       expect(normalizeUnicodeScripts('2+3×x^2'), '2+3×x^2');
     });
   });
+
+  group('log base subscript (log₂, log_b)', () {
+    test('log2( and logb( get a lowered base and still read back unchanged', () {
+      for (final s in ['log2(8)', 'logb(8,2)', '2×log2(x)', 'log2(log2(4))', '2^log2(8)', 'sin(logb(x,3))', 'xlog2(3)', 'log2', 'logb']) {
+        expect(serializeNodes(parseLinear(s).nodes), s, reason: s);
+      }
+    });
+
+    test('the base is a bare subscript between log and the parenthesis', () {
+      final nodes = parseLinear('log2(8)').nodes;
+      expect(nodes.length, 7); // l o g <base> ( 8 )
+      final base = nodes[3] as SubNode;
+      expect(base.bare, isTrue);
+      expect(base.children, [const CharNode('2')]);
+      expect(serializeNodes(nodes).contains('_'), isFalse);
+    });
+
+    test('a word that merely ends in log is not split', () {
+      expect(parseLinear('xlog2(3)').nodes.whereType<GroupNode>(), isEmpty);
+      expect(parseLinear('log2').nodes.whereType<GroupNode>(), isEmpty);
+    });
+
+    test('as an exponent it stays one operand', () {
+      final sup = parseLinear('2^log2(8)').nodes.whereType<SupNode>().single;
+      expect(sup.children.whereType<SubNode>().single.bare, isTrue);
+    });
+
+    test('JSON keeps the bare flag', () {
+      final nodes = parseLinear('log2(8)').nodes;
+      expect(nodesFromJson(nodesToJson(nodes)), nodes);
+      expect(nodesToJson(nodes), [
+        'log',
+        {'bsub': ['2']},
+        '(8)',
+      ]);
+    });
+  });
 }

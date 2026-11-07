@@ -74,6 +74,10 @@ int _operandEnd(String s, int p) {
     }
     return i;
   }
+  if (s.startsWith('log2(', p)) {
+    final m = _matchParen(s, p + 4);
+    return m < 0 ? s.length : m;
+  }
   if (_isLetter(c)) {
     final e = _letterRunEnd(s, p);
     if (e < s.length && s.codeUnitAt(e) == 0x28) {
@@ -112,7 +116,16 @@ LinearParse parseLinear(String s) {
   var i = 0;
   while (i < s.length) {
     final ch = s[i];
-    if (ch == '^' || ch == '_') {
+    if (ch == 'l' &&
+        (s.startsWith('log2(', i) || s.startsWith('logb(', i)) &&
+        (i == 0 || !_isLetter(s.codeUnitAt(i - 1)))) {
+      // log base 2 / base b: the base is a lowered group that is written without `_`
+      run.write('log');
+      flush();
+      nodes.add(SubNode([CharNode(s[i + 3])], true));
+      i += 4;
+      lastIsGroupAtEnd = false;
+    } else if (ch == '^' || ch == '_') {
       flush();
       final end = _operandEnd(s, i + 1);
       lastContent = s.substring(i + 1, end);
@@ -141,6 +154,10 @@ String _operand(String c) {
   if (c.codeUnitAt(0) == 0x28) {
     final m = _matchParen(c, 0);
     return (m < 0 || m == c.length) ? c : '($c)';
+  }
+  if (c.startsWith('log2(')) {
+    final m = _matchParen(c, 4);
+    if (m < 0 || m == c.length) return c;
   }
   final e = _letterRunEnd(c, 0);
   if (e > 0 && e < c.length && c.codeUnitAt(e) == 0x28) {
@@ -190,10 +207,14 @@ String serializeNodes(List<Node> nodes) {
         b
           ..write('^')
           ..write(_operandBefore(serializeNodes(children), next));
-      case SubNode(:final children):
-        b
-          ..write('_')
-          ..write(_operandBefore(serializeNodes(children), next));
+      case SubNode(:final children, :final bare):
+        if (bare) {
+          b.write(serializeNodes(children));
+        } else {
+          b
+            ..write('_')
+            ..write(_operandBefore(serializeNodes(children), next));
+        }
     }
   }
   return b.toString();

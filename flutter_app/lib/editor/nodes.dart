@@ -65,14 +65,25 @@ final class SupNode extends GroupNode {
 }
 
 /// Lowered group: written `_` in the linear form.
+///
+/// A [bare] subscript is the base of `log₂` / `log_b`: it is drawn lowered but written WITHOUT the `_` (`log2(`,
+/// `logb(`), because that is the text the engine reads. [parseLinear] makes one of every `log2(` and `logb(`.
 final class SubNode extends GroupNode {
-  SubNode([super.children = const []]);
+  SubNode([super.children = const [], this.bare = false]);
+
+  final bool bare;
 
   @override
-  String get jsonKey => 'sub';
+  String get jsonKey => bare ? 'bsub' : 'sub';
 
   @override
-  String toString() => 'Sub($children)';
+  bool operator ==(Object other) => other is SubNode && other.bare == bare && super == other;
+
+  @override
+  int get hashCode => Object.hash(super.hashCode, bare);
+
+  @override
+  String toString() => bare ? 'BareSub($children)' : 'Sub($children)';
 }
 
 /// Nodes as plain JSON: runs of characters become one string, a group becomes `{"sup": [...]}` or `{"sub": [...]}`.
@@ -112,7 +123,12 @@ List<Node>? nodesFromJson(Object? raw, {int depth = 0}) {
     } else if (item is Map && item.length == 1) {
       final sup = item['sup'];
       final sub = item['sub'];
-      if (sup != null) {
+      final bsub = item['bsub'];
+      if (bsub != null) {
+        final inner = nodesFromJson(bsub, depth: depth + 1);
+        if (inner == null) return null;
+        out.add(SubNode(inner, true));
+      } else if (sup != null) {
         final inner = nodesFromJson(sup, depth: depth + 1);
         if (inner == null) return null;
         out.add(SupNode(inner));

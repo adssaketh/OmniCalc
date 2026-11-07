@@ -37,10 +37,16 @@ raised and lowered, typed characters go inside them, and the engine still receiv
 3. Backspace after a power: first enters it, then deletes its content, then removes the empty group (one more press than before).
 4. Pasting Unicode superscripts/subscripts is now accepted (it was ignored).
 
+## Added after review (4b follow-up)
+- **Exit key** `→` ("exit power") on the keypad, in the advanced Powers tab (where `xʸ` and `10ˣ` live) and the Calculus tab
+  (which also has `xʸ`). It takes the slot of `%` in Powers (still on the main keypad) and of the first `sgn` in Calculus
+  (still in Powers and Probability), so no function is lost and the grid keeps its size. The badge-row chip stays.
+- **`log₂` and `log_b` show a real lowered base.** Typing them builds `log`, a bare subscript, `(`. The bare subscript is
+  written WITHOUT `_`, so the engine still gets `log2(` / `logb(`; every `log2(` / `logb(` in old strings and history
+  now draws that way. One backspace removes `log₂(` whole. JSON key `bsub`.
+
 ## Not done / open
-- **Subscript has no keypad key**: reachable by the hardware `_` and by paste. The keys `log₂`, `log_b` still insert the
-  text `log2(` / `logb(` and show it as before (showing them as real subscripts would change the display; say if you want it).
-- **No exit key on the keypad** (adding one changes the grid). The chip in the badge row is the touch way out; please check it feels right.
+- **Subscript has no keypad key** of its own: reachable by the hardware `_` and by paste.
 - Selection, drag, cut/copy of part of an expression: not done. Whole-expression copy gives the linear string.
 - The screenshot goldens of Part 2 (`2^(3+x²)`, `x₁+x₂`, `log₂(8)`, `H₂SO₄`) are not added: they need baselines.
 - Speed of editing a 200-character expression is not measured.

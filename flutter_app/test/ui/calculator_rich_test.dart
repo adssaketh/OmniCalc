@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:omnicalc/editor/expr_doc.dart';
+import 'package:omnicalc/editor/nodes.dart';
 import 'package:omnicalc/editor/rich_layout.dart';
 import 'package:omnicalc/engine/evaluator.dart';
 import 'package:omnicalc/engine/types.dart';
@@ -140,6 +141,43 @@ void main() {
       c.handleInput('^');
       expect(c.doc.depth, 3);
       expect(c.expression, before);
+    });
+  });
+
+  group('log base keys', () {
+    test('log₂ shows a lowered 2 but the engine text is log2(', () {
+      final c = make();
+      c.handleFunction('log2');
+      expect(c.expression, 'log2(');
+      expect(c.doc.root.whereType<SubNode>().single.bare, isTrue);
+      c.handleInput('8');
+      c.handleParentheses();
+      expect(c.expression, 'log2(8)');
+    });
+
+    test('log_b is the same with a b', () {
+      final c = make();
+      c.handleInsertTemplate('logb(');
+      expect(c.expression, 'logb(');
+      expect((c.doc.root.whereType<SubNode>().single.children.single as CharNode).ch, 'b');
+    });
+
+    test('backspace removes log₂( as one piece', () {
+      final c = make();
+      c.handleFunction('log2');
+      c.handleBackspace();
+      expect(c.expression, '0');
+    });
+  });
+
+  group('exit key', () {
+    test('the keypad exit key does what the chip does', () {
+      final c = make();
+      type(c, '2^3');
+      expect(c.caretInGroup, isTrue);
+      expect(c.exitGroup(), isTrue);
+      type(c, '+4');
+      expect(c.expression, '2^3+4');
     });
   });
 
