@@ -84,6 +84,7 @@ void main() {
   });
 
   test('edge fade strengths: quantised to 0.02 over 48 px', () {
+    TestWidgetsFlutterBinding.ensureInitialized(); // EdgeFade asks the scheduler which frame phase it is in
     final f = EdgeFade();
     f.updateFromScroll(pixels: 0, maxScrollExtent: 1000);
     expect(f.top, 0);
