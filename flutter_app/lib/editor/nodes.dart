@@ -184,6 +184,50 @@ final class LogBaseNode extends StructNode {
   String toString() => 'LogBase($children)';
 }
 
+/// Definite integral (Phase 7c): integrand, lower limit, upper limit. Written `∫(f,a,b)`.
+final class IntegralNode extends StructNode {
+  IntegralNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode(), SlotNode(), SlotNode()]);
+
+  @override
+  String get jsonKey => 'integral';
+
+  @override
+  String toString() => 'Integral($children)';
+}
+
+/// Derivative at a point (Phase 7c): function, point. Written `d/dx(f,a)`.
+final class DerivNode extends StructNode {
+  DerivNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode(), SlotNode()]);
+
+  @override
+  String get jsonKey => 'deriv';
+
+  @override
+  String toString() => 'Deriv($children)';
+}
+
+/// Sum (Phase 7c): term, first value of X, last value of X. Written `Σ(f,a,b)`.
+final class SigmaNode extends StructNode {
+  SigmaNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode(), SlotNode(), SlotNode()]);
+
+  @override
+  String get jsonKey => 'sigma';
+
+  @override
+  String toString() => 'Sigma($children)';
+}
+
+/// Product (Phase 7c): factor, first value of X, last value of X. Written `∏(f,a,b)`.
+final class ProdNode extends StructNode {
+  ProdNode([List<SlotNode>? slots]) : super(slots ?? [SlotNode(), SlotNode(), SlotNode()]);
+
+  @override
+  String get jsonKey => 'prod';
+
+  @override
+  String toString() => 'Prod($children)';
+}
+
 /// Builds the structure called [key] around [slots] (null for a name this editor does not know).
 StructNode? structFromKey(String key, List<SlotNode> slots) {
   switch (key) {
@@ -199,11 +243,19 @@ StructNode? structFromKey(String key, List<SlotNode> slots) {
       return slots.length == 1 ? AbsNode(slots) : null;
     case 'logb':
       return slots.length == 2 ? LogBaseNode(slots) : null;
+    case 'integral':
+      return slots.length == 3 ? IntegralNode(slots) : null;
+    case 'deriv':
+      return slots.length == 2 ? DerivNode(slots) : null;
+    case 'sigma':
+      return slots.length == 3 ? SigmaNode(slots) : null;
+    case 'prod':
+      return slots.length == 3 ? ProdNode(slots) : null;
   }
   return null;
 }
 
-const Set<String> _structKeys = {'frac', 'mixed', 'sqrt', 'root', 'abs', 'logb'};
+const Set<String> _structKeys = {'frac', 'mixed', 'sqrt', 'root', 'abs', 'logb', 'integral', 'deriv', 'sigma', 'prod'};
 
 /// Nodes as plain JSON: runs of characters become one string, a group becomes `{"sup": [...]}` or `{"sub": [...]}`.
 /// `[ "2", {"sup": ["3", "+", "x"]}, "+1" ]` is `2` then a superscript `3+x`, then `+1`.

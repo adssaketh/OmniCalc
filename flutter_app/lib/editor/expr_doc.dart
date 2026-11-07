@@ -180,6 +180,14 @@ class ExprDoc {
           b.write(' absolute value of ${_slotSpoken(slots[0])} end absolute value ');
         case LogBaseNode(:final slots):
           b.write(' log base ${_slotSpoken(slots[0])} of ${_slotSpoken(slots[1])} ');
+        case IntegralNode(:final slots):
+          b.write(' integral of ${_slotSpoken(slots[0])} from ${_slotSpoken(slots[1])} to ${_slotSpoken(slots[2])} ');
+        case DerivNode(:final slots):
+          b.write(' derivative of ${_slotSpoken(slots[0])} at x equals ${_slotSpoken(slots[1])} ');
+        case SigmaNode(:final slots):
+          b.write(' sum of ${_slotSpoken(slots[0])} for x from ${_slotSpoken(slots[1])} to ${_slotSpoken(slots[2])} ');
+        case ProdNode(:final slots):
+          b.write(' product of ${_slotSpoken(slots[0])} for x from ${_slotSpoken(slots[1])} to ${_slotSpoken(slots[2])} ');
       }
     }
     return b.toString();

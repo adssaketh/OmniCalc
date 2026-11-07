@@ -139,7 +139,11 @@ const Set<String> _funcSet = <String>{
   'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'asinh', 'acosh', 'atanh', 'sec', 'csc', 'cot',
   'sech', 'csch', 'coth', 'ln', 'log', 'log2', 'logb', 'exp', 'sqrt', 'cbrt', 'root', 'abs', 'round', 'floor', 'ceil',
   'sign', 'sgn', 'npr', 'ncr', 'mod', 'gcd', 'lcm', 'pol', 'rec', 'rnd', 'intg', 'int', 'const', 'conv', 'ranint#', 'dms',
+  'integral', 'deriv', 'sumx', 'prodx',
 };
+
+/// ∫, d/dx, Σ and ∏ (Phase 7c). They always have their argument list in parentheses.
+const Set<String> kCalculusNames = <String>{'integral', 'deriv', 'sumx', 'prodx'};
 
 List<_Tok> _lex(String src) {
   final out = <_Tok>[];
@@ -313,6 +317,17 @@ List<_Tok> _lex(String src) {
       case '√':
         out.add(_Tok(_T.id, 'sqrt', i++));
         continue;
+      // Phase 7c, linear syntax of the manual (p.39-43): ∫(f(x), a, b, tol), d/dx(f(x), a, tol), Σ(f(x), a, b), ∏(f(x), a, b)
+      case '∫':
+        out.add(_Tok(_T.id, 'integral', i++));
+        continue;
+      case 'Σ':
+      case '∑':
+        out.add(_Tok(_T.id, 'sumx', i++));
+        continue;
+      case '∏':
+        out.add(_Tok(_T.id, 'prodx', i++));
+        continue;
       case '→':
         out.add(_Tok(_T.op, '→', i++));
         // the letter after STO names a variable, so `→E` is the variable E (not Euler's e)
@@ -333,6 +348,11 @@ List<_Tok> _lex(String src) {
         throw CasioError(CasioErrorKind.syntax, i);
     }
     // ---- words
+    if (c == 'd' && src.startsWith('d/dx', i)) {
+      out.add(_Tok(_T.id, 'deriv', i));
+      i += 4;
+      continue;
+    }
     if (isLetter(c)) {
       // longest known name first (case sensitive for the capitalised Casio names, insensitive for the rest)
       String? best;
@@ -592,6 +612,7 @@ class CasioParser {
     }
     if (!_funcSet.contains(lower)) throw CasioError(CasioErrorKind.syntax, t.pos);
     final canonical = _canonicalFunc(name, lower);
+    if (kCalculusNames.contains(canonical) && _cur.t != _T.lp) throw CasioError(CasioErrorKind.syntax, _cur.pos);
     // with parentheses
     if (_cur.t == _T.lp) {
       _next();

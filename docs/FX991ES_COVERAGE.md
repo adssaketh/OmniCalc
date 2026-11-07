@@ -1,6 +1,6 @@
 # fx-991ES PLUS coverage matrix
 
-Status after **Phase 7b** (COMP engine). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
+Status after **Phase 7c** (COMP engine, calculus, SOLVE, CALC). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
 `test/casio/coverage_test.dart` reads this table: a row marked Done or Partial must name an existing test file, and a row
 marked Deferred must name the phase that will do it.
 
@@ -93,12 +93,12 @@ total is the whole inventory.
 | X02 | error messages (Math, Syntax, Argument; the others belong to their modes) | Partial | 7e | test/casio/casio_engine_test.dart |
 | X03 | calculation style, percent style, result display settings | Done | 7b | test/casio/casio_settings_test.dart |
 | X04 | differences from the legacy engine listed | Done | 7b | test/casio/legacy_diff_test.dart |
-| F01 | `∫` | Deferred | 7c | - |
-| F02 | `d/dx` | Deferred | 7c | - |
-| F03 | `Σ` | Deferred | 7c | - |
-| F04 | `∏` | Deferred | 7c | - |
-| F05 | `SOLVE` | Deferred | 7c | - |
-| F06 | `CALC` | Deferred | 7c | - |
+| F01 | `∫` | Done | 7c | test/casio/calculus_test.dart |
+| F02 | `d/dx` | Done | 7c | test/casio/calculus_test.dart |
+| F03 | `Σ` | Done | 7c | test/casio/calculus_test.dart |
+| F04 | `∏` | Done | 7c | test/casio/calculus_test.dart |
+| F05 | `SOLVE` | Done | 7c | test/casio/solve_calc_test.dart |
+| F06 | `CALC` | Done | 7c | test/casio/solve_calc_test.dart |
 
 Sections H to R (CMPLX, STAT, BASE-N, EQN, MATRIX, VECTOR, TABLE, INEQ, VERIF, DIST, persistence) are Deferred to 7d
 (H to N) and 7e (O to R). Their rows are added to this file when each phase starts, one row per inventory item.

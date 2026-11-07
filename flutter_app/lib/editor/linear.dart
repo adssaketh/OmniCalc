@@ -215,6 +215,10 @@ String _structText(StructNode n) {
     RootNode() => 'root(${t[0]},${t[1]})',
     AbsNode() => 'abs(${t[0]})',
     LogBaseNode() => 'logb(${t[0]},${t[1]})',
+    IntegralNode() => '∫(${t[0]},${t[1]},${t[2]})',
+    DerivNode() => 'd/dx(${t[0]},${t[1]})',
+    SigmaNode() => 'Σ(${t[0]},${t[1]},${t[2]})',
+    ProdNode() => '∏(${t[0]},${t[1]},${t[2]})',
   };
 }
 

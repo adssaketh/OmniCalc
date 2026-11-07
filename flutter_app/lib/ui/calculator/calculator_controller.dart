@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -9,14 +10,34 @@ import '../../editor/nodes.dart';
 import '../../editor/rich_layout.dart' show CaretHit;
 import '../../engine/calc_error.dart';
 import '../../engine/casio/config.dart';
-import '../../engine/casio/cval.dart' show CasioError;
+import '../../engine/casio/cval.dart' show CVal, CasioError, CasioErrorKind;
 import '../../engine/casio/engine.dart';
 import '../../engine/casio/format.dart';
+import '../../engine/casio/solve_calc.dart';
 import '../../engine/chemistry/calc_functions.dart';
 import '../../engine/evaluator.dart';
 import '../../engine/types.dart';
 import '../../services/feedback_service.dart';
 import '../../state/history_store.dart';
+
+/// Runs one Casio calculation in a background isolate (∫, d/dx, Σ, ∏ can take seconds). Message:
+/// [SendPort, expression, CasioConfig, CasioMemory, continuesAns, AngleMode index]. Reply:
+/// ['ok', CasioOutcome, CasioMemory] or ['err', kindIndex (-1 = other), message].
+void _casioWorker(List<Object?> msg) {
+  final port = msg[0]! as SendPort;
+  final engine = CasioEngine(config: msg[2]! as CasioConfig, memory: msg[3]! as CasioMemory);
+  try {
+    final out = engine.evaluate(msg[1]! as String,
+        continuesAns: msg[4]! as bool, legacyAngle: AngleMode.values[msg[5]! as int]);
+    port.send(<Object?>['ok', out, engine.memory]);
+  } on CasioError catch (e) {
+    port.send(<Object?>['err', e.kind.index, e.message]);
+  } catch (e) {
+    port.send(<Object?>['err', -1, CasioEngine.messageOf(e)]);
+  }
+}
+
+enum _SessionStage { none, prompt, continueScreen, result, error }
 
 /// `AdvancedTab` of CalculatorScreen.tsx.
 enum AdvancedTab { calculus, trig, powers, prob, constants, chemistry, es }
@@ -293,6 +314,16 @@ class CalculatorController extends ChangeNotifier {
     playSound(ClickType.num);
     _clearModifiers();
     _syntaxError = null;
+    if (_busy) return;
+    if (_sessionActive && _stage == _SessionStage.prompt && _sessionFresh) {
+      // typing at a prompt replaces the value shown there
+      _sessionFresh = false;
+      _doc = ExprDoc.plain('0');
+    }
+    if (_sessionActive && (_stage != _SessionStage.prompt || token == '=')) {
+      notifyListeners();
+      return;
+    }
     if (_treeMode) {
       _treeInput(token);
       return;
@@ -467,6 +498,17 @@ class CalculatorController extends ChangeNotifier {
     playSound(ClickType.clear);
     _clearModifiers();
     _syntaxError = null;
+    if (_busy) {
+      // AC interrupts a running calculation (manual: ∫, d/dx, Σ, ∏ can be interrupted with AC)
+      _stopBackground();
+      notifyListeners();
+      return;
+    }
+    if (_sessionActive) {
+      _exitSession();
+      notifyListeners();
+      return;
+    }
     // AC on an already empty display also forgets the saved y = ... equation
     if (_expression == '0' && !_hasEvaluated && hasEquation) {
       MathEvaluator.setYDefinition(null);
@@ -646,6 +688,18 @@ class CalculatorController extends ChangeNotifier {
   /// log with a lowered base: base first, then the argument.
   void esLogBase() => _insertStruct(LogBaseNode.new, wrapSlot: 1);
 
+  /// ∫ with its limits: integrand, lower limit, upper limit (manual p.39).
+  void esIntegral() => _insertStruct(IntegralNode.new);
+
+  /// d/dx at a point: function, point (manual p.41).
+  void esDeriv() => _insertStruct(DerivNode.new);
+
+  /// Σ: term, first and last value of X (manual p.42).
+  void esSigma() => _insertStruct(SigmaNode.new);
+
+  /// ∏: factor, first and last value of X (manual p.43).
+  void esProd() => _insertStruct(ProdNode.new);
+
   /// `x²`, `x³`, `x⁻¹` of the ES tab: a raised group with the caret INSIDE it, so the next key stays in the exponent
   /// until the right arrow leaves it (video frame: `X` then `x²`). Pressed twice in a row the second press is ignored,
   /// as the manual says for these three.
@@ -672,14 +726,325 @@ class CalculatorController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// A key whose function arrives in a later phase (CALC and SOLVE: 8c): it only lets go of SHIFT / ALPHA / INS.
+  /// A key with no function yet: it only lets go of SHIFT / ALPHA / INS.
   void esNotYet() {
     _clearModifiers();
     notifyListeners();
   }
 
-  /// ALPHA + CALC types `=` (an equation such as `(X²−6)/(X+3)=10`; SOLVE reads it in Phase 8c).
+  /// ALPHA + CALC types `=` (an equation such as `(X²−6)/(X+3)=10`, read by SOLVE).
   void esEquals() => handleInput('=');
+
+
+  // -- SOLVE and CALC sessions (Phase 7c) ---------------------------------------------------------------------------
+  CasioSolver? _solver;
+  CasioCalc? _calc;
+  _SessionStage _stage = _SessionStage.none;
+  List<String> _sessionVars = const <String>[];
+  int _sessionIdx = 0;
+  Map<String, CVal> _sessionVals = <String, CVal>{};
+  bool _sessionFresh = false;
+  ExprDoc? _savedDoc;
+  String _sessionHeader = '';
+  String _sessionExtraLine = '';
+
+  /// A SOLVE or CALC session is open (prompts, Continue, result or error screen). AC leaves it.
+  bool get _sessionActive => _stage != _SessionStage.none;
+  bool get sessionActive => _sessionActive;
+
+  /// The text above the answer: the usual `expression =` line, or the prompt (`A?`) / the equation of a session.
+  String get questionLine {
+    if (_sessionActive) return _sessionHeader;
+    return _lastQuestion.isEmpty ? '' : '$_lastQuestion =';
+  }
+
+  /// The second line of the SOLVE solution screen (`L−R=0`), empty otherwise.
+  String get sessionExtra => _sessionActive ? _sessionExtraLine : '';
+
+  /// A calculation runs in the background (AC interrupts it).
+  bool get busy => _busy;
+
+  /// CALC: saves the expression and asks for the value of each variable in it, in order of appearance (manual p.47-49).
+  void esCalc() {
+    playSound(ClickType.op);
+    _clearModifiers();
+    _syntaxError = null;
+    if (_busy) return;
+    if (_sessionActive) {
+      notifyListeners();
+      return;
+    }
+    if (!_beginSession()) return;
+    try {
+      _calc = CasioCalc(engine, _doc.linear);
+      _solver = null;
+      _sessionVars = List<String>.of(_calc!.variables);
+      _sessionHeader = '';
+      _startPrompts();
+    } catch (e) {
+      _abortBegin(e);
+    }
+    notifyListeners();
+  }
+
+  /// SHIFT + CALC = SOLVE: `expr`, `lhs=rhs` or `…,variable` (manual p.49-51).
+  void esSolve() {
+    playSound(ClickType.op);
+    _clearModifiers();
+    _syntaxError = null;
+    if (_busy) return;
+    if (_sessionActive) {
+      notifyListeners();
+      return;
+    }
+    if (!_beginSession()) return;
+    try {
+      _solver = CasioSolver(engine, _doc.linear);
+      _calc = null;
+      _sessionVars = <String>[..._solver!.prompts, _solver!.variable];
+      _sessionHeader = '';
+      _startPrompts();
+    } catch (e) {
+      _abortBegin(e);
+    }
+    notifyListeners();
+  }
+
+  /// Common start: nothing to run on a result screen or an empty line; an unfilled placeholder is a Syntax ERROR.
+  bool _beginSession() {
+    if (_hasEvaluated || _doc.root.isEmpty || _expression == '0') {
+      notifyListeners();
+      return false;
+    }
+    final placeholder = _doc.firstPlaceholderPath;
+    if (placeholder != null) {
+      _doc.setCaret(placeholder, 0);
+      _syntaxError = 'Syntax ERROR';
+      notifyListeners();
+      return false;
+    }
+    _savedDoc = _doc;
+    _sessionVals = <String, CVal>{};
+    return true;
+  }
+
+  /// The line was refused (Syntax ERROR, Variable ERROR, ...): the message is shown and AC returns to the line.
+  void _abortBegin(Object e) {
+    _stage = _SessionStage.error;
+    _showSessionError(CasioEngine.messageOf(e));
+  }
+
+  void _showSessionError(String msg) {
+    _sessionHeader = '';
+    _sessionExtraLine = '';
+    _hasEvaluated = true;
+    _resultError = true;
+    _forms = const <CasioShown>[];
+    _answerDisplay = '';
+    _setPlain(msg);
+  }
+
+  String _valueText(CVal v) => CasioFormatter(engine.config).first(v).display;
+
+  void _startPrompts() {
+    if (_sessionVars.isEmpty) {
+      _runSession();
+      return;
+    }
+    _showPrompt(0);
+  }
+
+  void _showPrompt(int i) {
+    _stage = _SessionStage.prompt;
+    _sessionIdx = i;
+    _hasEvaluated = false;
+    _resultError = false;
+    _answerDisplay = '';
+    _forms = const <CasioShown>[];
+    final v = _sessionVars[i];
+    final cur = _sessionVals[v] ?? (_solver?.current(v) ?? _calc?.current(v) ?? CVal.zero);
+    _sessionHeader = '$v?';
+    _sessionExtraLine = '';
+    _doc = ExprDoc.plain(_valueText(cur));
+    _sessionFresh = true;
+  }
+
+  /// `=` inside a session.
+  void _sessionEnter() {
+    switch (_stage) {
+      case _SessionStage.prompt:
+        final text = _doc.linear.trim();
+        CVal value;
+        try {
+          value = text.isEmpty ? CVal.zero : (engine.evaluate(text, commit: false).value ?? CVal.zero);
+        } catch (e) {
+          _syntaxError = CasioEngine.messageOf(e);
+          return;
+        }
+        _sessionVals[_sessionVars[_sessionIdx]] = value;
+        if (_sessionIdx + 1 < _sessionVars.length) {
+          _showPrompt(_sessionIdx + 1);
+        } else {
+          _runSession();
+        }
+      case _SessionStage.continueScreen:
+        _runSolveStep(() => _solver!.next());
+      case _SessionStage.result:
+        // the values stay: `=` goes through the prompts again (manual p.48: "5 = 10 =", "7 = 20 =")
+        if (_sessionVars.isEmpty) {
+          _runSession();
+        } else {
+          _showPrompt(0);
+        }
+      case _SessionStage.error || _SessionStage.none:
+        break;
+    }
+  }
+
+  void _runSession() {
+    final calc = _calc;
+    if (calc != null) {
+      try {
+        final out = calc.run(_sessionVals);
+        _sessionHeader = '${calc.text} =';
+        _sessionExtraLine = '';
+        _forms = out.forms;
+        _formIndex = 0;
+        _resultError = false;
+        _resultRemainder = out.remainder;
+        _resultExtra = out.extra;
+        _resultFactorable = out.factorable;
+        _answerDisplay = out.remainder != null ? '${out.text} R ${out.remainder}' : out.text;
+        _setPlain(_answerDisplay);
+        _hasEvaluated = true;
+        _stage = _SessionStage.result;
+      } catch (e) {
+        _stage = _SessionStage.error;
+        _showSessionError(CasioEngine.messageOf(e));
+      }
+      return;
+    }
+    final solver = _solver!;
+    final initial = _sessionVals[solver.variable] ?? CVal.zero;
+    final given = Map<String, CVal>.of(_sessionVals)..remove(solver.variable);
+    _runSolveStep(() => solver.start(given, initial));
+  }
+
+  void _runSolveStep(SolveOutcome Function() step) {
+    final solver = _solver!;
+    try {
+      final o = step();
+      _sessionHeader = solver.equation;
+      _hasEvaluated = true;
+      _resultError = false;
+      _forms = const <CasioShown>[];
+      _resultExtra = const <String, String>{};
+      _resultFactorable = false;
+      switch (o) {
+        case SolveContinue():
+          _stage = _SessionStage.continueScreen;
+          _sessionExtraLine = '';
+          _answerDisplay = 'Continue: [=]';
+        case SolveDone(:final value, :final lMinusR):
+          _stage = _SessionStage.result;
+          final txt = '${solver.variable}=${solver.show(value)}';
+          _forms = <CasioShown>[CasioShown(txt, txt)];
+          _answerDisplay = txt;
+          _sessionExtraLine = 'L−R=${_valueText(lMinusR)}';
+      }
+      _setPlain(_answerDisplay);
+    } catch (e) {
+      _stage = _SessionStage.error;
+      _showSessionError(CasioEngine.messageOf(e));
+    }
+  }
+
+  void _exitSession() {
+    _stage = _SessionStage.none;
+    _solver = null;
+    _calc = null;
+    _sessionHeader = '';
+    _sessionExtraLine = '';
+    _hasEvaluated = false;
+    _resultError = false;
+    _answerDisplay = '';
+    _forms = const <CasioShown>[];
+    _lastQuestion = '';
+    _lastAnswer = '';
+    _doc = _savedDoc ?? ExprDoc.plain('0');
+    _savedDoc = null;
+  }
+
+  // -- Background calculation (∫, d/dx, Σ, ∏) -----------------------------------------------------------------------
+  bool _busy = false;
+  Isolate? _isolate;
+  ReceivePort? _port;
+  Completer<void>? _backgroundDone;
+
+  /// Completes when the calculation started by the last `=` has ended (for tests and callers that want to wait).
+  Future<void> get pending => _backgroundDone?.future ?? Future<void>.value();
+
+  void _stopBackground() {
+    _isolate?.kill(priority: Isolate.immediate);
+    _isolate = null;
+    _port?.close();
+    _port = null;
+    _busy = false;
+    final d = _backgroundDone;
+    _backgroundDone = null;
+    if (d != null && !d.isCompleted) d.complete();
+  }
+
+  /// Starts [expr] in a background isolate; [commit] runs when it ends (it receives the outcome, or throws what the
+  /// engine threw). A web build has no isolates: it calculates in place.
+  void _evaluateInBackground(String expr, void Function(CasioOutcome?, Object?) commit) {
+    if (kIsWeb) {
+      try {
+        commit(engine.evaluate(expr, continuesAns: _continuesAns, legacyAngle: _angleMode), null);
+      } catch (e) {
+        commit(null, e);
+      }
+      return;
+    }
+    _busy = true;
+    _backgroundDone = Completer<void>();
+    final port = ReceivePort();
+    _port = port;
+    port.listen((Object? m) {
+      final reply = m! as List<Object?>;
+      final continued = _continuesAns;
+      _stopBackground();
+      if (reply[0] == 'ok') {
+        final mem = reply[2]! as CasioMemory;
+        engine.memory
+          ..ans = mem.ans
+          ..preAns = mem.preAns
+          ..ansText = mem.ansText
+          ..vars.addAll(mem.vars);
+        _continuesAns = continued;
+        commit(reply[1]! as CasioOutcome, null);
+      } else {
+        final k = reply[1]! as int;
+        commit(null, k >= 0 ? CasioError(CasioErrorKind.values[k]) : const CalcError('Math ERROR'));
+      }
+      notifyListeners();
+    });
+    Isolate.spawn(
+      _casioWorker,
+      <Object?>[port.sendPort, expr, engine.config, engine.memory, _continuesAns, _angleMode.index],
+    ).then((iso) {
+      if (_port != port) {
+        iso.kill(priority: Isolate.immediate);
+      } else {
+        _isolate = iso;
+      }
+    }).catchError((Object e) {
+      _stopBackground();
+      commit(null, e);
+      notifyListeners();
+    });
+    notifyListeners();
+  }
 
   // -- Live preview -------------------------------------------------------------------------------------------------
   String? _livePreviewKey;
@@ -695,8 +1060,10 @@ class CalculatorController extends ChangeNotifier {
   }
 
   String _computeLivePreview() {
-    if (_hasEvaluated) return '';
+    if (_hasEvaluated || _sessionActive || _busy) return '';
     final trimmed = _expression.trim();
+    // ∫ d/dx Σ ∏ can take seconds: they are calculated only on `=`, in the background
+    if (CasioEngine.hasCasioCalculus(trimmed)) return '';
     if (trimmed.isEmpty || _reYStart.hasMatch(trimmed)) return '';
     final isPlainNumber = _rePlainNumber.hasMatch(trimmed);
     if (isPlainNumber && !hasEquation) return '';
@@ -718,6 +1085,12 @@ class CalculatorController extends ChangeNotifier {
     playSound(ClickType.eval);
     _clearModifiers();
     _syntaxError = null;
+    if (_busy) return;
+    if (_sessionActive) {
+      _sessionEnter();
+      notifyListeners();
+      return;
+    }
     // an unfilled placeholder (an empty numerator, radicand, ...) is a Syntax ERROR and the caret goes to it
     final placeholder = _hasEvaluated ? null : _doc.firstPlaceholderPath;
     if (placeholder != null) {
@@ -764,58 +1137,78 @@ class CalculatorController extends ChangeNotifier {
 
       // atomicsym(26) is the one chemistry function whose answer is text (Phase 6); it only works as the whole expression
       final chemText = ChemCalcFunctions.textResult(exprToEval);
+      if (chemText == null && !_hasEvaluated && CasioEngine.hasCasioCalculus(exprToEval)) {
+        // ∫ d/dx Σ ∏ run in the background; AC interrupts
+        final asked = shown;
+        _evaluateInBackground(exprToEval, (outcome, error) {
+          if (error != null) {
+            _commitError(error);
+          } else {
+            _commitResult(outcome, null, asked);
+          }
+        });
+        return;
+      }
       CasioOutcome? outcome;
       if (chemText == null) {
         outcome = engine.evaluate(exprToEval, continuesAns: _continuesAns, legacyAngle: _angleMode);
       }
-      _continuesAns = false;
-      final String formatted;
-      final String reusable;
-      if (outcome == null) {
-        formatted = chemText!;
-        reusable = chemText;
-      } else {
-        final first = outcome.shown;
-        formatted = outcome.remainder != null ? '${first.display} R ${outcome.remainder}' : first.display;
-        reusable = first.expr;
-      }
-      _forms = outcome == null || outcome.legacy ? const <CasioShown>[] : outcome.forms;
-      _formIndex = 0;
-      _engExp = 0;
-      _resultError = false;
-      _resultRemainder = outcome?.remainder;
-      _resultExtra = outcome?.extra ?? const <String, String>{};
-      _resultFactorable = outcome?.factorable ?? false;
-
-      _lastQuestion = shown;
-      _lastAnswer = formatted;
-
-      final mode = _isScientific ? 'scientific' : 'standard';
-      // the rich tree is kept with the entry only when it is exactly what was calculated
-      final rich = (shown == _expression && _doc.hasGroups) ? _doc.toJson() : null;
-      if (onAddHistoryRich != null) {
-        onAddHistoryRich!.call(expression: shown, result: formatted, mode: mode, rich: rich);
-      } else {
-        onAddHistory?.call(expression: shown, result: formatted, mode: mode);
-      }
-
-      _setPlain(outcome?.remainder != null ? first0(outcome!) : reusable);
-      _answerDisplay = formatted == _expression ? '' : formatted;
-      _hasEvaluated = true;
+      _commitResult(outcome, chemText, shown);
     } catch (err) {
-      final msg = err is CalcError || err is CasioError ? CasioEngine.messageOf(err) : 'Error';
-      _lastQuestion = _expression;
-      _lastAnswer = msg;
-      _setPlain(msg);
-      _forms = const <CasioShown>[];
-      _resultError = true;
-      _resultFactorable = false;
-      _resultExtra = const <String, String>{};
-      _answerDisplay = '';
-      _continuesAns = false;
-      _hasEvaluated = true;
+      _commitError(err);
     }
     notifyListeners();
+  }
+
+  void _commitResult(CasioOutcome? outcome, String? chemText, String shown) {
+    _continuesAns = false;
+    final String formatted;
+    final String reusable;
+    if (outcome == null) {
+      formatted = chemText!;
+      reusable = chemText;
+    } else {
+      final first = outcome.shown;
+      formatted = outcome.remainder != null ? '${first.display} R ${outcome.remainder}' : first.display;
+      reusable = first.expr;
+    }
+    _forms = outcome == null || outcome.legacy ? const <CasioShown>[] : outcome.forms;
+    _formIndex = 0;
+    _engExp = 0;
+    _resultError = false;
+    _resultRemainder = outcome?.remainder;
+    _resultExtra = outcome?.extra ?? const <String, String>{};
+    _resultFactorable = outcome?.factorable ?? false;
+
+    _lastQuestion = shown;
+    _lastAnswer = formatted;
+
+    final mode = _isScientific ? 'scientific' : 'standard';
+    // the rich tree is kept with the entry only when it is exactly what was calculated
+    final rich = (shown == _expression && _doc.hasGroups) ? _doc.toJson() : null;
+    if (onAddHistoryRich != null) {
+      onAddHistoryRich!.call(expression: shown, result: formatted, mode: mode, rich: rich);
+    } else {
+      onAddHistory?.call(expression: shown, result: formatted, mode: mode);
+    }
+
+    _setPlain(outcome?.remainder != null ? first0(outcome!) : reusable);
+    _answerDisplay = formatted == _expression ? '' : formatted;
+    _hasEvaluated = true;
+  }
+
+  void _commitError(Object err) {
+    final msg = err is CalcError || err is CasioError ? CasioEngine.messageOf(err) : 'Error';
+    _lastQuestion = _expression;
+    _lastAnswer = msg;
+    _setPlain(msg);
+    _forms = const <CasioShown>[];
+    _resultError = true;
+    _resultFactorable = false;
+    _resultExtra = const <String, String>{};
+    _answerDisplay = '';
+    _continuesAns = false;
+    _hasEvaluated = true;
   }
 
   /// With a remainder only the quotient continues into the next calculation (manual p.25).
@@ -1169,6 +1562,7 @@ class CalculatorController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _stopBackground();
     _copiedTimer?.cancel();
     _equalsTimer?.cancel();
     super.dispose();

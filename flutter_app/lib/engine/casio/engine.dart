@@ -5,6 +5,7 @@ import '../calc_error.dart';
 import '../chemistry/calc_functions.dart';
 import '../evaluator.dart';
 import '../types.dart';
+import 'calculus.dart';
 import 'config.dart';
 import 'cval.dart';
 import 'evaluator.dart';
@@ -54,11 +55,20 @@ class CasioEngine {
   CasioConfig config;
   final CasioMemory memory;
 
+  /// Set by the caller that runs a long calculation (∫, d/dx, Σ, ∏, SOLVE) so that AC can interrupt it.
+  CasioCancel? cancel;
+
   /// Functions Phase 7c rebuilds; until then they are calculated by the legacy evaluator.
   static final RegExp _legacyOnly = RegExp(
-    r'\b(integrate|diff|sum|prod|y)\s*\(|\bd/dx\b|[∫Σ∏]|∑',
+    r'\b(integrate|diff|sum|prod|y)\s*\(',
     caseSensitive: false,
   );
+
+  /// The Casio linear syntax of Phase 7c (manual p.39-43): `∫(f(x),a,b,tol)`, `d/dx(f(x),a,tol)`, `Σ(f(x),a,b)`,
+  /// `∏(f(x),a,b)`. These work in both calculation styles, with the Casio engine's numerics.
+  static final RegExp _casioCalculus = RegExp(r'[∫Σ∑∏]|d/dx');
+
+  static bool hasCasioCalculus(String expr) => _casioCalculus.hasMatch(expr);
 
   /// OmniCalc functions that are not on the calculator and keep their legacy meaning.
   static final RegExp _legacyWords = RegExp(r'\b(min|max|avg|mean|limit|mod)\b');
@@ -90,7 +100,7 @@ class CasioEngine {
   /// after `=`): the previous result is then used at full precision as `Ans`, as on the unit.
   CasioOutcome evaluate(String input, {bool continuesAns = false, AngleMode? legacyAngle, bool commit = true}) {
     var expr = ChemCalcFunctions.resolve(input).trim();
-    if (!config.useCasio || needsLegacy(expr)) {
+    if ((!config.useCasio && !hasCasioCalculus(expr)) || needsLegacy(expr)) {
       return _legacy(expr, legacyAngle);
     }
     if (config.phonePercent) expr = PhonePercent.apply(expr);
@@ -105,7 +115,7 @@ class CasioEngine {
     final ast = CasioParser.parse(expr);
     // a preview must not touch Ans or the variables (Pol/Rec store X and Y)
     final mem = commit ? memory : memory.copy();
-    final ev = CasioEvaluator(config, mem);
+    final ev = CasioEvaluator(config, mem, cancel: cancel);
     final res = ev.run(ast);
     final fmt = CasioFormatter(config);
     final forms = fmt.forms(res.value);

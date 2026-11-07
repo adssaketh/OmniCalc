@@ -56,6 +56,26 @@ for n, r in [(10, 4), (52, 5), (30, 15), (100, 3), (7, 7), (7, 0)]:
 for expr, v in [('1÷3', mpf(1) / 3), ('22÷7', mpf(22) / 7), ('2÷3+5÷7', mpf(2) / 3 + mpf(5) / 7), ('√2+√3', sqrt(2) + sqrt(3)),
                 ('π', pi), ('π×π', pi * pi), ('e', exp(1)), ('2π', 2 * pi), ('√(2)×√(8)', mpf(4)), ('log(2,1024)', mpf(10))]:
     add(expr, v)
+
+# Phase 7c: calculus (rad). mpmath quad / diff / nsum are independent of the engine's Gauss-Kronrod and Ridders code.
+from mpmath import quad, diff, mpf as _m, nsum, nprod, inf
+def calc(expr, value):
+    add(expr, value, 'rad')
+for f, ftxt, a, b in [(lambda x: x**2, 'X²', 0, 2), (lambda x: exp(x), 'e^(X)', 0, 1), (lambda x: 1 / x, '1÷X', 1, 10),
+                      (lambda x: sqrt(x), '√(X)', 0, 4), (lambda x: sin(x), 'sin(X)', 0, 1), (lambda x: cos(x) ** 2, 'cos(X)²', 0, 3),
+                      (lambda x: log(x), 'ln(X)', 1, 5), (lambda x: x * exp(-x), 'X×e^(-X)', 0, 4),
+                      (lambda x: 1 / (1 + x ** 2), '1÷(1+X²)', -3, 3), (lambda x: x ** 3 - 2 * x, 'X³−2X', -1, 2.5)]:
+    calc('∫(%s,%s,%s)' % (ftxt, a, b), quad(f, [a, b]))
+for f, ftxt, a in [(lambda x: x ** 3, 'X³', 2), (lambda x: exp(x), 'e^(X)', 1.5), (lambda x: log(x), 'ln(X)', 3),
+                   (lambda x: sin(x), 'sin(X)', 0.7), (lambda x: x ** 2 * cos(x), 'X²cos(X)', 1.2), (lambda x: 1 / x, '1÷X', 4)]:
+    calc('d/dx(%s,%s)' % (ftxt, a), diff(f, mpf(str(a))))
+for ftxt, f, a, b in [('X²', lambda k: k ** 2, 1, 10), ('1÷X', lambda k: _m(1) / k, 1, 8), ('X+1', lambda k: k + 1, 1, 5)]:
+    calc('Σ(%s,%d,%d)' % (ftxt, a, b), sum(f(_m(k)) for k in range(a, b + 1)))
+for ftxt, f, a, b in [('X+1', lambda k: k + 1, 1, 5), ('X', lambda k: k, 1, 10), ('1+1÷X', lambda k: 1 + _m(1) / k, 1, 6)]:
+    p = _m(1)
+    for k in range(a, b + 1):
+        p *= f(_m(k))
+    calc('∏(%s,%d,%d)' % (ftxt, a, b), p)
 # the unit holds pi and e with 15 digits (manual p.36): the reference values are the rounded ones
 for o in out:
     if o['expr'] in ('π', 'e'):

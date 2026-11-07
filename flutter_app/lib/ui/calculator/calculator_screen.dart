@@ -737,11 +737,11 @@ class _PortraitDisplay extends StatelessWidget {
                           if (c.hasEquation)
                             _EquationLine(
                                 controller: c, t: t, size: smallText ? 14 : 12),
-                          if (c.lastQuestion.isNotEmpty)
+                          if (c.questionLine.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 2),
                               child: Text(
-                                '${c.lastQuestion} =',
+                                c.questionLine,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.right,
@@ -757,15 +757,17 @@ class _PortraitDisplay extends StatelessWidget {
                             ),
                           answer,
                           // Small live answer; turns into the big answer when = is pressed. Fixed height so keys never jump.
-                          if (!c.hasEvaluated)
+                          if (!c.hasEvaluated || c.sessionExtra.isNotEmpty)
                             SizedBox(
                               height: smallText ? 32 : 28,
                               child: Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  c.livePreview.isEmpty
-                                      ? ''
-                                      : '= ${c.livePreview}',
+                                  c.hasEvaluated
+                                      ? c.sessionExtra
+                                      : (c.livePreview.isEmpty
+                                          ? ''
+                                          : '= ${c.livePreview}'),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: calcText(
@@ -1439,11 +1441,11 @@ class _LandscapeDisplay extends StatelessWidget {
         tape,
         if (c.hasEquation)
           _EquationLine(controller: c, t: t, size: sm ? 14 : 12),
-        if (c.lastQuestion.isNotEmpty)
+        if (c.questionLine.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
-              '${c.lastQuestion} =',
+              c.questionLine,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: calcText(
@@ -1473,7 +1475,7 @@ class _LandscapeDisplay extends StatelessWidget {
             ),
           ),
         ),
-        if (!c.hasEvaluated)
+        if (!c.hasEvaluated || c.sessionExtra.isNotEmpty)
           SizedBox(
             height: 28,
             child: Padding(
@@ -1481,7 +1483,7 @@ class _LandscapeDisplay extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  c.livePreview.isEmpty ? '' : '= ${c.livePreview}',
+                  c.hasEvaluated ? c.sessionExtra : (c.livePreview.isEmpty ? '' : '= ${c.livePreview}'),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: calcText(

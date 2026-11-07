@@ -5,6 +5,7 @@ import 'dart:math' as math;
 
 import '../js_number.dart';
 import 'casio_constants_data.dart';
+import 'calculus.dart';
 import 'casio_conversions.dart';
 import 'config.dart';
 import 'cval.dart';
@@ -36,11 +37,14 @@ const Map<String, double> kLegacyConstants = <String, double>{
 };
 
 class CasioEvaluator {
-  CasioEvaluator(this.cfg, this.mem, {math.Random? random}) : _rng = random ?? math.Random();
+  CasioEvaluator(this.cfg, this.mem, {math.Random? random, this.cancel}) : _rng = random ?? math.Random();
 
   final CasioConfig cfg;
   final CasioMemory mem;
   final math.Random _rng;
+
+  /// AC while a long calculation (∫, d/dx, Σ, ∏, SOLVE) runs: it checks this token and stops with [CasioCancelled].
+  final CasioCancel? cancel;
 
   // ----- public ---------------------------------------------------------------------------------------------------
 
@@ -852,8 +856,140 @@ class CasioEvaluator {
       case 'conv':
         // `CONV(n)` on its own (no value before it) converts 1
         return _convert(CVal.int(1), c);
+      case 'integral':
+        return _integral(c);
+      case 'deriv':
+        return _derivative(c);
+      case 'sumx':
+        return _series(c, product: false);
+      case 'prodx':
+        return _series(c, product: true);
     }
     throw CasioError(CasioErrorKind.syntax, c.pos);
+  }
+
+  // ----- ∫  d/dx  Σ  ∏  (Phase 7c, manual p.39-43) ---------------------------------------------------------------------
+
+  /// f(x) as a function of a double: every call is a 15-digit calculation with X set to the point.
+  double Function(double) _fn(Node f) {
+    final m = mem.copy();
+    final ev = CasioEvaluator(cfg, m, random: _rng, cancel: cancel);
+    return (double x) {
+      m.vars['X'] = CVal.dec(x);
+      return ev.eval(f).v;
+    };
+  }
+
+  /// "The following cannot be used in f(x): Pol, Rec, ÷R. The following cannot be used in f(x), a, b, or tol: ∫, d/dx, Σ, Π."
+  /// The unit refuses to take such input; here the line is a Syntax ERROR.
+  void _forbid(Node n, {required bool inFunction}) {
+    if (_anyNode(n, (m) => m is NCall && kCalculusNames.contains(m.name))) throw CasioError(CasioErrorKind.syntax, n.pos);
+    if (inFunction &&
+        _anyNode(n, (m) => (m is NCall && (m.name == 'pol' || m.name == 'rec')) || (m is NBin && m.op == '÷R'))) {
+      throw CasioError(CasioErrorKind.syntax, n.pos);
+    }
+  }
+
+  static bool _anyNode(Node n, bool Function(Node) test) {
+    if (test(n)) return true;
+    switch (n) {
+      case NNum() || NName():
+        return false;
+      case NNeg():
+        return _anyNode(n.a, test);
+      case NBin():
+        return _anyNode(n.a, test) || _anyNode(n.b, test);
+      case NPow():
+        return _anyNode(n.a, test) || _anyNode(n.b, test);
+      case NPost():
+        return _anyNode(n.a, test);
+      case NCall():
+        return n.args.any((a) => _anyNode(a, test));
+      case NSto():
+        return _anyNode(n.a, test);
+      case NSeq():
+        return n.stmts.any((a) => _anyNode(a, test));
+      case NDms():
+        return _anyNode(n.d, test) || (n.m != null && _anyNode(n.m!, test)) || (n.s != null && _anyNode(n.s!, test));
+    }
+  }
+
+  /// A result that is p/q × π with a small q (|x| < 10⁶) is shown in π form (manual p.100 notes that internal error can
+  /// make the unit show such a result in π form, and the guide's ∫₀^π (sin x + cos x)² dx shows `π`).
+  CVal _asPiForm(double v) {
+    if (v == 0) return CVal.exact(Ex.zero);
+    if (v.abs() < 1e6) {
+      final q = v / kPi15;
+      for (var d = 1; d <= 12; d++) {
+        final p = (q * d).roundToDouble();
+        if (p != 0 && p.abs() <= 1000 && ((q * d) - p).abs() <= 1e-9 * (q * d).abs()) {
+          return CVal.exact(Ex.piMultiple(Rat(BigInt.from(p.toInt()), BigInt.from(d))));
+        }
+      }
+    }
+    return CVal.dec(v);
+  }
+
+  CVal _integral(NCall c) {
+    if (c.args.length < 3 || c.args.length > 4) throw CasioError(CasioErrorKind.syntax, c.pos);
+    _forbid(c.args[0], inFunction: true);
+    for (final a in c.args.skip(1)) {
+      _forbid(a, inFunction: false);
+    }
+    final lo = eval(c.args[1]).v;
+    final hi = eval(c.args[2]).v;
+    var tol = kIntegralTol;
+    if (c.args.length == 4) {
+      tol = eval(c.args[3]).v;
+      if (!(tol > 0) || tol < 1e-14) throw kArgumentError;
+    }
+    final r = gaussKronrod(_fn(c.args[0]), lo, hi, tol, cancel: cancel);
+    final v = round15(r);
+    if (!v.isFinite || v.abs() >= 1e100) throw kMathError;
+    return _asPiForm(v);
+  }
+
+  CVal _derivative(NCall c) {
+    if (c.args.length < 2 || c.args.length > 3) throw CasioError(CasioErrorKind.syntax, c.pos);
+    _forbid(c.args[0], inFunction: true);
+    for (final a in c.args.skip(1)) {
+      _forbid(a, inFunction: false);
+    }
+    final at = eval(c.args[1]).v;
+    var tol = kDerivativeTol;
+    final given = c.args.length == 3;
+    if (given) {
+      tol = eval(c.args[2]).v;
+      if (!(tol > 0) || tol < 1e-14) throw kArgumentError;
+    }
+    final r = centralDifference(_fn(c.args[0]), at, tol, tolGiven: given, cancel: cancel);
+    return _check(CVal.dec(r));
+  }
+
+  /// Σ(f(x), a, b) and ∏(f(x), a, b) with integer a and b. Terms are exact when f(x) is.
+  CVal _series(NCall c, {required bool product}) {
+    if (c.args.length != 3) throw CasioError(CasioErrorKind.syntax, c.pos);
+    _forbid(c.args[0], inFunction: true);
+    _forbid(c.args[1], inFunction: false);
+    _forbid(c.args[2], inFunction: false);
+    final a = _intArg(eval(c.args[1]));
+    final b = _intArg(eval(c.args[2]));
+    if (a == null || b == null) throw kArgumentError;
+    final lim = BigInt.from(10).pow(10);
+    final okLow = product ? a < lim : (a > -lim && a < lim);
+    if (!okLow || b >= lim || a > b) throw kArgumentError;
+    final m = mem.copy();
+    final ev = CasioEvaluator(cfg, m, random: _rng, cancel: cancel);
+    var acc = product ? CVal.int(1) : CVal.exact(Ex.zero);
+    final end = b.toInt();
+    var n = 0;
+    for (var k = a.toInt(); k <= end; k++) {
+      if ((n++ & 255) == 0) cancel?.check();
+      m.vars['X'] = CVal.int(k);
+      final term = ev.eval(c.args[0]);
+      acc = product ? _mul(acc, term) : _add(acc, term);
+    }
+    return acc;
   }
 
   CVal _gcdLcm(CVal a, CVal b, {required bool gcd}) {

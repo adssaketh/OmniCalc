@@ -388,6 +388,60 @@ StructPiece _layoutStruct(
             canvas.drawLine(
                 Offset(ox + w - 0.10 * size, baselineY - top), Offset(ox + w - 0.10 * size, baselineY + bottom), p);
           });
+    case IntegralNode() || SigmaNode() || ProdNode():
+      final f = slotRow(0);
+      final lo = slotRow(1, small: true);
+      final hi = slotRow(2, small: true);
+      final sym = n is IntegralNode ? '∫' : (n is SigmaNode ? 'Σ' : '∏');
+      final big = TextPainter(
+        text: TextSpan(text: sym, style: styleFor(size * 1.35)),
+        textDirection: textDirection,
+        maxLines: 1,
+      )..layout();
+      final bigBase = big.computeDistanceToActualBaseline(TextBaseline.alphabetic);
+      final bigDescent = big.height - bigBase;
+      final symW = math.max(big.width, math.max(lo.width, hi.width));
+      final hiBase = bigBase * 0.55 + hi.descent + 0.05 * size;
+      final loBase = -(bigDescent * 0.55 + lo.ascent + 0.05 * size);
+      final fDx = symW + 0.14 * size;
+      return StructPiece(x, index,
+          width: fDx + f.width,
+          ascent: math.max(f.ascent, hiBase + hi.ascent),
+          descent: math.max(f.descent, lo.descent - loBase),
+          slots: [
+            SlotPlace(f, fDx, 0),
+            SlotPlace(lo, (symW - lo.width) / 2, loBase),
+            SlotPlace(hi, (symW - hi.width) / 2, hiBase),
+          ],
+          decorate: (canvas, ox, baselineY) =>
+              big.paint(canvas, Offset(ox + (symW - big.width) / 2, baselineY - bigBase)));
+    case DerivNode():
+      final f = slotRow(0);
+      final at = slotRow(1, small: true);
+      TextPainter text(String t, double sz) => TextPainter(
+            text: TextSpan(text: t, style: styleFor(sz)),
+            textDirection: textDirection,
+            maxLines: 1,
+          )..layout();
+      final word = text('d/dx(', size);
+      final close = text(')', size);
+      final tag = text('x=', size * 0.7);
+      final wb = word.computeDistanceToActualBaseline(TextBaseline.alphabetic);
+      final tb = tag.computeDistanceToActualBaseline(TextBaseline.alphabetic);
+      final drop = kSubDropEm * size;
+      final closeDx = word.width + f.width;
+      final tagDx = closeDx + close.width + 0.06 * size;
+      final atDx = tagDx + tag.width;
+      return StructPiece(x, index,
+          width: atDx + at.width,
+          ascent: math.max(wb, f.ascent),
+          descent: math.max(word.height - wb, math.max(f.descent, math.max(at.descent, tag.height - tb) + drop)),
+          slots: [SlotPlace(f, word.width, 0), SlotPlace(at, atDx, -drop)],
+          decorate: (canvas, ox, baselineY) {
+            word.paint(canvas, Offset(ox, baselineY - wb));
+            close.paint(canvas, Offset(ox + closeDx, baselineY - wb));
+            tag.paint(canvas, Offset(ox + tagDx, baselineY + drop - tb));
+          });
     case LogBaseNode():
       final base = slotRow(0, small: true);
       final arg = slotRow(1);

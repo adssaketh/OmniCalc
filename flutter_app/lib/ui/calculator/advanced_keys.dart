@@ -51,7 +51,7 @@ class _Adv {
   final bool alphaArmed;
 }
 
-const String _hintCalculus = 'Format: diff(f(x), x_val) • integrate(f(x), a, b) • sum(f(x), 1, n)';
+const String _hintCalculus = 'Fill the boxes with ▶ • diff(f(x), x_val) • integrate(f(x), a, b) • sum(f(x), 1, n) still work typed';
 const String _hintProb = 'Syntax: nCr(n, r) • nPr(n, r) • gcd(a, b) • lcm(a, b) • randInt(1, 100)';
 
 /// The five advanced tabs, keys in the order of the TSX (rows of four).
@@ -70,10 +70,12 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
   switch (tab) {
     case AdvancedTab.calculus:
       return [
-        tpl('d/dx', 'derivative', 'diff('),
-        tpl('∫ dx', 'integral', 'integrate('),
-        tpl('∑', 'sum', 'sum('),
-        tpl('∏', 'product', 'prod('),
+        // Phase 7c: the structures of the unit (caret starts in the first slot). The words diff( integrate( sum( prod(
+        // can still be typed; they keep their OmniCalc meaning.
+        _Adv('d/dx', 'derivative', c.esDeriv, labelSize: 12, textSm: true),
+        _Adv('∫▭▭', 'integral', c.esIntegral, labelSize: 12, textSm: true),
+        _Adv('Σ▭▭', 'sum', c.esSigma, labelSize: 12, textSm: true),
+        _Adv('∏▭▭', 'product', c.esProd, labelSize: 12, textSm: true),
         tpl('lim', 'limit', 'limit('),
         fn('|x|', 'abs', 'abs'),
         exitKey(),
@@ -224,7 +226,7 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         prefix('SHIFT', 'prefix', c.shiftOn, c.toggleShift),
         prefix('ALPHA', 'prefix', c.alphaOn, c.toggleAlpha),
         prefix('INS', 'wrap arg', c.insArmed, c.toggleIns),
-        layered('CALC', 'soon', main: c.esNotYet, shift: c.esNotYet, alpha: c.esEquals, shiftLabel: 'SOLVE', alphaLabel: '=', size: 12),
+        layered('CALC', 'calc', main: c.esCalc, shift: c.esSolve, alpha: c.esEquals, shiftLabel: 'SOLVE', alphaLabel: '=', size: 12),
         _Adv('◀', 'left', c.moveCaretLeft, labelSize: 14, textSm: true),
         _Adv('▲', 'up', c.moveCaretUp, labelSize: 14, textSm: true),
         _Adv('▼', 'down', c.moveCaretDown, labelSize: 14, textSm: true),
