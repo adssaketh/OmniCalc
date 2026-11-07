@@ -26,15 +26,16 @@ Still to do: 5d Physics Lab, 5e Grapher, 5f History tape + Settings modal + Guid
 - Table column widths approximate CSS `table-layout: auto` (content-proportional; horizontal scroll when too wide).
 - No number-input spinner / mouse wheel handling.
 - Placeholder colour is the text colour at 50 %.
-- `HeadlineRow` clips instead of overflowing when a value is too wide.
+- `HeadlineRow` clips instead of overflowing when a value is too wide; `RatioBar` clips the brief over-100% sum during a transition (CSS shrinks the items instead).
 
 ## Not done / open (5c)
 - 5d Physics Lab, 5e Grapher, 5f History / Settings / Guide.
 
 ## Verification status (5c)
-- **Not compiled, analysed or run with Flutter** (no Flutter SDK reachable from the sandbox). Only syntax was checked with a plain Dart
-  parser (`dart format -o none`), and the lucide check was run. CI on `flutter-rewrite` is the real check: run
-  `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
+CI (gen checks, lucide check, analyze, all tests, APK) is green on the final 5c commit. Not run on a device. Three CI rounds: the first
+had 16 failing tests (my test helper resized the window after switching tab, which remounts the screen and resets the tab), the second
+4 (a transient ratio-bar overflow while a new segment appears during the 500 ms width transition, now clipped; two assertions that
+forgot legitimately repeated table values), the third passed. Run: `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
 
 ## Parity doubts (5c)
 - Line height of the `text-[11.5px]` table text below sm is assumed to be 1.5.
