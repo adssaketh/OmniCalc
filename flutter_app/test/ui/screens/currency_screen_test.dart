@@ -48,7 +48,9 @@ Future<SilentFeedbackService> pumpCurrency(
 
 String textOf(WidgetTester tester, String key) => tester.widget<Text>(find.byKey(ValueKey(key))).data!;
 
-String amountText(WidgetTester tester) => textOf(tester, 'converted-amount');
+/// The converted amount. The test font (Ahem) is as wide as it is tall, so on a narrow card the amount may legitimately
+/// be split with zero-width spaces (CSS `break-all`); the value is what is compared.
+String amountText(WidgetTester tester) => textOf(tester, 'converted-amount').replaceAll('\u200B', '');
 
 void main() {
   group('number formatting', () {
