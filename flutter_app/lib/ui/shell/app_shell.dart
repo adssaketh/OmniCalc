@@ -278,7 +278,9 @@ class _AppShellState extends State<AppShell> {
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 1650),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
+                      // The web's `min-h-full` column carries `padding-bottom: bottom-stack + 12px` itself (border-box), so
+                      // the space under the bars is taken out of the height the screen fills, not added after it.
+                      padding: EdgeInsets.fromLTRB(hPad, vPad, hPad, vPad + (large ? 24 : bottomBars + 12)),
                       child: Column(
                         children: [
                           Expanded(
@@ -293,7 +295,6 @@ class _AppShellState extends State<AppShell> {
                   ),
                 ),
               ),
-              SliverToBoxAdapter(child: SizedBox(height: large ? 24 : bottomBars + 12)),
             ],
           ),
         ),

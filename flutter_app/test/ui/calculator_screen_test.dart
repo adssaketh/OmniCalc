@@ -71,6 +71,20 @@ void main() {
       expect(find.text('7+3 ='), findsOneWidget);
     });
 
+    testWidgets('on a 400x800 phone the whole keypad sits above the bottom bar', (tester) async {
+      await pumpApp(tester, size: const Size(400, 800));
+      await settle(tester);
+      final bar = tester.getTopLeft(find.text('Calculator')).dy;
+      final equals = tester.getBottomLeft(find.text('=').last).dy;
+      expect(equals, lessThan(bar), reason: 'the = key must not be under the navigation bar');
+      await tapKey(tester, '1');
+      await tapKey(tester, '+');
+      await tapKey(tester, '1');
+      await tester.tap(find.text('=').last);
+      await settle(tester);
+      expect(shown(tester), '2');
+    });
+
     testWidgets('AC clears and backspace deletes', (tester) async {
       await pumpApp(tester);
       await settle(tester);
