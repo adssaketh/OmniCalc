@@ -1,4 +1,3 @@
-import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 
 /// Motion language of OmniCalc (Material 3 Expressive, shared with Ping): `src/motion.ts` and the `--ease-*` tokens and

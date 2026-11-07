@@ -83,7 +83,6 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
   _Lock? _lock;
   double _currentOffset = 0;
   bool _isDragging = false;
-  bool _wasSwiping = false;
   Duration _lastWheel = const Duration(days: -1);
 
   int get _activeIndex {
@@ -317,11 +316,6 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
       _offset.animateTo(0);
       _opacity.animateTo(1);
       _currentOffset = 0;
-
-      _wasSwiping = true;
-      Future<void>.delayed(const Duration(milliseconds: 150), () {
-        if (mounted) _wasSwiping = false;
-      });
 
       if (target != ai) {
         widget.onSelectTab(widget.tabs[target].id);
