@@ -40,7 +40,11 @@ Future<Harness> pumpApp(
 NavigationState navOf(WidgetTester tester) =>
     Provider.of<NavigationState>(tester.element(find.byType(AppShell)), listen: false);
 
-Future<void> settle(WidgetTester tester) => tester.pump(const Duration(milliseconds: 1500));
+/// Two frames: effects that run after a frame (scroll reset, mode checks) rebuild on the next one.
+Future<void> settle(WidgetTester tester) async {
+  await tester.pump(const Duration(milliseconds: 16));
+  await tester.pump(const Duration(milliseconds: 1500));
+}
 
 void main() {
   group('phone layout', () {
