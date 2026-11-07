@@ -122,7 +122,7 @@ void main() {
       tester,
       content: SizedBox(
         height: 300,
-        child: ListView(scrollDirection: Axis.horizontal, children: [for (var i = 0; i < 10; i++) const SizedBox(width: 200, height: 300)]),
+        child: ListView(scrollDirection: Axis.horizontal, children: [for (var i = 0; i < 10; i++) const ColoredBox(color: Color(0x00000000), child: SizedBox(width: 200, height: 300))]),
       ),
     );
     await drag(tester, start, -150);

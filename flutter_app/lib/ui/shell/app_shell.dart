@@ -128,7 +128,7 @@ class _AppShellState extends State<AppShell> {
   /// Each screen starts at the top.
   void _onModeChanged(CalculatorMode mode) {
     _collapseTarget = false;
-    if (_collapsed) _collapsed = false;
+    if (_collapsed) setState(() => _collapsed = false);
     if (_scroll.hasClients) _scroll.jumpTo(0);
     _fade.updateFromScroll(pixels: 0, maxScrollExtent: _scroll.hasClients ? _scroll.position.maxScrollExtent : 0);
   }
