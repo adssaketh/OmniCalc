@@ -28,6 +28,21 @@ const ICONS = [
   ['corner-down-left', 'CornerDownLeft'],
   ['chevron-up', 'ChevronUp'],
   ['rotate-ccw', 'RotateCcw'],
+  // Phase 5: converter category tabs (UnitCategory.iconName) and the swap button.
+  ['ruler', 'Ruler'],
+  ['scale', 'Scale'],
+  ['thermometer', 'Thermometer'],
+  ['square', 'Square'],
+  ['box', 'Box'],
+  ['gauge', 'Gauge'],
+  ['hard-drive', 'HardDrive'],
+  ['clock', 'Clock'],
+  ['activity', 'Activity'],
+  ['zap', 'Zap'],
+  ['compass', 'Compass'],
+  ['magnet', 'Magnet'],
+  ['arrow-left-right', 'ArrowLeftRight'],
+  ['chevron-down', 'ChevronDown'],
 ];
 const WANT_VERSION = /^0\.546\./;
 

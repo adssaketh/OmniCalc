@@ -10,7 +10,7 @@ import 'state/settings_store.dart';
 import 'theme/app_theme.dart';
 import 'theme/dynamic_colors.dart';
 import 'theme/tokens.dart';
-import 'ui/calculator/calculator_screen.dart';
+import 'ui/screens/screens.dart';
 import 'ui/shell/app_shell.dart';
 import 'ui/shell/pinned_slot.dart';
 
@@ -122,7 +122,7 @@ class _OmniCalcAppState extends State<OmniCalcApp> with WidgetsBindingObserver {
           title: 'OmniCalc',
           debugShowCheckedModeBanner: false,
           theme: buildThemeData(resolved.tokens),
-          home: AppShell(feedback: widget.feedback, screenBuilder: calculatorOrPlaceholder),
+          home: AppShell(feedback: widget.feedback, screenBuilder: appScreenBuilder),
         ),
       ),
     );

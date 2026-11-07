@@ -63,7 +63,7 @@ void main() {
       await tester.tap(find.text('Converter'));
       await settle(tester);
       expect(navOf(tester).mode, CalculatorMode.converter);
-      expect(find.text('Converter (Phase 5)'), findsOneWidget);
+      expect(find.text('FROM UNIT'), findsOneWidget); // the converter screen (Phase 5)
       expect(h.feedback.log, ['click:toggle', 'haptic:medium']);
       await tester.tap(find.text('Finance'));
       await settle(tester);
