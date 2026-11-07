@@ -51,6 +51,9 @@ locally**: 4,770 passed and 6 skipped, no analyzer errors or warnings. CI (gen c
 skipped, APK) is green on `4c167a9`. Not run on a device.
 Run: `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
 
+To run them in a new chat sandbox (nothing is kept between chats): `bash flutter_app/tools/setup_flutter_sandbox.sh`, then
+`export PATH=/opt/fl/flutter/bin:$PATH CI=true`. It downloads the current stable SDK (about 1.5 GB, a minute or two) and runs `flutter pub get`.
+
 ## Parity doubts (5e)
 1. **High-density screens.** `resize()` sets `canvas.width = rect.width * devicePixelRatio` and scales the context by the same ratio, but
    `drawGraph` then reads `canvas.width` / `canvas.height` (device pixels) as if they were CSS pixels: the origin goes to
