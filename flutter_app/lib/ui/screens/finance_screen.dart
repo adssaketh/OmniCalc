@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../../services/feedback_service.dart';
-import '../../theme/app_theme.dart';
-import '../../theme/tokens.dart';
 import '../icons/lucide_icon.dart';
 import '../shell/intrinsic_cache.dart';
 import '../shell/swipeable_tab_container.dart';
+import 'compound_screen.dart';
 import 'currency_screen.dart';
+import 'loan_screen.dart';
+import 'roi_screen.dart';
 import 'screen_utils.dart';
+import 'swp_screen.dart';
+import 'tip_screen.dart';
 
 /// `FinanceTab` of FinanceScreen.tsx.
 enum FinanceTab { currency, loan, compound, swp, tip, roi }
@@ -22,7 +25,8 @@ const List<({FinanceTab tab, String label, LucideIconId icon})> financeTabs = [
   (tab: FinanceTab.roi, label: 'ROI & CAGR', icon: LucideIconId.lineChart),
 ];
 
-/// Port of FinanceScreen.tsx. The Currency tab is real (Phase 5b); the other five show a stand-in until Phase 5c.
+/// Port of FinanceScreen.tsx: the tab strip and the six tabs (Currency 5b; Loan / EMI, SIP & Compound, SWP, Tip & Bill,
+/// ROI & CAGR 5c).
 class FinanceScreen extends StatefulWidget {
   const FinanceScreen({super.key});
 
@@ -68,30 +72,16 @@ class _FinanceScreenState extends State<FinanceScreen> {
                 padding: const EdgeInsets.only(top: 8),
                 child: switch (_active) {
                   FinanceTab.currency => const CurrencyScreen(key: ValueKey('finance-currency')),
-                  _ => _StandIn(key: ValueKey('finance-${_active.name}'), label: financeTabs.firstWhere((f) => f.tab == _active).label),
+                  FinanceTab.loan => const LoanScreen(key: ValueKey('finance-loan')),
+                  FinanceTab.compound => const CompoundScreen(key: ValueKey('finance-compound')),
+                  FinanceTab.swp => const SwpScreen(key: ValueKey('finance-swp')),
+                  FinanceTab.tip => const TipScreen(key: ValueKey('finance-tip')),
+                  FinanceTab.roi => const RoiScreen(key: ValueKey('finance-roi')),
                 },
               ),
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Stand-in for the finance tabs that arrive in Phase 5c.
-class _StandIn extends StatelessWidget {
-  const _StandIn({super.key, required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = M3Theme.of(context);
-    return SizedBox(
-      height: 320,
-      child: Center(
-        child: Text('$label (Phase 5c)', style: appText(size: 16, weight: FontWeight.w600, color: t.onSurfaceVariant)),
       ),
     );
   }

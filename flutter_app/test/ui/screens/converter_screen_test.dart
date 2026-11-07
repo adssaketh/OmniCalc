@@ -105,6 +105,22 @@ void main() {
     expect(fb.log, ['click:op', 'haptic:medium']);
   });
 
+  testWidgets('swap button: the whole 40 px circle takes touches on a phone (top edge swaps)', (tester) async {
+    await pumpConverter(tester);
+    final rect = tester.getRect(find.byKey(const ValueKey('swap-units')));
+    expect(rect.height, 40);
+    expect(rect.width, 40);
+    // 2 px inside the top edge: this was outside the old 24 px hit box
+    await tester.tapAt(Offset(rect.center.dx, rect.top + 2));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(convertedText(tester), '1000');
+    // 2 px inside the bottom edge swaps back
+    final rect2 = tester.getRect(find.byKey(const ValueKey('swap-units')));
+    await tester.tapAt(Offset(rect2.center.dx, rect2.bottom - 2));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(convertedText(tester), '0.001');
+  });
+
   testWidgets('tapping a comparison tile selects the target unit', (tester) async {
     await pumpConverter(tester);
     await tester.ensureVisible(find.byKey(const ValueKey('compare-ft')));

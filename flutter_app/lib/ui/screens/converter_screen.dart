@@ -187,12 +187,11 @@ class _ConverterScreenState extends State<ConverterScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           inputCard,
-          SizedBox(height: gap),
-          SizedBox(
-            height: 24,
-            child: OverflowBox(maxHeight: 40, child: Center(child: _swapButton(t))),
-          ),
-          SizedBox(height: gap),
+          // `gap` minus the button's `-my-2` (8 px) on each side, around the full 40 px button, so all of it takes touches
+          // (same layout as currency_screen.dart).
+          SizedBox(height: gap - 8),
+          Center(child: _swapButton(t)),
+          SizedBox(height: gap - 8),
           resultCard,
         ],
       );

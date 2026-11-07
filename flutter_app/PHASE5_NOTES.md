@@ -1,12 +1,45 @@
 # Phase 5: tool screens (in steps)
 
-Phase 5 is split. **5a is the Converter, 5b (below) is Currency.** Still to do: 5c Finance (loan, compound, SWP, tip, ROI),
-5d Physics Lab, 5e Grapher, 5f History tape + Settings modal + Guide sheet (these replace `dev_settings_sheet.dart`).
+Phase 5 is split. **5a is the Converter, 5b is Currency, 5c (below) is the other five Finance tabs plus the converter swap-button fix.**
+Still to do: 5d Physics Lab, 5e Grapher, 5f History tape + Settings modal + Guide sheet (these replace `dev_settings_sheet.dart`).
 
-**To do in 5c (requested): fix the converter swap button.** In `converter_screen.dart` the phone layout puts the 40 px button in a
-24 px `OverflowBox`, so only the middle 24 px take touches. Lay it out like `currency_screen.dart` does (two 8 px gaps around a
-full 40 px button, `Center(child: _swapButton(t))`), keeping the md layout (button centred over the grid) as it is. Add a test
-that taps the top edge of the button on a phone-width screen.
+# Phase 5c: Finance tabs (Loan, SIP & Compound, SWP, Tip, ROI) + swap button fix
+
+## What is here (5c)
+- `lib/ui/screens/finance_widgets.dart`: shared pieces ported from the repeated markup of the five TSX calculators: `FinanceLayout`
+  (1 column below md, 2 from md), `InputCard`, `CardHeader`, `FinanceNumberInput` (React controlled number-input quirks),
+  `PresetChips`, `FinanceCheckbox`, `ResultsCard`, `HeadlineRow`, `RatioBar` (500 ms width transition) / `RatioLegend`,
+  `MetricGrid`, `Footnote`, `CollapsibleTable` / `FinanceTable`, `formatMoney` (`Math.round` then en-IN grouping), parse helpers.
+- `loan_screen.dart` (Loan / EMI, optional GST + processing-fee taxes, amortisation schedule), `compound_screen.dart`
+  (SIP & Compound, year-by-year table), `swp_screen.dart` (depletion warning, timeline), `tip_screen.dart`, `roi_screen.dart`.
+  `finance_screen.dart` now shows them; the "(Phase 5c)" stand-in is gone.
+- `engine/js_locale.dart`: `jsToLocaleStringEnIN` (Indian digit grouping, `toLocaleString('en-IN')`).
+- Lucide: `triangle-alert` (`AlertTriangle`) added to the generator; 29 icons now, `--check` passes against lucide-react 0.546.0.
+- Converter swap button: phone layout is now `SizedBox(gap - 8)`, `Center(_swapButton)`, `SizedBox(gap - 8)` like Currency; the
+  `OverflowBox` is gone, so the whole 40 px circle takes touches. md layout unchanged. New test taps the top and bottom edges.
+- Tests: `test/ui/screens/finance_tabs_test.dart` (expected numbers come from running the TS engine with tsx), the swap test, and
+  the Currency test's stand-in assertion now checks the real SWP screen.
+
+## Deliberate differences (5c)
+- The results card is not sticky on md+ (`sticky md:top-4` in the web app).
+- The checkbox is an approximation of the browser one (16 px, accent fill, tick black/white by luminance, `outline` border unchecked).
+- Table column widths approximate CSS `table-layout: auto` (content-proportional; horizontal scroll when too wide).
+- No number-input spinner / mouse wheel handling.
+- Placeholder colour is the text colour at 50 %.
+- `HeadlineRow` clips instead of overflowing when a value is too wide.
+
+## Not done / open (5c)
+- 5d Physics Lab, 5e Grapher, 5f History / Settings / Guide.
+
+## Verification status (5c)
+- **Not compiled, analysed or run with Flutter** (no Flutter SDK reachable from the sandbox). Only syntax was checked with a plain Dart
+  parser (`dart format -o none`), and the lucide check was run. CI on `flutter-rewrite` is the real check: run
+  `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
+
+## Parity doubts (5c)
+- Line height of the `text-[11.5px]` table text below sm is assumed to be 1.5.
+- Table column widths and the checkbox look can differ by a few pixels from the browser.
+- Tip's round-up flag has no visible numeric effect in the TS engine either (checked), so none here.
 
 # Phase 5b: Currency
 
@@ -61,8 +94,7 @@ Run: `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
 1. The status bar's two texts split a narrow row by their own width (like CSS `flex-shrink`); checked by reasoning, not on a device.
 2. `font-mono` is the app font with tabular figures, as in the other screens.
 3. The long amount breaks between any two characters only when it does not fit (CSS `break-all`).
-4. The converter's swap button (5a) is laid out with an `OverflowBox`; the currency one uses two 8 px gaps (16 px gap minus the
-   `-my-2` margin). Same geometry, but the 5a button's outer 8 px are not tappable. Worth changing in a later cleanup.
+4. (Fixed in 5c.) The converter's swap button used an `OverflowBox`; it now uses the same two 8 px gaps as Currency.
 
 # Phase 5a: Converter
 

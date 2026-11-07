@@ -90,12 +90,12 @@ void main() {
       }
     });
 
-    testWidgets('switching tab plays the toggle click and shows the stand-in', (tester) async {
+    testWidgets('switching tab plays the toggle click and shows that tab', (tester) async {
       final fb = await pumpCurrency(tester, size: const Size(1300, 1400));
       await tester.tap(find.text('SWP'));
       await tester.pump(const Duration(milliseconds: 600));
       expect(fb.log.take(2), ['click:toggle', 'haptic:medium']);
-      expect(find.text('SWP (Phase 5c)'), findsOneWidget);
+      expect(find.byKey(const ValueKey('swp-corpus-input')), findsOneWidget);
       expect(find.byKey(const ValueKey('currency-input')), findsNothing);
     });
   });

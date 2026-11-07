@@ -52,6 +52,8 @@ const ICONS = [
   ['chart-line', 'LineChart'], // lucide's LineChart is an alias of ChartLine,
   ['refresh-cw', 'RefreshCw'],
   ['trending-up', 'TrendingUp'],
+  // Phase 5c: the SWP depletion warning (SWPCalculator.tsx); lucide's AlertTriangle is an alias of TriangleAlert.
+  ['triangle-alert', 'AlertTriangle'],
 ];
 const WANT_VERSION = /^0\.546\./;
 

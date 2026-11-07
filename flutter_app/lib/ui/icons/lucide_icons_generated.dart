@@ -1,11 +1,11 @@
 // GENERATED FILE - DO NOT EDIT.
-// Source of truth: lucide-react 0.546.0 (the web app's icon library), icons: copy, check, delete, corner-down-left, chevron-up, rotate-ccw, ruler, scale, thermometer, square, box, gauge, hard-drive, clock, activity, zap, compass, magnet, arrow-left-right, chevron-down, globe, landmark, piggy-bank, wallet, receipt, chart-line, refresh-cw, trending-up.
+// Source of truth: lucide-react 0.546.0 (the web app's icon library), icons: copy, check, delete, corner-down-left, chevron-up, rotate-ccw, ruler, scale, thermometer, square, box, gauge, hard-drive, clock, activity, zap, compass, magnet, arrow-left-right, chevron-down, globe, landmark, piggy-bank, wallet, receipt, chart-line, refresh-cw, trending-up, triangle-alert.
 // Regenerate with: node flutter_app/tools/gen_lucide_paths.mjs
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:ui';
 
-enum LucideIconId { copy, check, delete, cornerDownLeft, chevronUp, rotateCcw, ruler, scale, thermometer, square, box, gauge, hardDrive, clock, activity, zap, compass, magnet, arrowLeftRight, chevronDown, globe, landmark, piggyBank, wallet, receipt, lineChart, refreshCw, trendingUp }
+enum LucideIconId { copy, check, delete, cornerDownLeft, chevronUp, rotateCcw, ruler, scale, thermometer, square, box, gauge, hardDrive, clock, activity, zap, compass, magnet, arrowLeftRight, chevronDown, globe, landmark, piggyBank, wallet, receipt, lineChart, refreshCw, trendingUp, alertTriangle }
 
 /// lucide "copy"
 Path _lucideCopy() {
@@ -498,6 +498,23 @@ Path _lucideTrendingUp() {
   return p;
 }
 
+/// lucide "triangle-alert"
+Path _lucideAlertTriangle() {
+  final p = Path();
+  p.moveTo(21.73, 18.0);
+  p.lineTo(13.73, 4.0);
+  p.arcToPoint(const Offset(10.25, 4.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(2.25, 18.0);
+  p.arcToPoint(const Offset(4.0, 21.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 21.0);
+  p.arcToPoint(const Offset(21.73, 18.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.moveTo(12.0, 9.0);
+  p.lineTo(12.0, 13.0);
+  p.moveTo(12.0, 17.0);
+  p.lineTo(12.01, 17.0);
+  return p;
+}
+
 /// Builders of the 24 x 24 stroke icons.
 final Map<LucideIconId, Path Function()> kLucideIconBuilders = <LucideIconId, Path Function()>{
   LucideIconId.copy: _lucideCopy,
@@ -528,4 +545,5 @@ final Map<LucideIconId, Path Function()> kLucideIconBuilders = <LucideIconId, Pa
   LucideIconId.lineChart: _lucideLineChart,
   LucideIconId.refreshCw: _lucideRefreshCw,
   LucideIconId.trendingUp: _lucideTrendingUp,
+  LucideIconId.alertTriangle: _lucideAlertTriangle,
 };
