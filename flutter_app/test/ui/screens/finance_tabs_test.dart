@@ -282,7 +282,7 @@ void main() {
       expect(find.text('₹2,09,192'), findsOneWidget);
       expect(find.text('₹24,13,770'), findsOneWidget);
       expect(find.text('Yr 15'), findsOneWidget);
-      expect(find.text('₹2,82,258'), findsOneWidget);
+      expect(find.text('₹2,82,258'), findsNWidgets(2)); // year 14's balance is year 15's principal repaid
       expect(find.text('₹13,164'), findsOneWidget);
       expect(find.text('₹0'), findsOneWidget);
       await tapKey(tester, 'loan-schedule-toggle');
@@ -406,7 +406,7 @@ void main() {
       await tapKey(tester, 'swp-timeline-toggle');
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('Yr 1'), findsOneWidget);
-      expect(find.text('₹96,000'), findsOneWidget);
+      expect(find.text('₹96,000'), findsNWidgets(10)); // flat withdrawal: the same every year
       expect(find.text('+78,736'), findsOneWidget); // no rupee sign on the returns column
       expect(find.text('₹9,82,736'), findsOneWidget);
       expect(find.text('Yr 10'), findsOneWidget);

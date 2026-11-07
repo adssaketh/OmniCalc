@@ -574,18 +574,28 @@ class RatioBar extends StatelessWidget {
           }
           // flex-shrink: segments that add up to more than 100% shrink in proportion
           final scale = total > 100 ? 100 / total : 1.0;
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (final s in segments)
-                AnimatedContainer(
-                  key: s.key,
-                  duration: const Duration(milliseconds: 500),
-                  curve: kTailwindEase,
-                  width: box.maxWidth * s.percent * scale / 100,
-                  color: s.color,
-                ),
-            ],
+          // While the 500 ms width transitions run, a new segment can appear next to old widths and the sum briefly
+          // exceeds the bar (CSS shrinks the flex items). The row sits in a non-scrolling scroll view so that is clipped
+          // by the rounded container instead of raising an overflow error.
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const NeverScrollableScrollPhysics(),
+            child: SizedBox(
+              height: 12,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (final s in segments)
+                    AnimatedContainer(
+                      key: s.key,
+                      duration: const Duration(milliseconds: 500),
+                      curve: kTailwindEase,
+                      width: box.maxWidth * s.percent * scale / 100,
+                      color: s.color,
+                    ),
+                ],
+              ),
+            ),
           );
         },
       ),
