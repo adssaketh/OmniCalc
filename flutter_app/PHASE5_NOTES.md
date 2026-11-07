@@ -47,7 +47,8 @@ Still to do: 5f History tape + Settings modal + Guide sheet (these replace `dev_
 
 ## Verification status (5e)
 Flutter 3.47.9 was installed in the chat sandbox this time (the Flutter download host was reachable), so analyze and the **full suite ran
-locally**: 4,770 passed and 6 skipped, no analyzer errors or warnings. CI result is recorded below once the run finishes.
+locally**: 4,770 passed and 6 skipped, no analyzer errors or warnings. CI (gen checks, lucide check, analyze, 4,770 tests passed and 6
+skipped, APK) is green on `4c167a9`. Not run on a device.
 Run: `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
 
 ## Parity doubts (5e)
