@@ -38,15 +38,18 @@ five Finance tabs show a "(Phase 5c)" stand-in until 5c replaces them.
    (it cannot stick when the result card is the taller column), and the number input's spinner / wheel.
 
 ## Not done / open (5b)
-- No screenshot goldens and no device check. **Not run in this session: there is no Flutter SDK in the chat sandbox**, so
-  `flutter analyze` and `flutter test` were not run here; CI on the branch is the first run. See "Verification status (5b)".
+- No screenshot goldens and no device check. There is no Flutter SDK in the chat sandbox, so everything below was verified by CI
+  on the branch, not locally. See "Verification status (5b)".
 - The unit check of the amount field: `<input type="number">` is approximated as in 5a (allow `0-9 e E + - .`, parse with `parseFloat`).
 - Placeholder colour is the Tailwind 4 default (text colour at 50%); not compared against a device.
 
 ## Verification status (5b)
-Written but not executed locally. Tests: `test/ui/screens/currency_screen_test.dart` (formatting, six tabs and icons, tab-switch
-click, built-in rates render, watchlist values, typing and presets, empty input, swap, tile tap, pickers, copy text and tick,
-tablet and phone layouts, live status and cache write, cached fallback label, refresh button disabled while updating).
+CI (analyze, 4,650 tests passed and 6 skipped, APK) is green on the final 5b commit `d93c6db`. Not run on a device. Two CI
+rounds were needed: the first failed analyze (a missing `TextField` import in the new test), the second failed one test
+(the tablet layout test compared an amount that the wide test font made wrap; the test now strips the `break-all` spaces, the app
+code was unchanged). Tests: `test/ui/screens/currency_screen_test.dart` (formatting, six tabs and icons, tab-switch click,
+built-in rates render, watchlist values, typing and presets, empty input, swap, tile tap, pickers, copy text and tick, tablet and
+phone layouts, live status and cache write, cached fallback label, refresh button disabled while updating).
 Run: `cd flutter_app && flutter pub get && flutter analyze && flutter test`.
 
 ## Parity doubts (5b)
