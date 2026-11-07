@@ -126,9 +126,8 @@ void main() {
   });
 
   testWidgets('temperature tab resets the units and shows the text formula', (tester) async {
-    final fb = await pumpConverter(tester);
-    await tester.ensureVisible(find.text('Temperature'));
-    await tester.pump(const Duration(milliseconds: 300));
+    // wide enough that the whole tab strip is on screen
+    final fb = await pumpConverter(tester, size: const Size(1300, 1000));
     await tester.tap(find.text('Temperature'));
     await tester.pump(const Duration(milliseconds: 600));
     expect(convertedText(tester), '33.8');

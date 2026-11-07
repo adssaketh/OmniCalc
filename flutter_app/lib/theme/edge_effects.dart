@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 import '../engine/js_number.dart';
@@ -148,7 +149,27 @@ class EdgeFade extends ChangeNotifier {
     if (t == _top && b == _bottom) return;
     _top = t;
     _bottom = b;
+    // A page that changes height (a tool screen switching tab) reports new scroll metrics while it is being laid out;
+    // listeners must not rebuild in the middle of a frame, so they hear about it right after it.
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+      if (_notifyQueued) return;
+      _notifyQueued = true;
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        _notifyQueued = false;
+        if (!_disposed) notifyListeners();
+      });
+      return;
+    }
     notifyListeners();
+  }
+
+  bool _notifyQueued = false;
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }
 
