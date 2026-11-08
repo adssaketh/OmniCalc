@@ -141,7 +141,7 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] O01 INEQ quadratic `aX²+bX+c` with `<` `>` `≤` `≥` (Done, phase 7e)
 - [ ] O02 INEQ cubic `aX³+bX²+cX+d` with `<` `>` `≤` `≥` (Done, phase 7e)
 - [ ] O03 Results in interval form (exact endpoints), `All Real Numbers`, `No-Solution` (Done, phase 7e)
-- [ ] O04 Coefficient Editor; changing the type zeroes the coefficients; a = 0 is Math ERROR (a dialog; the Linear Display layout of the manual note is not drawn) (Partial, phase 8)
+- [ ] O04 Coefficient Editor; changing the type zeroes the coefficients; a = 0 is Math ERROR; the header line and the Linear Display layout (`A=`, `B=`, `C=`) (Done, phase 8e)
 - [ ] P01 VERIF with one relational operator `=` `≠` `>` `<` `≥` `≤` (Done, phase 7e)
 - [ ] P02 VERIF chained relations of one direction (`1≤1<1+1`, `3<π<4`, `2²=2+2=4<6`) (Done, phase 7e)
 - [ ] P03 TRUE / FALSE with Ans = 1 or 0; variables read as their values (Done, phase 7e)
@@ -213,8 +213,14 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] Changing the display format while a result is shown: the result refreshes after the next key (known).
 - [ ] Recurring marks expand only in COMP (known).
 
+## Phase 8e: things to try on a phone (INEQ)
+- [ ] O04 MathO: INEQ `x²+2x−3` with `<` shows the header `A<X<B` and then `-3<X<1`; with `≥` it shows `X≤A,B≤X` and then `X≤-3` and `1≤X`.
+- [ ] O04 Linear Display (SETUP Display = LineIO): the same inequality with `≥` shows `X≤A,B≤X`, then `A=` with -3 on the right and `B=` with 1 on the right.
+- [ ] O04 Linear Display, cubic `3x³+3x²−x > 0`: header `A<X<B,C<X`, then `A=` -1.263762616, `B=` 0, `C=` 0.2637626158.
+- [ ] O04 `All Real Numbers` and `No-Solution` look the same in both displays and have no header.
+- [ ] O04 unverified on a real device: Examples 1 and 3 in Linear Display, and the header `X<A,A<X` for a left-out double root such as `(x−1)²>0`.
+
 ## Known open items (Phase 8d, not on a phone)
-- [ ] O04: the manual's INEQ Linear Display layout (guide pp. 83-84) is image-only and is not drawn. Row stays Partial until a page photo or a real-calculator photo is supplied.
 - [ ] I02, L05, M04, N06 stay Partial by design (full-height sheets instead of the Casio screens).
 - [ ] Parity goldens (tag `golden`) have no baselines yet; the 118 screenshot baselines catch layout changes only (test font), not differences from the web app.
 - [ ] Stack ERROR sizes, the byte size per function (99-byte limit, 200-byte history) and the RCL display form are unverified on a real device (D-ERR-2, D-VERIF-1, D-HIST-1, D-KEY-1).

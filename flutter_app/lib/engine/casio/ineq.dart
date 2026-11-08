@@ -57,6 +57,24 @@ class IneqPart {
   }
 }
 
+/// One named endpoint of the solution (`A=`, `B=`, `C=` in the manual's Linear Display, p.82-84).
+class IneqEndpoint {
+  const IneqEndpoint(this.name, this.value);
+
+  final String name;
+  final CVal value;
+}
+
+/// The header line of the solution screen (`A<X<B`, `X≤A,B≤X`, `X=A,B≤X`, `A<X<B,C<X`) and the endpoints it names, left to
+/// right on the number line (manual p.82-84). MathO shows the header above the solution, Linear Display shows it above one
+/// `name = value` line per endpoint.
+class IneqLayout {
+  const IneqLayout(this.header, this.endpoints);
+
+  final String header;
+  final List<IneqEndpoint> endpoints;
+}
+
 class IneqResult {
   const IneqResult(this.parts, {this.allReal = false});
 
@@ -71,6 +89,26 @@ class IneqResult {
     if (allReal) return const <String>['All Real Numbers'];
     if (parts.isEmpty) return const <String>['No-Solution'];
     return <String>[for (final p in parts) p.text(fmt)];
+  }
+
+  /// The header and the named endpoints, or null for the special results (`All Real Numbers`, `No-Solution`), which look the
+  /// same in both displays. Endpoints are named A, B, C in order along the number line; a root that is left out of the
+  /// solution but touches two parts (`(x−1)²>0`) keeps one name: `X<A,A<X` (unverified on a real device).
+  IneqLayout? layout() {
+    if (allReal || parts.isEmpty) return null;
+    final endpoints = <IneqEndpoint>[];
+    String nameOf(CVal v) {
+      for (final e in endpoints) {
+        if (e.value.v == v.v) return e.name;
+      }
+      final name = String.fromCharCode(0x41 + endpoints.length);
+      endpoints.add(IneqEndpoint(name, v));
+      return name;
+    }
+
+    // parts come in increasing order and each part is read left to right, so names are handed out A, B, C…
+    final header = <String>[for (final p in parts) p.text(nameOf)].join(',');
+    return IneqLayout(header, endpoints);
   }
 }
 

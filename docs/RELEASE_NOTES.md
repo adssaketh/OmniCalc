@@ -1,5 +1,14 @@
 # Release notes
 
+## 1.2.0+3 (Flutter rewrite, phase 8e)
+
+New
+- INEQ: the answer now shows the header line of the manual (`A<X<B`, `X≤A,B≤X`, `X=A,B≤X`, `A<X<B,C<X`) above the solution in Math display.
+- INEQ in Linear Display (SETUP Display = LineIO): the header, then one line per endpoint (`A=`, `B=`, `C=`) with its value to 10 digits. `All Real Numbers` and `No-Solution` are unchanged.
+
+Still open
+- The four full-height sheet rows I02, L05, M04, N06 stay Partial by design. Examples 1 and 3 in Linear Display and the double-root header `X<A,A<X` are unverified on a real device.
+
 ## 1.2.0 (Flutter rewrite, phase 8c)
 
 New
@@ -10,7 +19,7 @@ New
 - Regression screenshot suite (118 images) with its own CI job.
 
 Still open
-- O04: the manual's Linear Display layout for the inequality Coefficient Editor note is not drawn (needs the manual page as text or a real-calculator photo).
+- O04 was open here; it is closed in 1.2.0+3.
 
 Build
 - CI reports "signed" or "unsigned" in the job summary; signing needs the four OMNI_* secrets.

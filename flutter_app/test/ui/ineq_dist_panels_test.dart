@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:omnicalc/engine/casio/config.dart';
 import 'package:omnicalc/engine/casio/cval.dart';
 import 'package:omnicalc/engine/types.dart';
 import 'package:omnicalc/services/feedback_service.dart';
@@ -104,6 +105,107 @@ void main() {
       await enter(tester, 'ineq-cell-1', '9');
       await tap(tester, 'ineq-clear');
       expect(tester.widget<TextField>(find.byKey(const ValueKey('ineq-cell-1'))).controller!.text, '0');
+    });
+
+    // O04: the header line (guide p.82-84) in MathO and the Linear Display layout in LineIO.
+    testWidgets('MathO: the header A<X<B sits above the solution line', (tester) async {
+      await pump(tester, IneqPanel(onClose: () {}));
+      await tap(tester, 'ineq-rel-lt');
+      await enter(tester, 'ineq-cell-0', '1');
+      await enter(tester, 'ineq-cell-1', '2');
+      await enter(tester, 'ineq-cell-2', '-3');
+      await tap(tester, 'ineq-solve');
+      expect(text(tester, 'ineq-header'), 'A<X<B');
+      expect(text(tester, 'ineq-line-0'), '-3<X<1');
+      expect(find.byKey(const ValueKey('ineq-ep-name-0')), findsNothing);
+    });
+
+    testWidgets('MathO: example 2 shows the header X≤A,B≤X above X≤-3 and 1≤X', (tester) async {
+      await pump(tester, IneqPanel(onClose: () {}));
+      await tap(tester, 'ineq-rel-ge');
+      await enter(tester, 'ineq-cell-0', '1');
+      await enter(tester, 'ineq-cell-1', '2');
+      await enter(tester, 'ineq-cell-2', '-3');
+      await tap(tester, 'ineq-solve');
+      expect(text(tester, 'ineq-header'), 'X≤A,B≤X');
+      expect(text(tester, 'ineq-line-0'), 'X≤-3');
+      expect(text(tester, 'ineq-line-1'), '1≤X');
+    });
+
+    testWidgets('LineIO example 2: the header, then A= -3 and B= 1', (tester) async {
+      final engine = CasioRuntime.instance.engine;
+      final saved = engine.config;
+      engine.config = saved.copyWith(displayFormat: CasioDisplayFormat.lineIO);
+      try {
+        await pump(tester, IneqPanel(onClose: () {}));
+        await tap(tester, 'ineq-rel-ge');
+        await enter(tester, 'ineq-cell-0', '1');
+        await enter(tester, 'ineq-cell-1', '2');
+        await enter(tester, 'ineq-cell-2', '-3');
+        await tap(tester, 'ineq-solve');
+        expect(text(tester, 'ineq-header'), 'X≤A,B≤X');
+        expect(text(tester, 'ineq-ep-name-0'), 'A=');
+        expect(text(tester, 'ineq-ep-value-0'), '-3');
+        expect(text(tester, 'ineq-ep-name-1'), 'B=');
+        expect(text(tester, 'ineq-ep-value-1'), '1');
+        expect(find.byKey(const ValueKey('ineq-line-0')), findsNothing);
+      } finally {
+        engine.config = saved;
+      }
+    });
+
+    testWidgets('LineIO example 4: A<X<B,C<X with three endpoints to 10 digits', (tester) async {
+      final engine = CasioRuntime.instance.engine;
+      final saved = engine.config;
+      engine.config = saved.copyWith(displayFormat: CasioDisplayFormat.lineIO);
+      try {
+        await pump(tester, IneqPanel(onClose: () {}));
+        await tap(tester, 'ineq-type-cubic');
+        await tap(tester, 'ineq-rel-gt');
+        await enter(tester, 'ineq-cell-0', '3');
+        await enter(tester, 'ineq-cell-1', '3');
+        await enter(tester, 'ineq-cell-2', '-1');
+        await tap(tester, 'ineq-solve');
+        expect(text(tester, 'ineq-header'), 'A<X<B,C<X');
+        expect(text(tester, 'ineq-ep-value-0'), '-1.263762616');
+        expect(text(tester, 'ineq-ep-value-1'), '0');
+        expect(text(tester, 'ineq-ep-value-2'), '0.2637626158');
+        expect(text(tester, 'ineq-ep-name-2'), 'C=');
+      } finally {
+        engine.config = saved;
+      }
+    });
+
+    testWidgets('LineIO: All Real Numbers and No-Solution look the same as in MathO, with no header', (tester) async {
+      final engine = CasioRuntime.instance.engine;
+      final saved = engine.config;
+      engine.config = saved.copyWith(displayFormat: CasioDisplayFormat.lineIO);
+      try {
+        await pump(tester, IneqPanel(onClose: () {}));
+        await tap(tester, 'ineq-rel-ge');
+        await enter(tester, 'ineq-cell-0', '1');
+        await tap(tester, 'ineq-solve');
+        expect(text(tester, 'ineq-line-0'), 'All Real Numbers');
+        expect(find.byKey(const ValueKey('ineq-header')), findsNothing);
+        await tap(tester, 'ineq-rel-lt');
+        await tap(tester, 'ineq-solve');
+        expect(text(tester, 'ineq-line-0'), 'No-Solution');
+        expect(find.byKey(const ValueKey('ineq-header')), findsNothing);
+      } finally {
+        engine.config = saved;
+      }
+    });
+
+    testWidgets('changing the relation or the type hides the old header', (tester) async {
+      await pump(tester, IneqPanel(onClose: () {}));
+      await tap(tester, 'ineq-rel-lt');
+      await enter(tester, 'ineq-cell-0', '1');
+      await enter(tester, 'ineq-cell-1', '2');
+      await enter(tester, 'ineq-cell-2', '-3');
+      await tap(tester, 'ineq-solve');
+      expect(find.byKey(const ValueKey('ineq-header')), findsOneWidget);
+      await tap(tester, 'ineq-rel-gt');
+      expect(find.byKey(const ValueKey('ineq-header')), findsNothing);
     });
   });
 

@@ -1,7 +1,7 @@
 name: omnicalc
 description: OmniCalc rewritten in Flutter (Android first). The TypeScript engine in ../src is the oracle.
 publish_to: 'none'
-version: 1.2.0+2
+version: 1.2.0+3
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

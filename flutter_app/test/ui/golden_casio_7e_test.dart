@@ -5,6 +5,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:omnicalc/engine/casio/config.dart';
+import 'package:omnicalc/state/casio_settings.dart';
 import 'package:omnicalc/theme/tokens.dart';
 import 'package:omnicalc/ui/calculator/ineq_dist_panels.dart';
 
@@ -39,6 +41,26 @@ void main() {
     }
 
     await shot(tester, 'ineq_example1', IneqPanel(onClose: () {}), act);
+  });
+
+  // O04: Linear Display layout of the INEQ answer (guide p.82-84, Example 4): the header, then A=, B=, C= with their values
+  testWidgets('ineq_linear_example4', (tester) async {
+    final engine = CasioRuntime.instance.engine;
+    final saved = engine.config;
+    engine.config = saved.copyWith(displayFormat: CasioDisplayFormat.lineIO);
+    addTearDown(() => engine.config = saved);
+    Future<void> act() async {
+      await tester.tap(find.byKey(const ValueKey('ineq-type-cubic')));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('ineq-rel-gt')));
+      await tester.enterText(find.byKey(const ValueKey('ineq-cell-0')), '3');
+      await tester.enterText(find.byKey(const ValueKey('ineq-cell-1')), '3');
+      await tester.enterText(find.byKey(const ValueKey('ineq-cell-2')), '-1');
+      await tester.tap(find.byKey(const ValueKey('ineq-solve')));
+      await tester.pump();
+    }
+
+    await shot(tester, 'ineq_linear_example4', IneqPanel(onClose: () {}), act);
   });
 
   testWidgets('dist_binomial_list', (tester) async {

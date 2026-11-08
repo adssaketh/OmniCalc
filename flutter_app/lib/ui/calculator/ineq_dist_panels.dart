@@ -77,6 +77,9 @@ class _IneqPanelState extends State<IneqPanel> {
   IneqRel _rel = IneqRel.lt;
   late List<TextEditingController> _cells = _newCells();
   List<String>? _lines;
+  String? _header; // the shape line above the solution (null for All Real Numbers / No-Solution)
+  List<(String, String)>? _endpoints; // `A=` and its decimal value, for Linear Display
+  bool _linear = false; // SETUP display format was LineIO when Solve was pressed
   String? _error;
 
   List<TextEditingController> _newCells() => [for (var i = 0; i < _type.cols; i++) TextEditingController(text: '0')];
@@ -98,6 +101,8 @@ class _IneqPanelState extends State<IneqPanel> {
       _type = t;
       _cells = _newCells();
       _lines = null;
+      _header = null;
+      _endpoints = null;
       _error = null;
     });
   }
@@ -108,6 +113,8 @@ class _IneqPanelState extends State<IneqPanel> {
     }
     setState(() {
       _lines = null;
+      _header = null;
+      _endpoints = null;
       _error = null;
     });
   }
@@ -120,13 +127,21 @@ class _IneqPanelState extends State<IneqPanel> {
       final res = CasioIneq.solve(_type, _rel, coef);
       final rect = cfg.copyWith(complexFormat: CasioComplexFormat.rect);
       String fmt(CVal v) => cx.show(CComplex(v), rect).forms.first.text;
+      // Linear Display writes each endpoint as a decimal (manual p.82-84); the decimal form is the last one shown
+      String dec(CVal v) => cx.show(CComplex(v), rect).forms.last.text;
+      final layout = res.layout();
       setState(() {
         _lines = res.lines(fmt);
+        _header = layout?.header;
+        _endpoints = layout == null ? null : [for (final e in layout.endpoints) ('${e.name}=', dec(e.value))];
+        _linear = cfg.displayFormat == CasioDisplayFormat.lineIO;
         _error = null;
       });
     } catch (e) {
       setState(() {
         _lines = null;
+        _header = null;
+        _endpoints = null;
         _error = CasioEngine.messageOf(e);
       });
     }
@@ -154,6 +169,8 @@ class _IneqPanelState extends State<IneqPanel> {
               _chip(t, ValueKey('ineq-rel-${r.name}'), '$relText ${r.symbol} 0', r == _rel, () => setState(() {
                     _rel = r;
                     _lines = null;
+                    _header = null;
+                    _endpoints = null;
                     _error = null;
                   })),
           ]),
@@ -187,11 +204,28 @@ class _IneqPanelState extends State<IneqPanel> {
           ],
           if (_lines != null) ...[
             const SizedBox(height: 12),
-            for (var i = 0; i < _lines!.length; i++)
+            // the header names the shape of the answer in both displays (manual p.82-84)
+            if (_header != null)
               Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(_lines![i], key: ValueKey('ineq-line-$i'), style: appText(size: 15, weight: FontWeight.w600, color: t.onSurface)),
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text(_header!, key: const ValueKey('ineq-header'), style: appText(size: 13, weight: FontWeight.w500, color: t.onSurfaceVariant)),
               ),
+            if (_linear && _endpoints != null)
+              // Linear Display: one line per endpoint, the name on the left and the value on the right
+              for (var i = 0; i < _endpoints!.length; i++)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(_endpoints![i].$1, key: ValueKey('ineq-ep-name-$i'), style: appText(size: 15, weight: FontWeight.w600, color: t.onSurface)),
+                    Text(_endpoints![i].$2, key: ValueKey('ineq-ep-value-$i'), style: appText(size: 15, weight: FontWeight.w600, color: t.onSurface)),
+                  ]),
+                )
+            else
+              for (var i = 0; i < _lines!.length; i++)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(_lines![i], key: ValueKey('ineq-line-$i'), style: appText(size: 15, weight: FontWeight.w600, color: t.onSurface)),
+                ),
           ],
         ],
       ),

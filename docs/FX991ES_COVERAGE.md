@@ -1,6 +1,6 @@
 # fx-991ES PLUS coverage matrix
 
-Status after **Phase 8d** (everything through INEQ, VERIF, DIST, persistence and the Phase 8 hardening rows; only O04 and the four sheet rows I02, L05, M04, N06 are Partial). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
+Status after **Phase 8e** (everything through INEQ, VERIF, DIST, persistence and the Phase 8 hardening rows; only the four sheet rows I02, L05, M04, N06 are Partial). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
 `test/casio/coverage_test.dart` reads this table: a row marked Done or Partial must name an existing test file, and a row
 marked Deferred must name the phase that will do it.
 
@@ -150,7 +150,7 @@ total is the whole inventory.
 | O01 | INEQ quadratic `aX²+bX+c` with `<` `>` `≤` `≥` | Done | 7e | test/casio/ineq_test.dart |
 | O02 | INEQ cubic `aX³+bX²+cX+d` with `<` `>` `≤` `≥` | Done | 7e | test/casio/ineq_test.dart |
 | O03 | Results in interval form (exact endpoints), `All Real Numbers`, `No-Solution` | Done | 7e | test/casio/ineq_test.dart |
-| O04 | Coefficient Editor; changing the type zeroes the coefficients; a = 0 is Math ERROR (a dialog; the Linear Display layout of the manual note is not drawn) | Partial | 8 | test/ui/ineq_dist_panels_test.dart |
+| O04 | Coefficient Editor; changing the type zeroes the coefficients; a = 0 is Math ERROR; the header line (`A<X<B`, `X≤A,B≤X`, `A<X<B,C<X`) in both displays and the Linear Display layout with `A=`, `B=`, `C=` (a dialog; guide pp. 82-84, Examples 1 and 3 and the double-root header are unverified on a real device) | Done | 8 | test/ui/ineq_dist_panels_test.dart |
 | P01 | VERIF with one relational operator `=` `≠` `>` `<` `≥` `≤` | Done | 7e | test/casio/verif_test.dart |
 | P02 | VERIF chained relations of one direction (`1≤1<1+1`, `3<π<4`, `2²=2+2=4<6`) | Done | 7e | test/casio/verif_test.dart |
 | P03 | TRUE / FALSE with Ans = 1 or 0; variables read as their values | Done | 7e | test/casio/verif_test.dart |
