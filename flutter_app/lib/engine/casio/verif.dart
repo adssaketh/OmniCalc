@@ -127,6 +127,7 @@ class CasioVerif {
   static VerifOutcome verify(CasioEngine engine, String input) {
     final text = input.replaceAll(' ', '');
     if (_forbidden.hasMatch(text)) throw kSyntaxError;
+    if (!CasioInputBytes.fits(text)) throw kSyntaxError; // only a paste can get past the limit at the keys
     final parts = split(text);
     final values = <CVal>[];
     for (final operand in parts.operands) {
@@ -146,4 +147,36 @@ class CasioVerif {
     engine.memory.ansText = ok ? '1' : '0';
     return VerifOutcome(ok);
   }
+}
+
+/// The 99-byte input limit of the unit (manual p.18, p.85): "each numeral, symbol, or function normally uses one byte. Some
+/// functions require three to 13 bytes."
+///
+/// The guide does not list the size of each function, so this counts a function name (a run of two or more letters, with
+/// its `(` and `#`) as 3 bytes, the smallest figure the guide gives, and everything else as 1 byte. Unverified on a real
+/// device: a real unit may count some functions as more, and so refuse input earlier.
+class CasioInputBytes {
+  const CasioInputBytes._();
+
+  static const int max = 99;
+
+  static final RegExp _function = RegExp(r'[A-Za-z]{2,}#?\(?');
+
+  static int count(String text) {
+    var bytes = 0;
+    var i = 0;
+    while (i < text.length) {
+      final m = _function.matchAsPrefix(text, i);
+      if (m != null) {
+        bytes += 3;
+        i = m.end;
+      } else {
+        bytes += 1;
+        i++;
+      }
+    }
+    return bytes;
+  }
+
+  static bool fits(String text) => count(text) <= max;
 }

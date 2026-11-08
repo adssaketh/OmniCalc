@@ -12,6 +12,7 @@ import 'evaluator.dart';
 import 'format.dart';
 import 'parser.dart';
 import 'phone_percent.dart';
+import 'stack_check.dart';
 
 /// What one `=` produced.
 class CasioOutcome {
@@ -113,6 +114,7 @@ class CasioEngine {
       return CasioOutcome(forms: <CasioShown>[const CasioShown('0', '0')], value: CVal.zero);
     }
     final ast = CasioParser.parse(expr);
+    if (CasioStackCheck.exceeds(ast)) throw const CasioError(CasioErrorKind.stack);
     // a preview must not touch Ans or the variables (Pol/Rec store X and Y)
     final mem = commit ? memory : memory.copy();
     final ev = CasioEvaluator(config, mem, cancel: cancel);

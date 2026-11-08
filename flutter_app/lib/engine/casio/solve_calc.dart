@@ -5,6 +5,7 @@
 
 import 'dart:math' as math;
 
+import 'complex.dart';
 import 'config.dart';
 import 'cval.dart';
 import 'engine.dart';
@@ -289,10 +290,13 @@ class CasioSolver {
 
 /// CALC: an expression with variables that is run again for each set of values (manual p.47-49).
 class CasioCalc {
-  CasioCalc._(this._engine, this.text, this.variables, this.target, this._expr);
+  CasioCalc._(this._engine, this.text, this.variables, this.target, this._expr, this._cx);
 
   /// Parses [text]: an expression, a multi-statement, or `Var=expression` (the equals sign is ALPHA + CALC).
-  factory CasioCalc(CasioEngine engine, String text) {
+  ///
+  /// With [complex] (CMPLX mode, manual p.47-48) the expression may use `i` and the result is a complex number, shown in
+  /// the SETUP complex format or the `▸r∠θ` / `▸a+bi` command at its end.
+  factory CasioCalc(CasioEngine engine, String text, {CasioComplexEngine? complex}) {
     final body = text.trim();
     if (body.isEmpty) throw kSyntaxError;
     String? target;
@@ -305,12 +309,15 @@ class CasioCalc {
       expr = body.substring(eq + 1).trim();
       if (expr.isEmpty || _topLevel(expr, '=') >= 0) throw kSyntaxError;
     }
-    final ast = CasioParser.parse(expr);
+    final polarCommand = RegExp(r'^(.*?)\s*(▸r∠θ|▸a\+bi)\s*$', dotAll: true).firstMatch(expr);
+    final ast = CasioParser.parse(complex != null && polarCommand != null ? polarCommand.group(1)!.trim() : expr,
+        complex: complex != null);
     final vars = casioVariablesIn(ast);
-    return CasioCalc._(engine, body, vars, target, expr);
+    return CasioCalc._(engine, body, vars, target, expr, complex);
   }
 
   final CasioEngine _engine;
+  final CasioComplexEngine? _cx;
   final String text;
 
   /// The variables the unit prompts for, in order of appearance (the one on the left of `=` is not asked).
@@ -327,6 +334,14 @@ class CasioCalc {
   CasioOutcome run(Map<String, CVal> values) {
     for (final e in values.entries) {
       _engine.memory.vars[e.key] = e.value;
+      _cx?.vars.remove(e.key); // a value typed at the prompt is real
+    }
+    final cx = _cx;
+    if (cx != null) {
+      final o = cx.evaluate(_expr, _engine.config);
+      final t = target;
+      if (t != null) cx.vars[t] = o.value;
+      return CasioOutcome(forms: <CasioShown>[for (final f in o.forms) CasioShown(f.text, f.expr)]);
     }
     final out = _engine.evaluate(_expr);
     final t = target;

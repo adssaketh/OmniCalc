@@ -166,6 +166,7 @@ class _EqnPanelState extends State<EqnPanel> {
   EqnType _type = EqnType.simul2;
   late List<TextEditingController> _cells = _newCells();
   List<String>? _solution;
+  int _solutionIdx = 0;
   String? _message;
 
   List<TextEditingController> _newCells() =>
@@ -188,9 +189,35 @@ class _EqnPanelState extends State<EqnPanel> {
       _type = t;
       _cells = _newCells();
       _solution = null;
+      _solutionIdx = 0;
       _message = null;
     });
   }
+
+  /// `=` on a solution screen (manual p.71): the next solution; on the last one back to the Coefficient Editor.
+  void _nextSolution() {
+    setState(() {
+      if (_solutionIdx + 1 < _solution!.length) {
+        _solutionIdx++;
+      } else {
+        _solution = null;
+        _solutionIdx = 0;
+      }
+    });
+  }
+
+  /// ▲ / ▼ scroll between the solutions.
+  void _scrollSolution(int delta) {
+    final n = _solution?.length ?? 0;
+    if (n == 0) return;
+    setState(() => _solutionIdx = (_solutionIdx + delta).clamp(0, n - 1));
+  }
+
+  /// AC / ◀ on a solution screen: back to the Coefficient Editor.
+  void _backToEditor() => setState(() {
+        _solution = null;
+        _solutionIdx = 0;
+      });
 
   void _solve() {
     final cfg = CasioRuntime.instance.engine.config;
@@ -207,11 +234,13 @@ class _EqnPanelState extends State<EqnPanel> {
       }
       setState(() {
         _solution = out;
+        _solutionIdx = 0;
         _message = null;
       });
     } on EqnMessage catch (e) {
       setState(() {
         _solution = null;
+        _solutionIdx = 0;
         _message = e.text;
       });
     } catch (e) {
@@ -312,11 +341,34 @@ class _EqnPanelState extends State<EqnPanel> {
           ],
           if (_solution != null) ...[
             const SizedBox(height: 12),
-            for (final line in _solution!)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(line, key: ValueKey('eqn-line-$line'), style: appText(size: 15, weight: FontWeight.w600, color: t.onSurface)),
-              ),
+            // one solution at a time, as on the unit: `=` shows the next, ▲ ▼ scroll, the last `=` returns to the editor
+            Text(_solution![_solutionIdx],
+                key: ValueKey('eqn-line-${_solution![_solutionIdx]}'),
+                style: appText(size: 15, weight: FontWeight.w600, color: t.onSurface)),
+            const SizedBox(height: 6),
+            Row(children: [
+              Text('${_solutionIdx + 1} / ${_solution!.length}',
+                  key: const ValueKey('eqn-position'), style: appText(size: 12, weight: FontWeight.w500, color: t.onSurface)),
+              const Spacer(),
+              for (final b in <(String, String, VoidCallback)>[
+                ('eqn-up', '▲', () => _scrollSolution(-1)),
+                ('eqn-down', '▼', () => _scrollSolution(1)),
+                ('eqn-next', '=', _nextSolution),
+                ('eqn-editor', 'AC', _backToEditor),
+              ])
+                Padding(
+                  padding: const EdgeInsets.only(left: 6),
+                  child: GestureDetector(
+                    key: ValueKey(b.$1),
+                    onTap: b.$3,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(color: t.surfaceContainer, borderRadius: BorderRadius.circular(14)),
+                      child: Text(b.$2, style: appText(size: 13, weight: FontWeight.w700, color: t.onSurface)),
+                    ),
+                  ),
+                ),
+            ]),
           ],
         ],
       ),

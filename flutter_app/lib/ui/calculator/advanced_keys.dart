@@ -230,8 +230,8 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         prefix('INS', 'wrap arg', c.insArmed, c.toggleIns),
         layered('CALC', 'calc', main: c.esCalc, shift: c.esSolve, alpha: c.esEquals, shiftLabel: 'SOLVE', alphaLabel: '=', size: 12),
         _Adv('◀', 'left', c.moveCaretLeft, labelSize: 14, textSm: true),
-        _Adv('▲', 'up', c.moveCaretUp, labelSize: 14, textSm: true),
-        _Adv('▼', 'down', c.moveCaretDown, labelSize: 14, textSm: true),
+        _Adv('▲', 'up / history', c.esUp, labelSize: 14, textSm: true),
+        _Adv('▼', 'down / history', c.esDown, labelSize: 14, textSm: true),
         _Adv('▶', 'right', c.moveCaretRight, labelSize: 14, textSm: true),
         layered('▭/▭', 'fraction', main: c.esFraction, shift: c.esMixedFraction, shiftLabel: 'a▭/▭'),
         layered('√▭', 'root', main: c.esSqrt, shift: c.esCbrt, shiftLabel: '∛▭'),
@@ -241,8 +241,8 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         layered('x²', 'square', main: () => c.esPower('2'), shift: () => c.esPower('3'), shiftLabel: 'x³'),
         _Adv('x⁻¹', 'inverse', () => c.esPower('−1'), labelSize: 14, textSm: true),
         _Adv('xʸ', 'power', () => c.handleInput('^'), labelSize: 14, textSm: true),
-        _Adv('X', 'var X', () => c.handleInput('X'), labelSize: 14, textSm: true, role: _Role.primary, mono: true),
-        _Adv('Y', 'var Y', () => c.handleInput('Y'), labelSize: 14, textSm: true, role: _Role.tertiary, mono: true),
+        _Adv('X', 'var X', () => c.variableKey('X'), labelSize: 14, textSm: true, role: _Role.primary, mono: true),
+        _Adv('Y', 'var Y', () => c.variableKey('Y'), labelSize: 14, textSm: true, role: _Role.tertiary, mono: true),
         _Adv('→', 'exit', c.exitGroup, labelSize: 14, textSm: true, role: _Role.primary),
         _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
         // Phase 7b: the result keys of the unit
@@ -255,6 +255,17 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         tpl('Rnd', 'round', 'Rnd('),
         tpl('Pol', 'to polar', 'Pol('),
         tpl('Rec', 'to rect.', 'Rec('),
+        // Phase 8a: DRG▸ (manual p.37): the angle-unit marks ° ʳ ᵍ
+        inp('°', 'DRG▸ degree', '°', textSm: true),
+        inp('ʳ', 'DRG▸ radian', 'ʳ', textSm: true),
+        inp('ᵍ', 'DRG▸ gradian', 'ᵍ', textSm: true),
+        // Phase 8a: memory keys of the unit (manual p.35-36)
+        prefix('STO', 'store', c.stoOn, c.toggleSto),
+        prefix('RCL', 'recall', c.rclOn, c.toggleRcl),
+        _Adv('M+', 'add to M', () => c.handleMemory(MemoryAction.mPlus), labelSize: 14, textSm: true),
+        _Adv('M−', 'subtract', () => c.handleMemory(MemoryAction.mMinus), labelSize: 14, textSm: true),
+        for (final v in const ['A', 'B', 'C', 'D', 'E', 'F', 'M'])
+          _Adv(v, 'var $v', () => c.variableKey(v), labelSize: 14, textSm: true, role: _Role.tertiary, mono: true),
       ];
     case AdvancedTab.modes:
       // Phase 7d. The MODE key opens the menu (COMP, CMPLX, BASE-N, EQN). The CMPLX keys work in CMPLX mode, the BASE-N keys in BASE-N mode.

@@ -237,4 +237,22 @@ Ans, PreAns, A–F, M, X, Y (with exact forms) and the current mode / base / STA
 OFF (Modes tab) and 10 idle minutes put a dark overlay on the unit; a tap wakes it. The app itself keeps running. Memory is untouched.
 
 ## D-CLR-1 CLR also clears OmniCalc memory
-CLR → Memory / All additionally clears the OmniCalc M+ memory register, since both share the display.
+CLR → Memory / All additionally clears the OmniCalc M+ memory register. Since Phase 8a that register and the Casio M variable are the same store (see D-MEM-1).
+
+## D-MEM-1 One memory M
+The OmniCalc memory keys (MC, MR, MS, M+, M−) and the Casio independent memory M (variable M, manual p.34) are one store. The M annunciator follows it, it is saved with the other variables, and the M variable key in the ES tab reads it. In the Casio manual M+ and M− only add or subtract; MC, MR and MS stay as OmniCalc had them.
+
+## D-KEY-1 Memory and DRG▸ keys
+STO and RCL are prefix keys (annunciators STO / RCL) followed by a variable key (A B C D E F M X Y), as on the unit. RCL puts the exact value of the variable into the line (fractions and √ forms stay exact). DRG▸ is three keys (° ʳ ᵍ) in the ES tab rather than a menu. How the real unit shows a recalled value in the line is unverified on a real device.
+
+## D-HIST-1 Calculation replay history
+▲ and ▼ of the ES tab scroll through the newest calculations (about 200 bytes, counting a function name as 3 bytes) while a result is on screen. ON, a mode change, a display-format change and CLR → Setup / All clear it. This is separate from the OmniCalc history tape. Editing a replayed line with ◀ ▶ is not done. The byte count per function is unverified on a real device.
+
+## D-VERIF-1 99-byte limit
+In VERIF mode input stops at 99 bytes (manual p.85). The guide says some functions take 3 to 13 bytes without listing them, so every function name counts 3 bytes; a real unit may stop earlier. Other modes keep their old limits.
+
+## D-ERR-2 Stack ERROR
+A calculation whose operands wait deeper than 10 numeric levels or 24 command levels gives Stack ERROR (manual p.93). The guide gives no numbers; these are the figures older Casio guides print for this family, and they are unverified on a real device. Long sums, products and other left-leaning lines never reach them.
+
+## D-EQN-1 EQN solution screen
+EQN shows one solution at a time with buttons `=`, ▲, ▼ and AC (manual p.71), and a position counter (for example 1 / 2) that the unit does not have.

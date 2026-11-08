@@ -54,7 +54,7 @@ void main() {
     });
 
     testWidgets('the video sequence on screen: (X²−6)/(X+3) = 10', (tester) async {
-      await pumpApp(tester, size: const Size(400, 1400)); // the ×10ˣ key (7e) added a row to the ES tab
+      await pumpApp(tester, size: const Size(400, 1900)); // the 7e and 8a keys (×10ˣ, DRG▸, STO, RCL, variables) added rows to the ES tab
       await openEsTab(tester);
       await esKey(tester, '▭/▭');
       await esKey(tester, 'X');
@@ -77,7 +77,7 @@ void main() {
     });
 
     testWidgets('SHIFT shows S and the shifted key does its shifted job: SHIFT x² is x³', (tester) async {
-      await pumpApp(tester, size: const Size(400, 1400)); // the ×10ˣ key (7e) added a row to the ES tab
+      await pumpApp(tester, size: const Size(400, 1900)); // the 7e and 8a keys (×10ˣ, DRG▸, STO, RCL, variables) added rows to the ES tab
       await openEsTab(tester);
       await tapKey(tester, '2');
       await esKey(tester, 'SHIFT');

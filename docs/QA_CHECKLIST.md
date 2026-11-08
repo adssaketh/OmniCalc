@@ -24,9 +24,9 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] A18 `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec, complex format, STAT frequency and TABLE format settings; Disp and CONT remain) (Partial, phase 8)
 - [ ] A19 `CLR` Setup / Memory / All, each with Yes / Cancel (Modes tab) (Done, phase 7e)
 - [ ] A20 `STO` (Done, phase 7b)
-- [ ] A21 `RCL` (a variable can be typed; no RCL key yet) (Partial, phase 8)
-- [ ] A22 `M+`, `M−` (existing OmniCalc memory keys; the Casio M variable is not tied to them yet) (Partial, phase 8)
-- [ ] A23 variables `A B C D E F M X Y` (Partial, phase 8)
+- [ ] A21 `RCL` (ES tab key, RCL annunciator; recalls the exact value into the line) (Done, phase 8a)
+- [ ] A22 `M+`, `M−` (ES tab keys; the OmniCalc memory keys and the Casio M are one store, saved with the other variables) (Done, phase 8a)
+- [ ] A23 variables `A B C D E F M X Y` (ES tab keys; STO stores the line or Ans, plain key types the variable) (Done, phase 8a)
 - [ ] A24 `:` multi-statements (Done, phase 7b)
 - [ ] A25 `,` (Done, phase 7b)
 - [ ] A26 `%` (Done, phase 7b)
@@ -38,7 +38,7 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] A32 `π` (Done, phase 7b)
 - [ ] A33 `e` (Done, phase 7b)
 - [ ] A34 `i` (Done, phase 7d-1)
-- [ ] A35 `DRG▸` (the ° ʳ ᵍ marks are done; the menu key is not) (Partial, phase 8)
+- [ ] A35 `DRG▸` (three keys ° ʳ ᵍ in the ES tab instead of a menu) (Done, phase 8a)
 - [ ] A36 `÷R` (Done, phase 7b)
 - [ ] A37 `GCD(` (Done, phase 7b)
 - [ ] A38 `LCM(` (Done, phase 7b)
@@ -82,7 +82,7 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] G01 CONST (40 entries, CODATA 2014) (Done, phase 7b)
 - [ ] G02 CONV (40 entries, NIST SP 811) (Done, phase 7b)
 - [ ] X01 input-range checks, every row of manual p.97-100 (Done, phase 7b)
-- [ ] X02 error messages (Math, Syntax, Argument; the others belong to their modes) (Partial, phase 8)
+- [ ] X02 error messages (Math, Syntax, Argument, Stack; the others belong to their modes. Stack ERROR sizes are not in the guide, unverified) (Done, phase 8a)
 - [ ] X03 calculation style, percent style, result display settings (Done, phase 7b)
 - [ ] X04 differences from the legacy engine listed (Done, phase 7b)
 - [ ] F01 `∫` (Done, phase 7c)
@@ -101,7 +101,7 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] H08 `▸a+bi` (Done, phase 7d-1)
 - [ ] H09 SETUP complex format a+bi / r∠θ (Done, phase 7d-1)
 - [ ] H10 Linear Display: a and bi (or r and θ) on separate lines (engine gives the lines; the screen shows one line) (Partial, phase 8)
-- [ ] H11 CALC in CMPLX (Deferred, phase 8)
+- [ ] H11 CALC in CMPLX (p.47-48 example 2) (Done, phase 8a)
 - [ ] J01 DEC, HEX, BIN, OCT calculation and result conversion (Done, phase 7d-1)
 - [ ] J02 number-mode prefixes `d h b o` (Done, phase 7d-1)
 - [ ] J03 `and or xor xnor` (Done, phase 7d-1)
@@ -114,7 +114,7 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] K03 EQN quadratic with X/Y-Value Minimum or Maximum (Done, phase 7d-1)
 - [ ] K04 EQN cubic (Done, phase 7d-1)
 - [ ] K05 no-solution and infinite-solutions messages (Done, phase 7d-1)
-- [ ] K06 Coefficient Editor, one solution per `=` with ▲▼ scrolling (a dialog that lists every solution at once) (Partial, phase 8)
+- [ ] K06 Coefficient Editor, one solution per `=` with ▲▼ scrolling (dialog with `=`, ▲, ▼ and AC buttons) (Done, phase 8a)
 - [ ] I01 STAT types: 1-VAR, A+BX, _+CX², ln X, e^X, A·B^X, A·X^B, 1/X (Done, phase 7d-2)
 - [ ] I02 Statistics Editor: x, y, FREQ columns (40/20/26 lines), Ins, Del, Del-A (a full-height sheet) (Partial, phase 7d-2)
 - [ ] I03 1-VAR results: n, Σx, Σx², x̄, σx, sx, minX, maxX, Q1, Med, Q3 (Done, phase 7d-2)
@@ -146,7 +146,7 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] P02 VERIF chained relations of one direction (`1≤1<1+1`, `3<π<4`, `2²=2+2=4<6`) (Done, phase 7e)
 - [ ] P03 TRUE / FALSE with Ans = 1 or 0; variables read as their values (Done, phase 7e)
 - [ ] P04 Syntax ERROR forms of p.86 (empty side, relation inside parentheses / fraction / function, mixed directions, `≠` with an ordering relation, consecutive operators, ÷R / Pol / Rec) (Done, phase 7e)
-- [ ] P05 VERIF mode on the main line: MODE menu entry, relational keys in the Data tab, `=` answers (the 99-byte limit is not enforced) (Partial, phase 8)
+- [ ] P05 VERIF mode on the main line: MODE menu entry, relational keys in the Data tab, `=` answers, 99-byte limit (function sizes unverified) (Done, phase 8a)
 - [ ] Q01 Normal PD (x, σ, μ) (Done, phase 7e)
 - [ ] Q02 Normal CD (Lower, Upper, σ, μ) (Done, phase 7e)
 - [ ] Q03 Inverse Normal (Area, σ, μ; tail always left) (Done, phase 7e)
@@ -156,7 +156,7 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] Q07 Var format result stored in Ans; `ERROR` in the Ans cell for a sample out of range; Argument ERROR for a Var input out of range (Done, phase 7e)
 - [ ] R01 Ans, PreAns, variables A–F, M, X, Y persist across restarts with their exact forms (Done, phase 7e)
 - [ ] R02 SETUP choices and the mode (with BASE-N base and STAT type) persist across restarts (Done, phase 7e)
-- [ ] R03 Calculation replay history (▲▼) cleared by ON, mode change and display-format change (Deferred, phase 8)
+- [ ] R03 Calculation replay history (▲▼, about 200 bytes) cleared by ON, mode change, display-format change and CLR Setup/All (Done, phase 8a)
 
 ## Modes
 
@@ -184,3 +184,14 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] CLR Setup / Memory / All
 - [ ] OFF and ON, 10-minute idle
 - [ ] Restart keeps Ans, variables, mode
+
+## Phase 8a: things to try on a phone
+- [ ] STO then A (ES tab): `3×4`, STO, A stores 12. A on its own then types A.
+- [ ] RCL then A puts 12 into the line; `1÷3` STO B, RCL B ×3 gives 1 (exact).
+- [ ] M+ and M− change the M annunciator; MR and the M key give the same value.
+- [ ] ° ʳ ᵍ keys: `50ᵍ` gives 45 in Deg.
+- [ ] CMPLX: `A+Bi` then CALC asks A?, B?; `A+Bi▸r∠θ` with 1, 1 gives √2∠45.
+- [ ] ▲ ▼ after three calculations scroll back through them; mode change empties them (▼▲ goes away).
+- [ ] EQN: `=` shows one solution at a time, the last `=` returns to the editor.
+- [ ] VERIF stops accepting input at 99 bytes.
+- [ ] Stack ERROR on `1+(2+(3+(4+(5+(6+(7+(8+(9+(10+(11+(12+0))))))))))))`.

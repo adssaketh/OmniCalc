@@ -181,6 +181,7 @@ class CalculatorController extends ChangeNotifier {
     _soundEnabled = soundEnabled;
     _hapticEnabled = hapticEnabled;
     _history = history;
+    if (cfg.displayFormat != engine.config.displayFormat) _clearReplay();
     engine.config = cfg;
     if (changed) {
       _livePreviewKey = null;
@@ -200,6 +201,8 @@ class CalculatorController extends ChangeNotifier {
     _shift = false;
     _alpha = false;
     _insArmed = false;
+    _sto = false;
+    _rcl = false;
     _lastWasPower = false;
   }
 
@@ -224,7 +227,10 @@ class CalculatorController extends ChangeNotifier {
 
   /// Equation saved with y = ... ; while it is set, typing a number and pressing = gives y at that x.
   String? _equation;
-  double _memory = 0;
+  /// The OmniCalc memory keys (MC MR MS M+ M−) and the Casio independent memory M are one store (manual p.35: M is the
+  /// variable that M+ and M− change), so the value also survives a restart with the other variables.
+  double get _memory => engine.memory.vars['M']!.v;
+  set _memory(double v) => engine.memory.vars['M'] = v == 0 ? CVal.zero : CVal.dec(v);
   bool _isScientific = false;
   AdvancedTab _advancedTab = AdvancedTab.calculus;
 
@@ -255,6 +261,7 @@ class CalculatorController extends ChangeNotifier {
     if (_busy) return;
     if (_mode == CasioMode.stat && m != CasioMode.stat) _statData = null;
     _mode = m;
+    _clearReplay();
     _bnResult = null;
     _setPlain('0');
     _forms = const <CasioShown>[];
@@ -395,6 +402,7 @@ class CalculatorController extends ChangeNotifier {
   /// CLR ▸ Setup (manual p.12): the SETUP choices and the mode go back to the defaults; memory stays.
   void clearSetup() {
     onResetSetup?.call();
+    _clearReplay();
     _baseMode = BaseMode.dec;
     _statType = StatType.oneVar;
     _statData = null;
@@ -434,6 +442,7 @@ class CalculatorController extends ChangeNotifier {
   void powerOn() {
     if (!_off) return;
     _off = false;
+    _clearReplay();
     notifyListeners();
   }
 
@@ -488,6 +497,8 @@ class CalculatorController extends ChangeNotifier {
   // Phase 8a: the SHIFT / ALPHA / INS prefixes of the ES keys and the Syntax ERROR line
   bool _shift = false;
   bool _alpha = false;
+  bool _sto = false;
+  bool _rcl = false;
   bool _insArmed = false;
   bool _lastWasPower = false;
   String? _syntaxError;
@@ -508,6 +519,8 @@ class CalculatorController extends ChangeNotifier {
   bool get shiftOn => _shift;
   bool get alphaOn => _alpha;
   bool get insArmed => _insArmed;
+  bool get stoOn => _sto;
+  bool get rclOn => _rcl;
 
   /// "Syntax ERROR" while an unfilled placeholder is blocking the calculation (the caret stands on it), else null.
   String? get syntaxError => _syntaxError;
@@ -523,8 +536,11 @@ class CalculatorController extends ChangeNotifier {
         if (_mode == CasioMode.vector) 'VCT',
         if (_shift) 'S',
         if (_alpha) 'A',
+        if (_sto) 'STO',
+        if (_rcl) 'RCL',
         if (_memory != 0) 'M',
         if (_insArmed) 'INS',
+        if (replayAvailable) '▼▲',
         if (!_hasEvaluated && _doc.hasStructure) 'Math',
       ];
   int get historyIndex => _historyIndex;
@@ -584,6 +600,11 @@ class CalculatorController extends ChangeNotifier {
     _clearModifiers();
     _syntaxError = null;
     if (_busy) return;
+    // VERIF takes at most 99 bytes (manual p.85): further input is refused
+    if (_mode == CasioMode.verif && !_hasEvaluated && !CasioInputBytes.fits(_expression + token)) {
+      notifyListeners();
+      return;
+    }
     if (_sessionActive && _stage == _SessionStage.prompt && _sessionFresh) {
       // typing at a prompt replaces the value shown there
       _sessionFresh = false;
@@ -1003,6 +1024,67 @@ class CalculatorController extends ChangeNotifier {
     esPower('');
   }
 
+  /// STO (manual p.35): the next variable key stores the value on the line (or Ans, with a result on screen) in it.
+  void toggleSto() {
+    playSound(ClickType.toggle);
+    final on = !_sto;
+    _clearModifiers();
+    _sto = on;
+    notifyListeners();
+  }
+
+  /// RCL: the next variable key puts that variable's value into the expression.
+  void toggleRcl() {
+    playSound(ClickType.toggle);
+    final on = !_rcl;
+    _clearModifiers();
+    _rcl = on;
+    notifyListeners();
+  }
+
+  /// A variable key (A B C D E F M X Y). Plain it types the variable; after STO it stores, after RCL it recalls.
+  void variableKey(String name) {
+    if (_sto) {
+      _storeInto(name);
+    } else if (_rcl) {
+      _recallFrom(name);
+    } else {
+      handleInput(name);
+    }
+  }
+
+  void _storeInto(String name) {
+    playSound(ClickType.op);
+    _clearModifiers();
+    if (_busy || !kVariableNames.contains(name)) {
+      notifyListeners();
+      return;
+    }
+    if (_hasEvaluated || _expression == '0') {
+      // a result is on screen (or the line is empty): store Ans at full precision and leave the display alone
+      if (!_resultError) {
+        engine.memory.vars[name] = engine.memory.ans;
+        _persist();
+      }
+      notifyListeners();
+      return;
+    }
+    handleInput('→');
+    handleInput(name);
+    handleEvaluate();
+  }
+
+  void _recallFrom(String name) {
+    playSound(ClickType.num);
+    _clearModifiers();
+    if (_busy || !kVariableNames.contains(name)) {
+      notifyListeners();
+      return;
+    }
+    final text = CasioFormatter(engine.config).first(engine.memory.vars[name]!).expr;
+    handleInput(text);
+  }
+
   /// A key with no function yet: it only lets go of SHIFT / ALPHA / INS.
   void esNotYet() {
     _clearModifiers();
@@ -1053,7 +1135,7 @@ class CalculatorController extends ChangeNotifier {
     }
     if (!_beginSession()) return;
     try {
-      _calc = CasioCalc(engine, _doc.linear);
+      _calc = CasioCalc(engine, _doc.linear, complex: _mode == CasioMode.cmplx ? complexEngine : null);
       _solver = null;
       _sessionVars = List<String>.of(_calc!.variables);
       _sessionHeader = '';
@@ -1502,6 +1584,7 @@ class CalculatorController extends ChangeNotifier {
     } else {
       onAddHistory?.call(expression: shown, result: first.display, mode: hMode);
     }
+    _recordReplay(shown, first.display);
     _setPlain(first.expr);
     _answerDisplay = first.display == first.expr ? '' : first.display;
     _hasEvaluated = true;
@@ -1540,6 +1623,7 @@ class CalculatorController extends ChangeNotifier {
       onAddHistory?.call(expression: shown, result: formatted, mode: mode);
     }
 
+    _recordReplay(shown, formatted);
     _setPlain(outcome?.remainder != null ? first0(outcome!) : reusable);
     _answerDisplay = formatted == _expression ? '' : formatted;
     _hasEvaluated = true;
@@ -1617,6 +1701,69 @@ class CalculatorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // -- Calculation replay history (Part 9 section R, manual p.31-32) -----------------------------------------------------
+  /// COMP, CMPLX and BASE-N keep about 200 bytes of the newest calculations. ▲ ▼ scroll through them. ON, a mode change, a
+  /// display-format change and CLR ▸ Setup / All clear them.
+  static const int replayBytes = 200;
+  final List<_ReplayEntry> _replay = <_ReplayEntry>[];
+  int _replayAt = -1;
+
+  int get replayLength => _replay.length;
+
+  /// The ▼▲ annunciator: a result is on screen and there is calculation history behind it.
+  bool get replayAvailable => _hasEvaluated && _replay.isNotEmpty;
+
+  void _recordReplay(String question, String answer) {
+    if (_mode != CasioMode.comp && _mode != CasioMode.cmplx && _mode != CasioMode.baseN) return;
+    _replay.add(_ReplayEntry(question, answer));
+    var total = 0;
+    for (final e in _replay) {
+      total += e.bytes;
+    }
+    // the oldest go first, but the newest calculation always stays
+    while (total > replayBytes && _replay.length > 1) {
+      total -= _replay.removeAt(0).bytes;
+    }
+    _replayAt = _replay.length - 1;
+  }
+
+  void _clearReplay() {
+    _replay.clear();
+    _replayAt = -1;
+  }
+
+  /// ▲ (direction −1, older) and ▼ (+1, newer) with a result on screen.
+  bool replayStep(int direction) {
+    if (_replay.isEmpty || !_hasEvaluated || _busy || _sessionActive) return false;
+    final next = _replayAt + direction;
+    if (next < 0 || next >= _replay.length) return false;
+    _replayAt = next;
+    final e = _replay[next];
+    _lastQuestion = e.question;
+    _lastAnswer = e.answer;
+    _answerDisplay = e.answer;
+    _setPlain(e.answer);
+    _resultError = false;
+    _hasEvaluated = true;
+    _forms = const <CasioShown>[];
+    _clearModifiers();
+    playSound(ClickType.toggle);
+    notifyListeners();
+    return true;
+  }
+
+  /// ▲ of the ES tab: inside a structure it moves to the numerator, otherwise it scrolls the history back.
+  void esUp() {
+    if (moveCaretUp()) return;
+    replayStep(-1);
+  }
+
+  /// ▼ of the ES tab: to the denominator, otherwise forward in the history.
+  void esDown() {
+    if (moveCaretDown()) return;
+    replayStep(1);
+  }
+
   // -- Memory -------------------------------------------------------------------------------------------------------
   void handleMemory(MemoryAction action) {
     playSound(ClickType.op);
@@ -1637,6 +1784,7 @@ class CalculatorController extends ChangeNotifier {
         case MemoryAction.mMinus:
           _memory = _memory - currentVal;
       }
+      _persist();
     } catch (_) {
       // ignore
     }
@@ -1916,4 +2064,13 @@ class CalculatorController extends ChangeNotifier {
     _equalsTimer?.cancel();
     super.dispose();
   }
+}
+
+/// One calculation kept for ▲ ▼ replay.
+class _ReplayEntry {
+  _ReplayEntry(this.question, this.answer) : bytes = CasioInputBytes.count(question) + CasioInputBytes.count(answer);
+
+  final String question;
+  final String answer;
+  final int bytes;
 }
