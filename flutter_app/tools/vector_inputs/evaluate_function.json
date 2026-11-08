@@ -1,0 +1,262 @@
+[
+{
+"expr": "x^2",
+"x": "-3",
+"mode": "deg"
+},
+{
+"expr": "x^2",
+"x": "-3",
+"mode": "rad"
+},
+{
+"expr": "x^2",
+"x": "0",
+"mode": "deg"
+},
+{
+"expr": "x^2",
+"x": "0",
+"mode": "rad"
+},
+{
+"expr": "x^2",
+"x": "2.5",
+"mode": "deg"
+},
+{
+"expr": "x^2",
+"x": "2.5",
+"mode": "rad"
+},
+{
+"expr": "sin(x)",
+"x": "0",
+"mode": "deg"
+},
+{
+"expr": "sin(x)",
+"x": "0",
+"mode": "rad"
+},
+{
+"expr": "sin(x)",
+"x": "1",
+"mode": "deg"
+},
+{
+"expr": "sin(x)",
+"x": "1",
+"mode": "rad"
+},
+{
+"expr": "sin(x)",
+"x": "30",
+"mode": "deg"
+},
+{
+"expr": "sin(x)",
+"x": "30",
+"mode": "rad"
+},
+{
+"expr": "sin(x)",
+"x": "90",
+"mode": "deg"
+},
+{
+"expr": "sin(x)",
+"x": "90",
+"mode": "rad"
+},
+{
+"expr": "1/x",
+"x": "0",
+"mode": "deg"
+},
+{
+"expr": "1/x",
+"x": "0",
+"mode": "rad"
+},
+{
+"expr": "1/x",
+"x": "2",
+"mode": "deg"
+},
+{
+"expr": "1/x",
+"x": "2",
+"mode": "rad"
+},
+{
+"expr": "1/x",
+"x": "-1",
+"mode": "deg"
+},
+{
+"expr": "1/x",
+"x": "-1",
+"mode": "rad"
+},
+{
+"expr": "ln(x)",
+"x": "-1",
+"mode": "deg"
+},
+{
+"expr": "ln(x)",
+"x": "-1",
+"mode": "rad"
+},
+{
+"expr": "ln(x)",
+"x": "0",
+"mode": "deg"
+},
+{
+"expr": "ln(x)",
+"x": "0",
+"mode": "rad"
+},
+{
+"expr": "ln(x)",
+"x": "1",
+"mode": "deg"
+},
+{
+"expr": "ln(x)",
+"x": "1",
+"mode": "rad"
+},
+{
+"expr": "ln(x)",
+"x": "10",
+"mode": "deg"
+},
+{
+"expr": "ln(x)",
+"x": "10",
+"mode": "rad"
+},
+{
+"expr": "2x",
+"x": "3",
+"mode": "deg"
+},
+{
+"expr": "2x",
+"x": "3",
+"mode": "rad"
+},
+{
+"expr": "x*x",
+"x": "4",
+"mode": "deg"
+},
+{
+"expr": "x*x",
+"x": "4",
+"mode": "rad"
+},
+{
+"expr": "sqrt(x)",
+"x": "-4",
+"mode": "deg"
+},
+{
+"expr": "sqrt(x)",
+"x": "-4",
+"mode": "rad"
+},
+{
+"expr": "sqrt(x)",
+"x": "9",
+"mode": "deg"
+},
+{
+"expr": "sqrt(x)",
+"x": "9",
+"mode": "rad"
+},
+{
+"expr": "exp(x)",
+"x": "0",
+"mode": "deg"
+},
+{
+"expr": "exp(x)",
+"x": "0",
+"mode": "rad"
+},
+{
+"expr": "exp(x)",
+"x": "1",
+"mode": "deg"
+},
+{
+"expr": "exp(x)",
+"x": "1",
+"mode": "rad"
+},
+{
+"expr": "x^3−2x",
+"x": "1.5",
+"mode": "deg"
+},
+{
+"expr": "x^3−2x",
+"x": "1.5",
+"mode": "rad"
+},
+{
+"expr": "abs(x)",
+"x": "-7",
+"mode": "deg"
+},
+{
+"expr": "abs(x)",
+"x": "-7",
+"mode": "rad"
+},
+{
+"expr": "tan(x)",
+"x": "45",
+"mode": "deg"
+},
+{
+"expr": "tan(x)",
+"x": "45",
+"mode": "rad"
+},
+{
+"expr": "tan(x)",
+"x": "90",
+"mode": "deg"
+},
+{
+"expr": "tan(x)",
+"x": "90",
+"mode": "rad"
+},
+{
+"expr": "xyz",
+"x": "1",
+"mode": "deg"
+},
+{
+"expr": "xyz",
+"x": "1",
+"mode": "rad"
+},
+{
+"expr": "x+",
+"x": "1",
+"mode": "deg"
+},
+{
+"expr": "x+",
+"x": "1",
+"mode": "rad"
+}
+]

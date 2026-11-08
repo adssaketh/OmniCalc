@@ -1,0 +1,989 @@
+// GENERATED FILE - DO NOT EDIT.
+// Source of truth: lucide-react 0.546.0 (the web app's icon library), icons: copy, check, delete, corner-down-left, chevron-up, rotate-ccw, ruler, scale, thermometer, square, box, gauge, hard-drive, clock, activity, zap, compass, magnet, arrow-left-right, chevron-down, globe, landmark, piggy-bank, wallet, receipt, chart-line, refresh-cw, trending-up, triangle-alert, search, atom, orbit, sparkles, flame, zoom-in, zoom-out, crosshair, x, trash-2, download, calculator, file-text, arrow-left, palette, sun, moon, laptop, hash, volume-2, smartphone, shield-check, chevron-right, external-link, play.
+// Regenerate with: node flutter_app/tools/gen_lucide_paths.mjs
+// ignore_for_file: prefer_const_constructors
+
+import 'dart:ui';
+
+enum LucideIconId { copy, check, delete, cornerDownLeft, chevronUp, rotateCcw, ruler, scale, thermometer, square, box, gauge, hardDrive, clock, activity, zap, compass, magnet, arrowLeftRight, chevronDown, globe, landmark, piggyBank, wallet, receipt, lineChart, refreshCw, trendingUp, alertTriangle, search, atom, orbit, sparkles, flame, zoomIn, zoomOut, crosshair, x, trash2, download, calculator, fileText, arrowLeft, palette, sun, moon, laptop, hash, volume2, smartphone, shieldCheck, chevronRight, externalLink, play }
+
+/// lucide "copy"
+Path _lucideCopy() {
+  final p = Path();
+  p.addRRect(RRect.fromRectXY(Rect.fromLTWH(8.0, 8.0, 14.0, 14.0), 2.0, 2.0));
+  p.moveTo(4.0, 16.0);
+  p.cubicTo(2.9, 16.0, 2.0, 15.1, 2.0, 14.0);
+  p.lineTo(2.0, 4.0);
+  p.cubicTo(2.0, 2.9, 2.9, 2.0, 4.0, 2.0);
+  p.lineTo(14.0, 2.0);
+  p.cubicTo(15.1, 2.0, 16.0, 2.9, 16.0, 4.0);
+  return p;
+}
+
+/// lucide "check"
+Path _lucideCheck() {
+  final p = Path();
+  p.moveTo(20.0, 6.0);
+  p.lineTo(9.0, 17.0);
+  p.lineTo(4.0, 12.0);
+  return p;
+}
+
+/// lucide "delete"
+Path _lucideDelete() {
+  final p = Path();
+  p.moveTo(10.0, 5.0);
+  p.arcToPoint(const Offset(8.656, 5.519), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(2.328, 11.259);
+  p.arcToPoint(const Offset(2.328, 12.74), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(8.656, 18.481);
+  p.arcToPoint(const Offset(10.0, 19.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 19.0);
+  p.arcToPoint(const Offset(22.0, 17.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(22.0, 7.0);
+  p.arcToPoint(const Offset(20.0, 5.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  p.moveTo(12.0, 9.0);
+  p.lineTo(18.0, 15.0);
+  p.moveTo(18.0, 9.0);
+  p.lineTo(12.0, 15.0);
+  return p;
+}
+
+/// lucide "corner-down-left"
+Path _lucideCornerDownLeft() {
+  final p = Path();
+  p.moveTo(20.0, 4.0);
+  p.lineTo(20.0, 11.0);
+  p.arcToPoint(const Offset(16.0, 15.0), radius: const Radius.elliptical(4.0, 4.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(4.0, 15.0);
+  p.moveTo(9.0, 10.0);
+  p.lineTo(4.0, 15.0);
+  p.lineTo(9.0, 20.0);
+  return p;
+}
+
+/// lucide "chevron-up"
+Path _lucideChevronUp() {
+  final p = Path();
+  p.moveTo(18.0, 15.0);
+  p.lineTo(12.0, 9.0);
+  p.lineTo(6.0, 15.0);
+  return p;
+}
+
+/// lucide "rotate-ccw"
+Path _lucideRotateCcw() {
+  final p = Path();
+  p.moveTo(3.0, 12.0);
+  p.arcToPoint(const Offset(12.0, 3.0), radius: const Radius.elliptical(9.0, 9.0), rotation: 0.0, largeArc: true, clockwise: false);
+  p.arcToPoint(const Offset(5.26, 5.74), radius: const Radius.elliptical(9.75, 9.75), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(3.0, 8.0);
+  p.moveTo(3.0, 3.0);
+  p.lineTo(3.0, 8.0);
+  p.lineTo(8.0, 8.0);
+  return p;
+}
+
+/// lucide "ruler"
+Path _lucideRuler() {
+  final p = Path();
+  p.moveTo(21.3, 15.3);
+  p.arcToPoint(const Offset(21.3, 18.7), radius: const Radius.elliptical(2.4, 2.4), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(18.7, 21.3);
+  p.arcToPoint(const Offset(15.3, 21.3), radius: const Radius.elliptical(2.4, 2.4), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(2.7, 8.7);
+  p.arcToPoint(const Offset(2.7, 5.3), radius: const Radius.elliptical(2.41, 2.41), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(5.3, 2.7);
+  p.arcToPoint(const Offset(8.7, 2.7), radius: const Radius.elliptical(2.41, 2.41), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  p.moveTo(14.5, 12.5);
+  p.lineTo(16.5, 10.5);
+  p.moveTo(11.5, 9.5);
+  p.lineTo(13.5, 7.5);
+  p.moveTo(8.5, 6.5);
+  p.lineTo(10.5, 4.5);
+  p.moveTo(17.5, 15.5);
+  p.lineTo(19.5, 13.5);
+  return p;
+}
+
+/// lucide "scale"
+Path _lucideScale() {
+  final p = Path();
+  p.moveTo(16.0, 16.0);
+  p.lineTo(19.0, 8.0);
+  p.lineTo(22.0, 16.0);
+  p.cubicTo(21.13, 16.65, 20.08, 17.0, 19.0, 17.0);
+  p.cubicTo(17.92, 17.0, 16.87, 16.65, 16.0, 16.0);
+  p.close();
+  p.moveTo(2.0, 16.0);
+  p.lineTo(5.0, 8.0);
+  p.lineTo(8.0, 16.0);
+  p.cubicTo(7.13, 16.65, 6.08, 17.0, 5.0, 17.0);
+  p.cubicTo(3.92, 17.0, 2.87, 16.65, 2.0, 16.0);
+  p.close();
+  p.moveTo(7.0, 21.0);
+  p.lineTo(17.0, 21.0);
+  p.moveTo(12.0, 3.0);
+  p.lineTo(12.0, 21.0);
+  p.moveTo(3.0, 7.0);
+  p.lineTo(5.0, 7.0);
+  p.cubicTo(7.0, 7.0, 10.0, 6.0, 12.0, 5.0);
+  p.cubicTo(14.0, 6.0, 17.0, 7.0, 19.0, 7.0);
+  p.lineTo(21.0, 7.0);
+  return p;
+}
+
+/// lucide "thermometer"
+Path _lucideThermometer() {
+  final p = Path();
+  p.moveTo(14.0, 4.0);
+  p.lineTo(14.0, 14.54);
+  p.arcToPoint(const Offset(10.0, 14.54), radius: const Radius.elliptical(4.0, 4.0), rotation: 0.0, largeArc: true, clockwise: true);
+  p.lineTo(10.0, 4.0);
+  p.arcToPoint(const Offset(14.0, 4.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  return p;
+}
+
+/// lucide "square"
+Path _lucideSquare() {
+  final p = Path();
+  p.addRRect(RRect.fromRectXY(Rect.fromLTWH(3.0, 3.0, 18.0, 18.0), 2.0, 2.0));
+  return p;
+}
+
+/// lucide "box"
+Path _lucideBox() {
+  final p = Path();
+  p.moveTo(21.0, 8.0);
+  p.arcToPoint(const Offset(20.0, 6.27), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(13.0, 2.27);
+  p.arcToPoint(const Offset(11.0, 2.27), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(4.0, 6.27);
+  p.arcToPoint(const Offset(3.0, 8.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(3.0, 16.0);
+  p.arcToPoint(const Offset(4.0, 17.73), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(11.0, 21.73);
+  p.arcToPoint(const Offset(13.0, 21.73), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 17.73);
+  p.arcToPoint(const Offset(21.0, 16.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  p.moveTo(3.3, 7.0);
+  p.lineTo(12.0, 12.0);
+  p.lineTo(20.7, 7.0);
+  p.moveTo(12.0, 22.0);
+  p.lineTo(12.0, 12.0);
+  return p;
+}
+
+/// lucide "gauge"
+Path _lucideGauge() {
+  final p = Path();
+  p.moveTo(12.0, 14.0);
+  p.lineTo(16.0, 10.0);
+  p.moveTo(3.34, 19.0);
+  p.arcToPoint(const Offset(20.66, 19.0), radius: const Radius.elliptical(10.0, 10.0), rotation: 0.0, largeArc: true, clockwise: true);
+  return p;
+}
+
+/// lucide "hard-drive"
+Path _lucideHardDrive() {
+  final p = Path();
+  p.moveTo(22.0, 12.0);
+  p.lineTo(2.0, 12.0);
+  p.moveTo(5.45, 5.11);
+  p.lineTo(2.0, 12.0);
+  p.lineTo(2.0, 18.0);
+  p.arcToPoint(const Offset(4.0, 20.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 20.0);
+  p.arcToPoint(const Offset(22.0, 18.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(22.0, 12.0);
+  p.lineTo(18.55, 5.11);
+  p.arcToPoint(const Offset(16.76, 4.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(7.24, 4.0);
+  p.arcToPoint(const Offset(5.45, 5.11), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  p.moveTo(6.0, 16.0);
+  p.lineTo(6.01, 16.0);
+  p.moveTo(10.0, 16.0);
+  p.lineTo(10.01, 16.0);
+  return p;
+}
+
+/// lucide "clock"
+Path _lucideClock() {
+  final p = Path();
+  p.moveTo(12.0, 6.0);
+  p.lineTo(12.0, 12.0);
+  p.lineTo(16.0, 14.0);
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 10.0));
+  return p;
+}
+
+/// lucide "activity"
+Path _lucideActivity() {
+  final p = Path();
+  p.moveTo(22.0, 12.0);
+  p.lineTo(19.52, 12.0);
+  p.arcToPoint(const Offset(17.59, 13.46), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(15.24, 21.82);
+  p.arcToPoint(const Offset(14.76, 21.82), radius: const Radius.elliptical(0.25, 0.25), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(9.24, 2.18);
+  p.arcToPoint(const Offset(8.76, 2.18), radius: const Radius.elliptical(0.25, 0.25), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(6.41, 10.54);
+  p.arcToPoint(const Offset(4.49, 12.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(2.0, 12.0);
+  return p;
+}
+
+/// lucide "zap"
+Path _lucideZap() {
+  final p = Path();
+  p.moveTo(4.0, 14.0);
+  p.arcToPoint(const Offset(3.22, 12.37), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(13.12, 2.17);
+  p.arcToPoint(const Offset(13.98, 2.63), radius: const Radius.elliptical(0.5, 0.5), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(12.06, 8.65);
+  p.arcToPoint(const Offset(13.0, 10.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 10.0);
+  p.arcToPoint(const Offset(20.78, 11.63), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(10.88, 21.83);
+  p.arcToPoint(const Offset(10.02, 21.37), radius: const Radius.elliptical(0.5, 0.5), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(11.94, 15.35);
+  p.arcToPoint(const Offset(11.0, 14.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  return p;
+}
+
+/// lucide "compass"
+Path _lucideCompass() {
+  final p = Path();
+  p.moveTo(16.24, 7.76);
+  p.lineTo(14.436, 13.171);
+  p.arcToPoint(const Offset(13.171, 14.436), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(7.76, 16.24);
+  p.lineTo(9.564, 10.829);
+  p.arcToPoint(const Offset(10.829, 9.564), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 10.0));
+  return p;
+}
+
+/// lucide "magnet"
+Path _lucideMagnet() {
+  final p = Path();
+  p.moveTo(12.0, 15.0);
+  p.lineTo(16.0, 19.0);
+  p.moveTo(2.352, 10.648);
+  p.arcToPoint(const Offset(2.352, 12.352), radius: const Radius.elliptical(1.205, 1.205), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(4.648, 14.648);
+  p.arcToPoint(const Offset(6.352, 14.648), radius: const Radius.elliptical(1.205, 1.205), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(12.381, 8.619);
+  p.arcToPoint(const Offset(15.381, 11.619), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: true, clockwise: true);
+  p.lineTo(9.352, 17.648);
+  p.arcToPoint(const Offset(9.352, 19.352), radius: const Radius.elliptical(1.205, 1.205), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(11.648, 21.648);
+  p.arcToPoint(const Offset(13.352, 21.648), radius: const Radius.elliptical(1.205, 1.205), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(19.717, 15.281);
+  p.arcToPoint(const Offset(8.716, 4.282), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  p.moveTo(5.0, 8.0);
+  p.lineTo(9.0, 12.0);
+  return p;
+}
+
+/// lucide "arrow-left-right"
+Path _lucideArrowLeftRight() {
+  final p = Path();
+  p.moveTo(8.0, 3.0);
+  p.lineTo(4.0, 7.0);
+  p.lineTo(8.0, 11.0);
+  p.moveTo(4.0, 7.0);
+  p.lineTo(20.0, 7.0);
+  p.moveTo(16.0, 21.0);
+  p.lineTo(20.0, 17.0);
+  p.lineTo(16.0, 13.0);
+  p.moveTo(20.0, 17.0);
+  p.lineTo(4.0, 17.0);
+  return p;
+}
+
+/// lucide "chevron-down"
+Path _lucideChevronDown() {
+  final p = Path();
+  p.moveTo(6.0, 9.0);
+  p.lineTo(12.0, 15.0);
+  p.lineTo(18.0, 9.0);
+  return p;
+}
+
+/// lucide "globe"
+Path _lucideGlobe() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 10.0));
+  p.moveTo(12.0, 2.0);
+  p.arcToPoint(const Offset(12.0, 22.0), radius: const Radius.elliptical(14.5, 14.5), rotation: 0.0, largeArc: false, clockwise: false);
+  p.arcToPoint(const Offset(12.0, 2.0), radius: const Radius.elliptical(14.5, 14.5), rotation: 0.0, largeArc: false, clockwise: false);
+  p.moveTo(2.0, 12.0);
+  p.lineTo(22.0, 12.0);
+  return p;
+}
+
+/// lucide "landmark"
+Path _lucideLandmark() {
+  final p = Path();
+  p.moveTo(10.0, 18.0);
+  p.lineTo(10.0, 11.0);
+  p.moveTo(11.12, 2.198);
+  p.arcToPoint(const Offset(12.88, 2.204), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(20.746, 6.051);
+  p.cubicTo(21.222, 6.284, 21.056, 7.0, 20.526, 7.0);
+  p.lineTo(3.474, 7.0);
+  p.cubicTo(2.944, 7.0, 2.779, 6.284, 3.254, 6.051);
+  p.close();
+  p.moveTo(14.0, 18.0);
+  p.lineTo(14.0, 11.0);
+  p.moveTo(18.0, 18.0);
+  p.lineTo(18.0, 11.0);
+  p.moveTo(3.0, 22.0);
+  p.lineTo(21.0, 22.0);
+  p.moveTo(6.0, 18.0);
+  p.lineTo(6.0, 11.0);
+  return p;
+}
+
+/// lucide "piggy-bank"
+Path _lucidePiggyBank() {
+  final p = Path();
+  p.moveTo(11.0, 17.0);
+  p.lineTo(14.0, 17.0);
+  p.lineTo(14.0, 19.0);
+  p.arcToPoint(const Offset(15.0, 20.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(17.0, 20.0);
+  p.arcToPoint(const Offset(18.0, 19.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(18.0, 16.0);
+  p.arcToPoint(const Offset(20.0, 14.0), radius: const Radius.elliptical(3.16, 3.16), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(21.0, 14.0);
+  p.arcToPoint(const Offset(22.0, 13.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(22.0, 11.0);
+  p.arcToPoint(const Offset(21.0, 10.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 10.0);
+  p.arcToPoint(const Offset(18.0, 6.0), radius: const Radius.elliptical(5.0, 5.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(18.0, 3.0);
+  p.arcToPoint(const Offset(14.8, 4.6), radius: const Radius.elliptical(4.0, 4.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(14.5, 5.0);
+  p.lineTo(11.0, 5.0);
+  p.arcToPoint(const Offset(5.0, 11.0), radius: const Radius.elliptical(6.0, 6.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(5.0, 12.0);
+  p.arcToPoint(const Offset(7.0, 16.0), radius: const Radius.elliptical(5.0, 5.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(7.0, 19.0);
+  p.arcToPoint(const Offset(8.0, 20.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(10.0, 20.0);
+  p.arcToPoint(const Offset(11.0, 19.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  p.moveTo(16.0, 10.0);
+  p.lineTo(16.01, 10.0);
+  p.moveTo(2.0, 8.0);
+  p.lineTo(2.0, 9.0);
+  p.arcToPoint(const Offset(4.0, 11.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(5.0, 11.0);
+  return p;
+}
+
+/// lucide "wallet"
+Path _lucideWallet() {
+  final p = Path();
+  p.moveTo(19.0, 7.0);
+  p.lineTo(19.0, 4.0);
+  p.arcToPoint(const Offset(18.0, 3.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(5.0, 3.0);
+  p.arcToPoint(const Offset(5.0, 7.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 7.0);
+  p.arcToPoint(const Offset(21.0, 8.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(21.0, 12.0);
+  p.lineTo(18.0, 12.0);
+  p.arcToPoint(const Offset(18.0, 16.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(21.0, 16.0);
+  p.arcToPoint(const Offset(22.0, 15.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(22.0, 13.0);
+  p.arcToPoint(const Offset(21.0, 12.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.moveTo(3.0, 5.0);
+  p.lineTo(3.0, 19.0);
+  p.arcToPoint(const Offset(5.0, 21.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 21.0);
+  p.arcToPoint(const Offset(21.0, 20.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(21.0, 16.0);
+  return p;
+}
+
+/// lucide "receipt"
+Path _lucideReceipt() {
+  final p = Path();
+  p.moveTo(4.0, 2.0);
+  p.lineTo(4.0, 22.0);
+  p.lineTo(6.0, 21.0);
+  p.lineTo(8.0, 22.0);
+  p.lineTo(10.0, 21.0);
+  p.lineTo(12.0, 22.0);
+  p.lineTo(14.0, 21.0);
+  p.lineTo(16.0, 22.0);
+  p.lineTo(18.0, 21.0);
+  p.lineTo(20.0, 22.0);
+  p.lineTo(20.0, 2.0);
+  p.lineTo(18.0, 3.0);
+  p.lineTo(16.0, 2.0);
+  p.lineTo(14.0, 3.0);
+  p.lineTo(12.0, 2.0);
+  p.lineTo(10.0, 3.0);
+  p.lineTo(8.0, 2.0);
+  p.lineTo(6.0, 3.0);
+  p.close();
+  p.moveTo(16.0, 8.0);
+  p.lineTo(10.0, 8.0);
+  p.arcToPoint(const Offset(10.0, 12.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: true, clockwise: false);
+  p.lineTo(14.0, 12.0);
+  p.arcToPoint(const Offset(14.0, 16.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: true, clockwise: true);
+  p.lineTo(8.0, 16.0);
+  p.moveTo(12.0, 17.5);
+  p.lineTo(12.0, 6.5);
+  return p;
+}
+
+/// lucide "chart-line"
+Path _lucideLineChart() {
+  final p = Path();
+  p.moveTo(3.0, 3.0);
+  p.lineTo(3.0, 19.0);
+  p.arcToPoint(const Offset(5.0, 21.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(21.0, 21.0);
+  p.moveTo(19.0, 9.0);
+  p.lineTo(14.0, 14.0);
+  p.lineTo(10.0, 10.0);
+  p.lineTo(7.0, 13.0);
+  return p;
+}
+
+/// lucide "refresh-cw"
+Path _lucideRefreshCw() {
+  final p = Path();
+  p.moveTo(3.0, 12.0);
+  p.arcToPoint(const Offset(12.0, 3.0), radius: const Radius.elliptical(9.0, 9.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(18.74, 5.74), radius: const Radius.elliptical(9.75, 9.75), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(21.0, 8.0);
+  p.moveTo(21.0, 3.0);
+  p.lineTo(21.0, 8.0);
+  p.lineTo(16.0, 8.0);
+  p.moveTo(21.0, 12.0);
+  p.arcToPoint(const Offset(12.0, 21.0), radius: const Radius.elliptical(9.0, 9.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(5.26, 18.26), radius: const Radius.elliptical(9.75, 9.75), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.0, 16.0);
+  p.moveTo(8.0, 16.0);
+  p.lineTo(3.0, 16.0);
+  p.lineTo(3.0, 21.0);
+  return p;
+}
+
+/// lucide "trending-up"
+Path _lucideTrendingUp() {
+  final p = Path();
+  p.moveTo(16.0, 7.0);
+  p.lineTo(22.0, 7.0);
+  p.lineTo(22.0, 13.0);
+  p.moveTo(22.0, 7.0);
+  p.lineTo(13.5, 15.5);
+  p.lineTo(8.5, 10.5);
+  p.lineTo(2.0, 17.0);
+  return p;
+}
+
+/// lucide "triangle-alert"
+Path _lucideAlertTriangle() {
+  final p = Path();
+  p.moveTo(21.73, 18.0);
+  p.lineTo(13.73, 4.0);
+  p.arcToPoint(const Offset(10.25, 4.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(2.25, 18.0);
+  p.arcToPoint(const Offset(4.0, 21.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 21.0);
+  p.arcToPoint(const Offset(21.73, 18.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.moveTo(12.0, 9.0);
+  p.lineTo(12.0, 13.0);
+  p.moveTo(12.0, 17.0);
+  p.lineTo(12.01, 17.0);
+  return p;
+}
+
+/// lucide "search"
+Path _lucideSearch() {
+  final p = Path();
+  p.moveTo(21.0, 21.0);
+  p.lineTo(16.66, 16.66);
+  p.addOval(Rect.fromCircle(center: const Offset(11.0, 11.0), radius: 8.0));
+  return p;
+}
+
+/// lucide "atom"
+Path _lucideAtom() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 1.0));
+  p.moveTo(20.2, 20.2);
+  p.cubicTo(22.24, 18.17, 20.22, 12.84, 15.7, 8.3);
+  p.cubicTo(11.16, 3.78, 5.83, 1.76, 3.8, 3.8);
+  p.cubicTo(1.76, 5.83, 3.78, 11.16, 8.3, 15.7);
+  p.cubicTo(12.84, 20.22, 18.17, 22.24, 20.2, 20.2);
+  p.close();
+  p.moveTo(15.7, 15.7);
+  p.cubicTo(20.22, 11.16, 22.24, 5.83, 20.2, 3.8);
+  p.cubicTo(18.17, 1.76, 12.84, 3.78, 8.3, 8.3);
+  p.cubicTo(3.78, 12.84, 1.76, 18.17, 3.8, 20.2);
+  p.cubicTo(5.83, 22.24, 11.16, 20.22, 15.7, 15.7);
+  p.close();
+  return p;
+}
+
+/// lucide "orbit"
+Path _lucideOrbit() {
+  final p = Path();
+  p.moveTo(20.341, 6.484);
+  p.arcToPoint(const Offset(10.266, 21.85), radius: const Radius.elliptical(10.0, 10.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.moveTo(3.659, 17.516);
+  p.arcToPoint(const Offset(13.74, 2.152), radius: const Radius.elliptical(10.0, 10.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 3.0));
+  p.addOval(Rect.fromCircle(center: const Offset(19.0, 5.0), radius: 2.0));
+  p.addOval(Rect.fromCircle(center: const Offset(5.0, 19.0), radius: 2.0));
+  return p;
+}
+
+/// lucide "sparkles"
+Path _lucideSparkles() {
+  final p = Path();
+  p.moveTo(11.017, 2.814);
+  p.arcToPoint(const Offset(12.983, 2.814), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(14.034, 8.372);
+  p.arcToPoint(const Offset(15.628, 9.966), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(21.186, 11.017);
+  p.arcToPoint(const Offset(21.186, 12.983), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(15.628, 14.034);
+  p.arcToPoint(const Offset(14.034, 15.628), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(12.983, 21.186);
+  p.arcToPoint(const Offset(11.017, 21.186), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(9.966, 15.628);
+  p.arcToPoint(const Offset(8.372, 14.034), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(2.814, 12.983);
+  p.arcToPoint(const Offset(2.814, 11.017), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(8.372, 9.966);
+  p.arcToPoint(const Offset(9.966, 8.372), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  p.moveTo(20.0, 2.0);
+  p.lineTo(20.0, 6.0);
+  p.moveTo(22.0, 4.0);
+  p.lineTo(18.0, 4.0);
+  p.addOval(Rect.fromCircle(center: const Offset(4.0, 20.0), radius: 2.0));
+  return p;
+}
+
+/// lucide "flame"
+Path _lucideFlame() {
+  final p = Path();
+  p.moveTo(12.0, 3.0);
+  p.quadraticBezierTo(13.0, 7.0, 16.0, 9.5);
+  p.quadraticBezierTo(19.0, 12.0, 19.0, 15.0);
+  p.arcToPoint(const Offset(5.0, 15.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(6.0, 12.0), radius: const Radius.elliptical(5.0, 5.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(11.0, 12.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.cubicTo(11.0, 10.0, 9.5, 9.0, 9.5, 7.0);
+  p.quadraticBezierTo(9.5, 5.0, 12.0, 3.0);
+  return p;
+}
+
+/// lucide "zoom-in"
+Path _lucideZoomIn() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(11.0, 11.0), radius: 8.0));
+  p.moveTo(21.0, 21.0);
+  p.lineTo(16.65, 16.65);
+  p.moveTo(11.0, 8.0);
+  p.lineTo(11.0, 14.0);
+  p.moveTo(8.0, 11.0);
+  p.lineTo(14.0, 11.0);
+  return p;
+}
+
+/// lucide "zoom-out"
+Path _lucideZoomOut() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(11.0, 11.0), radius: 8.0));
+  p.moveTo(21.0, 21.0);
+  p.lineTo(16.65, 16.65);
+  p.moveTo(8.0, 11.0);
+  p.lineTo(14.0, 11.0);
+  return p;
+}
+
+/// lucide "crosshair"
+Path _lucideCrosshair() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 10.0));
+  p.moveTo(22.0, 12.0);
+  p.lineTo(18.0, 12.0);
+  p.moveTo(6.0, 12.0);
+  p.lineTo(2.0, 12.0);
+  p.moveTo(12.0, 6.0);
+  p.lineTo(12.0, 2.0);
+  p.moveTo(12.0, 22.0);
+  p.lineTo(12.0, 18.0);
+  return p;
+}
+
+/// lucide "x"
+Path _lucideX() {
+  final p = Path();
+  p.moveTo(18.0, 6.0);
+  p.lineTo(6.0, 18.0);
+  p.moveTo(6.0, 6.0);
+  p.lineTo(18.0, 18.0);
+  return p;
+}
+
+/// lucide "trash-2"
+Path _lucideTrash2() {
+  final p = Path();
+  p.moveTo(10.0, 11.0);
+  p.lineTo(10.0, 17.0);
+  p.moveTo(14.0, 11.0);
+  p.lineTo(14.0, 17.0);
+  p.moveTo(19.0, 6.0);
+  p.lineTo(19.0, 20.0);
+  p.arcToPoint(const Offset(17.0, 22.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(7.0, 22.0);
+  p.arcToPoint(const Offset(5.0, 20.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(5.0, 6.0);
+  p.moveTo(3.0, 6.0);
+  p.lineTo(21.0, 6.0);
+  p.moveTo(8.0, 6.0);
+  p.lineTo(8.0, 4.0);
+  p.arcToPoint(const Offset(10.0, 2.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(14.0, 2.0);
+  p.arcToPoint(const Offset(16.0, 4.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(16.0, 6.0);
+  return p;
+}
+
+/// lucide "download"
+Path _lucideDownload() {
+  final p = Path();
+  p.moveTo(12.0, 15.0);
+  p.lineTo(12.0, 3.0);
+  p.moveTo(21.0, 15.0);
+  p.lineTo(21.0, 19.0);
+  p.arcToPoint(const Offset(19.0, 21.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(5.0, 21.0);
+  p.arcToPoint(const Offset(3.0, 19.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.0, 15.0);
+  p.moveTo(7.0, 10.0);
+  p.lineTo(12.0, 15.0);
+  p.lineTo(17.0, 10.0);
+  return p;
+}
+
+/// lucide "calculator"
+Path _lucideCalculator() {
+  final p = Path();
+  p.addRRect(RRect.fromRectXY(Rect.fromLTWH(4.0, 2.0, 16.0, 20.0), 2.0, 2.0));
+  p.moveTo(8.0, 6.0);
+  p.lineTo(16.0, 6.0);
+  p.moveTo(16.0, 14.0);
+  p.lineTo(16.0, 18.0);
+  p.moveTo(16.0, 10.0);
+  p.lineTo(16.01, 10.0);
+  p.moveTo(12.0, 10.0);
+  p.lineTo(12.01, 10.0);
+  p.moveTo(8.0, 10.0);
+  p.lineTo(8.01, 10.0);
+  p.moveTo(12.0, 14.0);
+  p.lineTo(12.01, 14.0);
+  p.moveTo(8.0, 14.0);
+  p.lineTo(8.01, 14.0);
+  p.moveTo(12.0, 18.0);
+  p.lineTo(12.01, 18.0);
+  p.moveTo(8.0, 18.0);
+  p.lineTo(8.01, 18.0);
+  return p;
+}
+
+/// lucide "file-text"
+Path _lucideFileText() {
+  final p = Path();
+  p.moveTo(15.0, 2.0);
+  p.lineTo(6.0, 2.0);
+  p.arcToPoint(const Offset(4.0, 4.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(4.0, 20.0);
+  p.arcToPoint(const Offset(6.0, 22.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(18.0, 22.0);
+  p.arcToPoint(const Offset(20.0, 20.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 7.0);
+  p.close();
+  p.moveTo(14.0, 2.0);
+  p.lineTo(14.0, 6.0);
+  p.arcToPoint(const Offset(16.0, 8.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(20.0, 8.0);
+  p.moveTo(10.0, 9.0);
+  p.lineTo(8.0, 9.0);
+  p.moveTo(16.0, 13.0);
+  p.lineTo(8.0, 13.0);
+  p.moveTo(16.0, 17.0);
+  p.lineTo(8.0, 17.0);
+  return p;
+}
+
+/// lucide "arrow-left"
+Path _lucideArrowLeft() {
+  final p = Path();
+  p.moveTo(12.0, 19.0);
+  p.lineTo(5.0, 12.0);
+  p.lineTo(12.0, 5.0);
+  p.moveTo(19.0, 12.0);
+  p.lineTo(5.0, 12.0);
+  return p;
+}
+
+/// lucide "palette"
+Path _lucidePalette() {
+  final p = Path();
+  p.moveTo(12.0, 22.0);
+  p.arcToPoint(const Offset(12.0, 2.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(22.0, 11.0), radius: const Radius.elliptical(10.0, 9.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.arcToPoint(const Offset(17.0, 16.0), radius: const Radius.elliptical(5.0, 5.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(14.75, 16.0);
+  p.arcToPoint(const Offset(13.35, 18.8), radius: const Radius.elliptical(1.75, 1.75), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(13.65, 19.2);
+  p.arcToPoint(const Offset(12.25, 22.0), radius: const Radius.elliptical(1.75, 1.75), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  p.addOval(Rect.fromCircle(center: const Offset(13.5, 6.5), radius: 0.5));
+  p.addOval(Rect.fromCircle(center: const Offset(17.5, 10.5), radius: 0.5));
+  p.addOval(Rect.fromCircle(center: const Offset(6.5, 12.5), radius: 0.5));
+  p.addOval(Rect.fromCircle(center: const Offset(8.5, 7.5), radius: 0.5));
+  return p;
+}
+
+/// lucide "sun"
+Path _lucideSun() {
+  final p = Path();
+  p.addOval(Rect.fromCircle(center: const Offset(12.0, 12.0), radius: 4.0));
+  p.moveTo(12.0, 2.0);
+  p.lineTo(12.0, 4.0);
+  p.moveTo(12.0, 20.0);
+  p.lineTo(12.0, 22.0);
+  p.moveTo(4.93, 4.93);
+  p.lineTo(6.34, 6.34);
+  p.moveTo(17.66, 17.66);
+  p.lineTo(19.07, 19.07);
+  p.moveTo(2.0, 12.0);
+  p.lineTo(4.0, 12.0);
+  p.moveTo(20.0, 12.0);
+  p.lineTo(22.0, 12.0);
+  p.moveTo(6.34, 17.66);
+  p.lineTo(4.93, 19.07);
+  p.moveTo(19.07, 4.93);
+  p.lineTo(17.66, 6.34);
+  return p;
+}
+
+/// lucide "moon"
+Path _lucideMoon() {
+  final p = Path();
+  p.moveTo(20.985, 12.486);
+  p.arcToPoint(const Offset(11.512, 3.014), radius: const Radius.elliptical(9.0, 9.0), rotation: 0.0, largeArc: true, clockwise: true);
+  p.cubicTo(11.917, 2.992, 12.129, 3.474, 11.914, 3.817);
+  p.arcToPoint(const Offset(20.182, 12.085), radius: const Radius.elliptical(6.0, 6.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.cubicTo(20.526, 11.87, 21.007, 12.081, 20.985, 12.486);
+  return p;
+}
+
+/// lucide "laptop"
+Path _lucideLaptop() {
+  final p = Path();
+  p.moveTo(18.0, 5.0);
+  p.arcToPoint(const Offset(20.0, 7.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(20.0, 15.526);
+  p.arcToPoint(const Offset(20.212, 16.423), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(21.28, 18.55);
+  p.arcToPoint(const Offset(20.38, 20.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.62, 20.0);
+  p.arcToPoint(const Offset(2.72, 18.55), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.788, 16.423);
+  p.arcToPoint(const Offset(4.0, 15.526), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(4.0, 7.0);
+  p.arcToPoint(const Offset(6.0, 5.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  p.moveTo(20.054, 15.987);
+  p.lineTo(3.946, 15.987);
+  return p;
+}
+
+/// lucide "hash"
+Path _lucideHash() {
+  final p = Path();
+  p.moveTo(4.0, 9.0);
+  p.lineTo(20.0, 9.0);
+  p.moveTo(4.0, 15.0);
+  p.lineTo(20.0, 15.0);
+  p.moveTo(10.0, 3.0);
+  p.lineTo(8.0, 21.0);
+  p.moveTo(16.0, 3.0);
+  p.lineTo(14.0, 21.0);
+  return p;
+}
+
+/// lucide "volume-2"
+Path _lucideVolume2() {
+  final p = Path();
+  p.moveTo(11.0, 4.702);
+  p.arcToPoint(const Offset(9.797, 4.204), radius: const Radius.elliptical(0.705, 0.705), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(6.413, 7.587);
+  p.arcToPoint(const Offset(5.416, 8.0), radius: const Radius.elliptical(1.4, 1.4), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.0, 8.0);
+  p.arcToPoint(const Offset(2.0, 9.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(2.0, 15.0);
+  p.arcToPoint(const Offset(3.0, 16.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: false);
+  p.lineTo(5.416, 16.0);
+  p.arcToPoint(const Offset(6.413, 16.413), radius: const Radius.elliptical(1.4, 1.4), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(9.796, 19.797);
+  p.arcToPoint(const Offset(11.0, 19.298), radius: const Radius.elliptical(0.705, 0.705), rotation: 0.0, largeArc: false, clockwise: false);
+  p.close();
+  p.moveTo(16.0, 9.0);
+  p.arcToPoint(const Offset(16.0, 15.0), radius: const Radius.elliptical(5.0, 5.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.moveTo(19.364, 18.364);
+  p.arcToPoint(const Offset(19.364, 5.636), radius: const Radius.elliptical(9.0, 9.0), rotation: 0.0, largeArc: false, clockwise: false);
+  return p;
+}
+
+/// lucide "smartphone"
+Path _lucideSmartphone() {
+  final p = Path();
+  p.addRRect(RRect.fromRectXY(Rect.fromLTWH(5.0, 2.0, 14.0, 20.0), 2.0, 2.0));
+  p.moveTo(12.0, 18.0);
+  p.lineTo(12.01, 18.0);
+  return p;
+}
+
+/// lucide "shield-check"
+Path _lucideShieldCheck() {
+  final p = Path();
+  p.moveTo(20.0, 13.0);
+  p.cubicTo(20.0, 18.0, 16.5, 20.5, 12.34, 21.95);
+  p.arcToPoint(const Offset(11.67, 21.94), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.cubicTo(7.5, 20.5, 4.0, 18.0, 4.0, 13.0);
+  p.lineTo(4.0, 6.0);
+  p.arcToPoint(const Offset(5.0, 5.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.cubicTo(7.0, 5.0, 9.5, 3.8, 11.24, 2.28);
+  p.arcToPoint(const Offset(12.76, 2.28), radius: const Radius.elliptical(1.17, 1.17), rotation: 0.0, largeArc: false, clockwise: true);
+  p.cubicTo(14.51, 3.81, 17.0, 5.0, 19.0, 5.0);
+  p.arcToPoint(const Offset(20.0, 6.0), radius: const Radius.elliptical(1.0, 1.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  p.moveTo(9.0, 12.0);
+  p.lineTo(11.0, 14.0);
+  p.lineTo(15.0, 10.0);
+  return p;
+}
+
+/// lucide "chevron-right"
+Path _lucideChevronRight() {
+  final p = Path();
+  p.moveTo(9.0, 18.0);
+  p.lineTo(15.0, 12.0);
+  p.lineTo(9.0, 6.0);
+  return p;
+}
+
+/// lucide "external-link"
+Path _lucideExternalLink() {
+  final p = Path();
+  p.moveTo(15.0, 3.0);
+  p.lineTo(21.0, 3.0);
+  p.lineTo(21.0, 9.0);
+  p.moveTo(10.0, 14.0);
+  p.lineTo(21.0, 3.0);
+  p.moveTo(18.0, 13.0);
+  p.lineTo(18.0, 19.0);
+  p.arcToPoint(const Offset(16.0, 21.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(5.0, 21.0);
+  p.arcToPoint(const Offset(3.0, 19.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(3.0, 8.0);
+  p.arcToPoint(const Offset(5.0, 6.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(11.0, 6.0);
+  return p;
+}
+
+/// lucide "play"
+Path _lucidePlay() {
+  final p = Path();
+  p.moveTo(5.0, 5.0);
+  p.arcToPoint(const Offset(8.008, 3.272), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(20.005, 10.27);
+  p.arcToPoint(const Offset(20.008, 13.728), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.lineTo(8.008, 20.728);
+  p.arcToPoint(const Offset(5.0, 19.0), radius: const Radius.elliptical(2.0, 2.0), rotation: 0.0, largeArc: false, clockwise: true);
+  p.close();
+  return p;
+}
+
+/// Builders of the 24 x 24 stroke icons.
+final Map<LucideIconId, Path Function()> kLucideIconBuilders = <LucideIconId, Path Function()>{
+  LucideIconId.copy: _lucideCopy,
+  LucideIconId.check: _lucideCheck,
+  LucideIconId.delete: _lucideDelete,
+  LucideIconId.cornerDownLeft: _lucideCornerDownLeft,
+  LucideIconId.chevronUp: _lucideChevronUp,
+  LucideIconId.rotateCcw: _lucideRotateCcw,
+  LucideIconId.ruler: _lucideRuler,
+  LucideIconId.scale: _lucideScale,
+  LucideIconId.thermometer: _lucideThermometer,
+  LucideIconId.square: _lucideSquare,
+  LucideIconId.box: _lucideBox,
+  LucideIconId.gauge: _lucideGauge,
+  LucideIconId.hardDrive: _lucideHardDrive,
+  LucideIconId.clock: _lucideClock,
+  LucideIconId.activity: _lucideActivity,
+  LucideIconId.zap: _lucideZap,
+  LucideIconId.compass: _lucideCompass,
+  LucideIconId.magnet: _lucideMagnet,
+  LucideIconId.arrowLeftRight: _lucideArrowLeftRight,
+  LucideIconId.chevronDown: _lucideChevronDown,
+  LucideIconId.globe: _lucideGlobe,
+  LucideIconId.landmark: _lucideLandmark,
+  LucideIconId.piggyBank: _lucidePiggyBank,
+  LucideIconId.wallet: _lucideWallet,
+  LucideIconId.receipt: _lucideReceipt,
+  LucideIconId.lineChart: _lucideLineChart,
+  LucideIconId.refreshCw: _lucideRefreshCw,
+  LucideIconId.trendingUp: _lucideTrendingUp,
+  LucideIconId.alertTriangle: _lucideAlertTriangle,
+  LucideIconId.search: _lucideSearch,
+  LucideIconId.atom: _lucideAtom,
+  LucideIconId.orbit: _lucideOrbit,
+  LucideIconId.sparkles: _lucideSparkles,
+  LucideIconId.flame: _lucideFlame,
+  LucideIconId.zoomIn: _lucideZoomIn,
+  LucideIconId.zoomOut: _lucideZoomOut,
+  LucideIconId.crosshair: _lucideCrosshair,
+  LucideIconId.x: _lucideX,
+  LucideIconId.trash2: _lucideTrash2,
+  LucideIconId.download: _lucideDownload,
+  LucideIconId.calculator: _lucideCalculator,
+  LucideIconId.fileText: _lucideFileText,
+  LucideIconId.arrowLeft: _lucideArrowLeft,
+  LucideIconId.palette: _lucidePalette,
+  LucideIconId.sun: _lucideSun,
+  LucideIconId.moon: _lucideMoon,
+  LucideIconId.laptop: _lucideLaptop,
+  LucideIconId.hash: _lucideHash,
+  LucideIconId.volume2: _lucideVolume2,
+  LucideIconId.smartphone: _lucideSmartphone,
+  LucideIconId.shieldCheck: _lucideShieldCheck,
+  LucideIconId.chevronRight: _lucideChevronRight,
+  LucideIconId.externalLink: _lucideExternalLink,
+  LucideIconId.play: _lucidePlay,
+};

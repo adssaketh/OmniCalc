@@ -1,0 +1,161 @@
+{
+ "values": [
+  "1",
+  "0",
+  "-5.5",
+  "1234.5678",
+  "1e-9"
+ ],
+ "extra": [
+  {
+   "c": "length",
+   "a": "zzz",
+   "b": "km",
+   "v": "5"
+  },
+  {
+   "c": "length",
+   "a": "m",
+   "b": "zzz",
+   "v": "5"
+  },
+  {
+   "c": "length",
+   "a": "zzz",
+   "b": "yyy",
+   "v": "5"
+  },
+  {
+   "c": "length",
+   "a": "m",
+   "b": "km",
+   "v": "NaN"
+  },
+  {
+   "c": "length",
+   "a": "m",
+   "b": "km",
+   "v": "-0"
+  },
+  {
+   "c": "length",
+   "a": "m",
+   "b": "km",
+   "v": "Infinity"
+  },
+  {
+   "c": "temperature",
+   "a": "C",
+   "b": "F",
+   "v": "-40"
+  },
+  {
+   "c": "temperature",
+   "a": "C",
+   "b": "F",
+   "v": "100"
+  },
+  {
+   "c": "temperature",
+   "a": "F",
+   "b": "C",
+   "v": "212"
+  },
+  {
+   "c": "temperature",
+   "a": "C",
+   "b": "K",
+   "v": "0"
+  },
+  {
+   "c": "temperature",
+   "a": "K",
+   "b": "C",
+   "v": "0"
+  },
+  {
+   "c": "temperature",
+   "a": "K",
+   "b": "F",
+   "v": "300"
+  },
+  {
+   "c": "temperature",
+   "a": "F",
+   "b": "K",
+   "v": "-459.67"
+  },
+  {
+   "c": "temperature",
+   "a": "C",
+   "b": "C",
+   "v": "37"
+  },
+  {
+   "c": "frequency",
+   "a": "rads",
+   "b": "hz",
+   "v": "6.283185307179586"
+  },
+  {
+   "c": "frequency",
+   "a": "hz",
+   "b": "rads",
+   "v": "1"
+  },
+  {
+   "c": "digital",
+   "a": "pb",
+   "b": "byte",
+   "v": "1"
+  },
+  {
+   "c": "digital",
+   "a": "bit",
+   "b": "gb",
+   "v": "8589934592"
+  },
+  {
+   "c": "energy",
+   "a": "gev",
+   "b": "j",
+   "v": "1"
+  },
+  {
+   "c": "speed",
+   "a": "kn",
+   "b": "mph",
+   "v": "100"
+  },
+  {
+   "c": "force",
+   "a": "kn",
+   "b": "lbf",
+   "v": "1"
+  },
+  {
+   "c": "magnetic",
+   "a": "g",
+   "b": "ut",
+   "v": "0.5"
+  },
+  {
+   "c": "length",
+   "a": "zzz",
+   "b": "yyy",
+   "v": "NaN"
+  },
+  {
+   "c": "time",
+   "a": "yr",
+   "b": "mo",
+   "v": "1"
+  },
+  {
+   "c": "volume",
+   "a": "gal_us",
+   "b": "gal_uk",
+   "v": "10"
+  }
+ ]
+}

@@ -1,0 +1,227 @@
+# Manual QA checklist (real device)
+
+Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a phone; the manual page references are in the manual.
+
+## Inventory rows
+
+- [ ] A01 `+ − × ÷` (Done, phase 7b)
+- [ ] A02 `=` (Done, phase 7b)
+- [ ] A03 `(−)` negative sign (Done, phase 7b)
+- [ ] A04 `( )`, closing parenthesis optional at the end (Done, phase 7b)
+- [ ] A05 `.` decimal point (Done, phase 7b)
+- [ ] A06 `×10ˣ` (types ×10 and opens the raised exponent group) (Done, phase 7e)
+- [ ] A07 `Ans` (Done, phase 7b)
+- [ ] A08 `PreAns` (Done, phase 7b)
+- [ ] A09 `AC` (Done, phase 4)
+- [ ] A10 `DEL` (Done, phase 4)
+- [ ] A11 `INS` (Done, phase 8a)
+- [ ] A12 `ON` (a tap on the dark screen wakes the unit; memory is kept) (Done, phase 7e)
+- [ ] A13 `OFF` (OFF key in the Modes tab and ten idle minutes darken the screen) (Done, phase 7e)
+- [ ] A14 `SHIFT` (Done, phase 8a)
+- [ ] A15 `ALPHA` (Done, phase 8a)
+- [ ] A16 REPLAY pad (◀ ▶ ▲ ▼) (Done, phase 8a)
+- [ ] A17 `MODE` menu (COMP, CMPLX, BASE-N, EQN, STAT, MATRIX, VECTOR, TABLE; the last four open sheets instead of Casio screens) (Done, phase 7d-2)
+- [ ] A18 `SETUP` incl. Disp and CONT (Done, phase 8c)
+- [ ] A19 `CLR` Setup / Memory / All, each with Yes / Cancel (Modes tab) (Done, phase 7e)
+- [ ] A20 `STO` (Done, phase 7b)
+- [ ] A21 `RCL` (ES tab key, RCL annunciator; recalls the exact value into the line) (Done, phase 8a)
+- [ ] A22 `M+`, `M−` (ES tab keys; the OmniCalc memory keys and the Casio M are one store, saved with the other variables) (Done, phase 8a)
+- [ ] A23 variables `A B C D E F M X Y` (ES tab keys; STO stores the line or Ans, plain key types the variable) (Done, phase 8a)
+- [ ] A24 `:` multi-statements (Done, phase 7b)
+- [ ] A25 `,` (Done, phase 7b)
+- [ ] A26 `%` (Done, phase 7b)
+- [ ] A27 `Rnd` (Done, phase 7b)
+- [ ] A28 `Ran#` (Done, phase 7b)
+- [ ] A29 `RanInt#(a,b)` (Done, phase 7b)
+- [ ] A30 `ENG` (Done, phase 7b)
+- [ ] A31 `←` (ENG left shift) (Done, phase 7b)
+- [ ] A32 `π` (Done, phase 7b)
+- [ ] A33 `e` (Done, phase 7b)
+- [ ] A34 `i` (Done, phase 7d-1)
+- [ ] A35 `DRG▸` (three keys ° ʳ ᵍ in the ES tab instead of a menu) (Done, phase 8a)
+- [ ] A36 `÷R` (Done, phase 7b)
+- [ ] A37 `GCD(` (Done, phase 7b)
+- [ ] A38 `LCM(` (Done, phase 7b)
+- [ ] A39 `Int(` (Done, phase 7b)
+- [ ] A40 `Intg(` (Done, phase 7b)
+- [ ] A41 recurring-decimal input (Done, phase 8c)
+- [ ] B01 `x²` (Done, phase 7b)
+- [ ] B02 `x³` (Done, phase 7b)
+- [ ] B03 `xʸ` / `^` (Done, phase 7b)
+- [ ] B04 `x⁻¹` (Done, phase 7b)
+- [ ] B05 `√` (Done, phase 7b)
+- [ ] B06 `∛` (Done, phase 7b)
+- [ ] B07 `ˣ√` (Done, phase 7b)
+- [ ] B08 `10ˣ` (Done, phase 7b)
+- [ ] B09 `eˣ` (Done, phase 7b)
+- [ ] B10 `log` base 10 and `log(a,b)` (Done, phase 7b)
+- [ ] B11 `logₐb` template (Done, phase 7b)
+- [ ] B12 `ln` (Done, phase 7b)
+- [ ] B13 `x!` (Done, phase 7b)
+- [ ] B14 `Abs` (Done, phase 7b)
+- [ ] C01 stacked fraction, stacked result in MathO (Done, phase 8c)
+- [ ] C02 mixed fraction (Done, phase 7b)
+- [ ] C03 `S⇔D` (Done, phase 7b)
+- [ ] C04 `ab/c ⇔ d/c` (Done, phase 7b)
+- [ ] C05 √ form, π form, fraction form results (Done, phase 7b)
+- [ ] C06 recurring-decimal toggle (Done, phase 7b)
+- [ ] C07 results in engineering form (Done, phase 7b)
+- [ ] D01 `sin cos tan` (Done, phase 7b)
+- [ ] D02 `sin⁻¹ cos⁻¹ tan⁻¹` (Done, phase 7b)
+- [ ] D03 `sinh cosh tanh` (Done, phase 7b)
+- [ ] D04 `sinh⁻¹ cosh⁻¹ tanh⁻¹` (Done, phase 7b)
+- [ ] D05 Deg / Rad / Gra (Done, phase 7b)
+- [ ] D06 `°′″` entry (Done, phase 7b)
+- [ ] D07 `▸DMS` conversion (S⇔D shows the decimal and the DMS form) (Done, phase 7b)
+- [ ] D08 `DRG▸` conversion of ° ʳ ᵍ marks (Done, phase 7b)
+- [ ] E01 `nPr` (Done, phase 7b)
+- [ ] E02 `nCr` (Done, phase 7b)
+- [ ] E03 `Pol(x,y)` (Done, phase 7b)
+- [ ] E04 `Rec(r,θ)` (Done, phase 7b)
+- [ ] E05 `FACT` (Done, phase 7b)
+- [ ] G01 CONST (40 entries, CODATA 2014) (Done, phase 7b)
+- [ ] G02 CONV (40 entries, NIST SP 811) (Done, phase 7b)
+- [ ] X01 input-range checks, every row of manual p.97-100 (Done, phase 7b)
+- [ ] X02 error messages (Math, Syntax, Argument, Stack; the others belong to their modes. Stack ERROR sizes are not in the guide, unverified) (Done, phase 8a)
+- [ ] X03 calculation style, percent style, result display settings (Done, phase 7b)
+- [ ] X04 differences from the legacy engine listed (Done, phase 7b)
+- [ ] F01 `∫` (Done, phase 7c)
+- [ ] F02 `d/dx` (Done, phase 7c)
+- [ ] F03 `Σ` (Done, phase 7c)
+- [ ] F04 `∏` (Done, phase 7c)
+- [ ] F05 `SOLVE` (Done, phase 7c)
+- [ ] F06 `CALC` (Done, phase 7c)
+- [ ] H01 CMPLX `+ − × ÷` with exact parts (Done, phase 7d-1)
+- [ ] H02 CMPLX powers (integer exponents exact, others principal value) and √ of a complex number (Done, phase 7d-1)
+- [ ] H03 `∠` polar entry (priority 8) (Done, phase 7d-1)
+- [ ] H04 `Abs(` of a complex number (Done, phase 7d-1)
+- [ ] H05 `arg(` (−180° < θ ≤ 180°) (Done, phase 7d-1)
+- [ ] H06 `Conjg(` (Done, phase 7d-1)
+- [ ] H07 `▸r∠θ` (Done, phase 7d-1)
+- [ ] H08 `▸a+bi` (Done, phase 7d-1)
+- [ ] H09 SETUP complex format a+bi / r∠θ (Done, phase 7d-1)
+- [ ] H10 Linear Display: a and bi (or r and θ) on separate lines (Done, phase 8c)
+- [ ] H11 CALC in CMPLX (p.47-48 example 2) (Done, phase 8a)
+- [ ] J01 DEC, HEX, BIN, OCT calculation and result conversion (Done, phase 7d-1)
+- [ ] J02 number-mode prefixes `d h b o` (Done, phase 7d-1)
+- [ ] J03 `and or xor xnor` (Done, phase 7d-1)
+- [ ] J04 `Not(` (Done, phase 7d-1)
+- [ ] J05 `Neg(` (Done, phase 7d-1)
+- [ ] J06 ranges (BIN 16 bits, others 32 bits), two's complement, zero-padded output (Done, phase 7d-1)
+- [ ] J07 letters A–F, no fractions (quotient cut off) (Done, phase 7d-1)
+- [ ] K01 EQN simultaneous, 2 unknowns (Done, phase 7d-1)
+- [ ] K02 EQN simultaneous, 3 unknowns (Done, phase 7d-1)
+- [ ] K03 EQN quadratic with X/Y-Value Minimum or Maximum (Done, phase 7d-1)
+- [ ] K04 EQN cubic (Done, phase 7d-1)
+- [ ] K05 no-solution and infinite-solutions messages (Done, phase 7d-1)
+- [ ] K06 Coefficient Editor, one solution per `=` with ▲▼ scrolling (dialog with `=`, ▲, ▼ and AC buttons) (Done, phase 8a)
+- [ ] I01 STAT types: 1-VAR, A+BX, _+CX², ln X, e^X, A·B^X, A·X^B, 1/X (Done, phase 7d-2)
+- [ ] I02 Statistics Editor: x, y, FREQ columns (40/20/26 lines), Ins, Del, Del-A (a full-height sheet) (Partial, phase 7d-2)
+- [ ] I03 1-VAR results: n, Σx, Σx², x̄, σx, sx, minX, maxX, Q1, Med, Q3 (Done, phase 7d-2)
+- [ ] I04 Paired results: Σy, Σy², Σxy, Σx³, Σx²y, Σx⁴, ȳ, σy, sy, minY, maxY (Done, phase 7d-2)
+- [ ] I05 Regression coefficients A, B, C and r for the seven regression types, x̂, x̂₁, x̂₂, ŷ (Done, phase 7d-2)
+- [ ] I06 Normal distribution P(, Q(, R(, ▸t (Done, phase 7d-2)
+- [ ] I07 Changing the type keeps the data between paired types and clears it between 1-VAR and paired; leaving STAT clears it (Done, phase 7d-2)
+- [ ] I08 Errors: Argument ERROR for an incomplete row or a bad FREQ (Done, phase 7d-2)
+- [ ] L01 MATRIX: MatA, MatB, MatC, MatAns, Dim up to 3×3 (Done, phase 7d-2)
+- [ ] L02 MatA+MatB, MatA−MatB, MatA×MatB, k·MatA (Done, phase 7d-2)
+- [ ] L03 det, Trn, Ref, Rref, Abs, MatA², MatA³, MatA⁻¹ (exact fractions) (Done, phase 7d-2)
+- [ ] L04 Dimension ERROR, Math ERROR (singular), Syntax ERROR (wrong power or wrong mode names) (Done, phase 7d-2)
+- [ ] L05 Matrix editor and MatAns screen with STO (full-height sheets) (Partial, phase 7d-2)
+- [ ] M01 VECTOR: VctA, VctB, VctC, VctAns, Dim 2 or 3 (Done, phase 7d-2)
+- [ ] M02 VctA+VctB, VctA−VctB, k·VctA, Dot, cross product, Abs (Done, phase 7d-2)
+- [ ] M03 Angle between vectors, unit vector through Abs (Done, phase 7d-2)
+- [ ] M04 Vector editor and VctAns screen with STO (full-height sheets) (Partial, phase 7d-2)
+- [ ] N01 TABLE f(x) with Start, End, Step (defaults 1, 5, 1) (Done, phase 7d-2)
+- [ ] N02 TABLE f(x) and g(x) (SETUP table format) (Done, phase 7d-2)
+- [ ] N03 Row limits 30 (f) and 20 (f and g), Insufficient MEM above them (Done, phase 7d-2)
+- [ ] N04 Argument ERROR for End ≤ Start or Step ≤ 0; Pol, Rec, ∫, d/dx, Σ, ∏ not allowed (Done, phase 7d-2)
+- [ ] N05 A cell that cannot be calculated shows ERROR; X takes the last x (Done, phase 7d-2)
+- [ ] N06 Table sheet (a full-height sheet; the ▲▼ scrolling of the Casio screen is a scrolling list) (Partial, phase 7d-2)
+- [ ] O01 INEQ quadratic `aX²+bX+c` with `<` `>` `≤` `≥` (Done, phase 7e)
+- [ ] O02 INEQ cubic `aX³+bX²+cX+d` with `<` `>` `≤` `≥` (Done, phase 7e)
+- [ ] O03 Results in interval form (exact endpoints), `All Real Numbers`, `No-Solution` (Done, phase 7e)
+- [ ] O04 Coefficient Editor; changing the type zeroes the coefficients; a = 0 is Math ERROR; the header line and the Linear Display layout (`A=`, `B=`, `C=`) (Done, phase 8e)
+- [ ] P01 VERIF with one relational operator `=` `≠` `>` `<` `≥` `≤` (Done, phase 7e)
+- [ ] P02 VERIF chained relations of one direction (`1≤1<1+1`, `3<π<4`, `2²=2+2=4<6`) (Done, phase 7e)
+- [ ] P03 TRUE / FALSE with Ans = 1 or 0; variables read as their values (Done, phase 7e)
+- [ ] P04 Syntax ERROR forms of p.86 (empty side, relation inside parentheses / fraction / function, mixed directions, `≠` with an ordering relation, consecutive operators, ÷R / Pol / Rec) (Done, phase 7e)
+- [ ] P05 VERIF mode on the main line: MODE menu entry, relational keys in the Data tab, `=` answers, 99-byte limit (function sizes unverified) (Done, phase 8a)
+- [ ] Q01 Normal PD (x, σ, μ) (Done, phase 7e)
+- [ ] Q02 Normal CD (Lower, Upper, σ, μ) (Done, phase 7e)
+- [ ] Q03 Inverse Normal (Area, σ, μ; tail always left) (Done, phase 7e)
+- [ ] Q04 Binomial PD / CD (x or List, N, p) (Done, phase 7e)
+- [ ] Q05 Poisson PD / CD (x or List, μ) (Done, phase 7e)
+- [ ] Q06 List screen: up to 25 samples, edit, Ins, Del, Del-A, one result per sample to five digits (Done, phase 7e)
+- [ ] Q07 Var format result stored in Ans; `ERROR` in the Ans cell for a sample out of range; Argument ERROR for a Var input out of range (Done, phase 7e)
+- [ ] R01 Ans, PreAns, variables A–F, M, X, Y persist across restarts with their exact forms (Done, phase 7e)
+- [ ] R02 SETUP choices and the mode (with BASE-N base and STAT type) persist across restarts (Done, phase 7e)
+- [ ] R03 Calculation replay history (▲▼, about 200 bytes) cleared by ON, mode change, display-format change and CLR Setup/All (Done, phase 8a)
+
+## Modes
+
+- [ ] COMP
+- [ ] CMPLX
+- [ ] STAT (all 7 types)
+- [ ] BASE-N
+- [ ] EQN
+- [ ] MATRIX
+- [ ] TABLE
+- [ ] VECTOR
+- [ ] INEQ (quadratic, cubic, all relations)
+- [ ] VERIF (=, ≠, <, >, ≤, ≥, chained, Syntax ERROR)
+- [ ] DIST (6 types, Var and List)
+
+## SETUP options
+
+- [ ] Angle: Deg / Rad / Gra
+- [ ] Number format: Fix / Sci / Norm 1 / Norm 2
+- [ ] Fraction: a b/c, d/c
+- [ ] Display: Math / Linear
+- [ ] Complex: a+bi, r∠θ
+- [ ] Stat frequency On/Off
+- [ ] Decimal: dot / comma
+- [ ] CLR Setup / Memory / All
+- [ ] OFF and ON, 10-minute idle
+- [ ] Restart keeps Ans, variables, mode
+
+## Phase 8a: things to try on a phone
+- [ ] STO then A (ES tab): `3×4`, STO, A stores 12. A on its own then types A.
+- [ ] RCL then A puts 12 into the line; `1÷3` STO B, RCL B ×3 gives 1 (exact).
+- [ ] M+ and M− change the M annunciator; MR and the M key give the same value.
+- [ ] ° ʳ ᵍ keys: `50ᵍ` gives 45 in Deg.
+- [ ] CMPLX: `A+Bi` then CALC asks A?, B?; `A+Bi▸r∠θ` with 1, 1 gives √2∠45.
+- [ ] ▲ ▼ after three calculations scroll back through them; mode change empties them (▼▲ goes away).
+- [ ] EQN: `=` shows one solution at a time, the last `=` returns to the editor.
+- [ ] VERIF stops accepting input at 99 bytes.
+- [ ] Stack ERROR on `1+(2+(3+(4+(5+(6+(7+(8+(9+(10+(11+(12+0))))))))))))`.
+
+## Phase 8b: things to try on a phone (performance, accessibility)
+- [ ] TalkBack on: ÷ is read "divide", − "minus", . "decimal point", the fraction key "fraction", ◀ ▶ ▲ ▼ "left/right/up/down", Σ "sum".
+- [ ] TalkBack on: after `=` the answer is read without a swipe; nothing is read while typing (portrait). Landscape is not a live region yet.
+- [ ] Type a 200-character expression and press `=`: typing stays smooth, no freeze.
+- [ ] `∫`, `d/dx`, `Σ`, `∏` and CALC with them: the screen stays usable, AC stops the calculation.
+- [ ] DIST Binomial CD with x = 1000000 and Poisson CD with a large x finish quickly (no freeze).
+- [ ] System font 1.3x to 2x on the Calculator, Converter, Finance, Physics, Chemistry, Grapher and Recents screens: no clipped text. The OmniCalc name in the header shrinks on narrow screens (deliberate difference).
+- [ ] CALC with `∫(X,0,A)` asks `X?` and then `A?` (not confirmed against a real fx-991ES).
+
+## Phase 8c: things to try on a phone (display rows)
+- [ ] A41: SHIFT on `×10ˣ` types `0.ṅ`; `0.ṅ` with period 3 plus `=` gives 1/3 in COMP; DEL removes a digit and its mark; a period longer than 14 digits is treated as a terminating decimal.
+- [ ] C01: `1÷3+1÷2` in Math display shows a stacked 5/6; Linear display shows `5⌟6`.
+- [ ] H10: in Linear display a complex result and Pol/Rec results use two lines (a and bi, r and θ, X and Y). In MathO they stay on one line.
+- [ ] A18: SETUP Disp = Comma shows a decimal comma in results only (input keeps the dot); CONT 1 to 5 changes display brightness.
+- [ ] Changing the display format while a result is shown: the result refreshes after the next key (known).
+- [ ] Recurring marks expand only in COMP (known).
+
+## Phase 8e: things to try on a phone (INEQ)
+- [ ] O04 MathO: INEQ `x²+2x−3` with `<` shows the header `A<X<B` and then `-3<X<1`; with `≥` it shows `X≤A,B≤X` and then `X≤-3` and `1≤X`.
+- [ ] O04 Linear Display (SETUP Display = LineIO): the same inequality with `≥` shows `X≤A,B≤X`, then `A=` with -3 on the right and `B=` with 1 on the right.
+- [ ] O04 Linear Display, cubic `3x³+3x²−x > 0`: header `A<X<B,C<X`, then `A=` -1.263762616, `B=` 0, `C=` 0.2637626158.
+- [ ] O04 `All Real Numbers` and `No-Solution` look the same in both displays and have no header.
+- [ ] O04 unverified on a real device: Examples 1 and 3 in Linear Display, and the header `X<A,A<X` for a left-out double root such as `(x−1)²>0`.
+
+## Known open items (Phase 8d, not on a phone)
+- [ ] I02, L05, M04, N06 stay Partial by design (full-height sheets instead of the Casio screens).
+- [ ] Parity goldens (tag `golden`) have no baselines yet; the 118 screenshot baselines catch layout changes only (test font), not differences from the web app.
+- [ ] Stack ERROR sizes, the byte size per function (99-byte limit, 200-byte history) and the RCL display form are unverified on a real device (D-ERR-2, D-VERIF-1, D-HIST-1, D-KEY-1).
+

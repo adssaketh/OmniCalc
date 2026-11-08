@@ -1,0 +1,2745 @@
+[
+{
+"expr": "1+2",
+"mode": "deg"
+},
+{
+"expr": "1+2",
+"mode": "rad"
+},
+{
+"expr": "2×3+4",
+"mode": "deg"
+},
+{
+"expr": "2×3+4",
+"mode": "rad"
+},
+{
+"expr": "(2+3)×4",
+"mode": "deg"
+},
+{
+"expr": "(2+3)×4",
+"mode": "rad"
+},
+{
+"expr": "10÷4",
+"mode": "deg"
+},
+{
+"expr": "10÷4",
+"mode": "rad"
+},
+{
+"expr": "10÷0",
+"mode": "deg"
+},
+{
+"expr": "10÷0",
+"mode": "rad"
+},
+{
+"expr": "10/0",
+"mode": "deg"
+},
+{
+"expr": "10/0",
+"mode": "rad"
+},
+{
+"expr": "2^10",
+"mode": "deg"
+},
+{
+"expr": "2^10",
+"mode": "rad"
+},
+{
+"expr": "2^3^2",
+"mode": "deg"
+},
+{
+"expr": "2^3^2",
+"mode": "rad"
+},
+{
+"expr": "−5+3",
+"mode": "deg"
+},
+{
+"expr": "−5+3",
+"mode": "rad"
+},
+{
+"expr": "-5+3",
+"mode": "deg"
+},
+{
+"expr": "-5+3",
+"mode": "rad"
+},
+{
+"expr": "5−−3",
+"mode": "deg"
+},
+{
+"expr": "5−−3",
+"mode": "rad"
+},
+{
+"expr": "5+−3",
+"mode": "deg"
+},
+{
+"expr": "5+−3",
+"mode": "rad"
+},
+{
+"expr": "0.1+0.2",
+"mode": "deg"
+},
+{
+"expr": "0.1+0.2",
+"mode": "rad"
+},
+{
+"expr": "1/3",
+"mode": "deg"
+},
+{
+"expr": "1/3",
+"mode": "rad"
+},
+{
+"expr": "2/3",
+"mode": "deg"
+},
+{
+"expr": "2/3",
+"mode": "rad"
+},
+{
+"expr": "7×8",
+"mode": "deg"
+},
+{
+"expr": "7×8",
+"mode": "rad"
+},
+{
+"expr": "100÷8",
+"mode": "deg"
+},
+{
+"expr": "100÷8",
+"mode": "rad"
+},
+{
+"expr": "3.5×2",
+"mode": "deg"
+},
+{
+"expr": "3.5×2",
+"mode": "rad"
+},
+{
+"expr": "0.5+0.25",
+"mode": "deg"
+},
+{
+"expr": "0.5+0.25",
+"mode": "rad"
+},
+{
+"expr": "1000000×1000000",
+"mode": "deg"
+},
+{
+"expr": "1000000×1000000",
+"mode": "rad"
+},
+{
+"expr": "99999999×99999999",
+"mode": "deg"
+},
+{
+"expr": "99999999×99999999",
+"mode": "rad"
+},
+{
+"expr": "123456789×987654321",
+"mode": "deg"
+},
+{
+"expr": "123456789×987654321",
+"mode": "rad"
+},
+{
+"expr": "1÷3×3",
+"mode": "deg"
+},
+{
+"expr": "1÷3×3",
+"mode": "rad"
+},
+{
+"expr": "5.5.5",
+"mode": "deg"
+},
+{
+"expr": "5.5.5",
+"mode": "rad"
+},
+{
+"expr": "..5",
+"mode": "deg"
+},
+{
+"expr": "..5",
+"mode": "rad"
+},
+{
+"expr": "5.",
+"mode": "deg"
+},
+{
+"expr": "5.",
+"mode": "rad"
+},
+{
+"expr": ".5+.5",
+"mode": "deg"
+},
+{
+"expr": ".5+.5",
+"mode": "rad"
+},
+{
+"expr": "007",
+"mode": "deg"
+},
+{
+"expr": "007",
+"mode": "rad"
+},
+{
+"expr": "1e3",
+"mode": "deg"
+},
+{
+"expr": "1e3",
+"mode": "rad"
+},
+{
+"expr": "1e−13",
+"mode": "deg"
+},
+{
+"expr": "1e−13",
+"mode": "rad"
+},
+{
+"expr": "1.5e10",
+"mode": "deg"
+},
+{
+"expr": "1.5e10",
+"mode": "rad"
+},
+{
+"expr": "2e3×2",
+"mode": "deg"
+},
+{
+"expr": "2e3×2",
+"mode": "rad"
+},
+{
+"expr": "6.626e−34×2",
+"mode": "deg"
+},
+{
+"expr": "6.626e−34×2",
+"mode": "rad"
+},
+{
+"expr": "7%",
+"mode": "deg"
+},
+{
+"expr": "7%",
+"mode": "rad"
+},
+{
+"expr": "50%",
+"mode": "deg"
+},
+{
+"expr": "50%",
+"mode": "rad"
+},
+{
+"expr": "200×15%",
+"mode": "deg"
+},
+{
+"expr": "200×15%",
+"mode": "rad"
+},
+{
+"expr": "200+10%",
+"mode": "deg"
+},
+{
+"expr": "200+10%",
+"mode": "rad"
+},
+{
+"expr": "200−10%",
+"mode": "deg"
+},
+{
+"expr": "200−10%",
+"mode": "rad"
+},
+{
+"expr": "(50+50)%",
+"mode": "deg"
+},
+{
+"expr": "(50+50)%",
+"mode": "rad"
+},
+{
+"expr": "100+5%+5%",
+"mode": "deg"
+},
+{
+"expr": "100+5%+5%",
+"mode": "rad"
+},
+{
+"expr": "5%×200",
+"mode": "deg"
+},
+{
+"expr": "5%×200",
+"mode": "rad"
+},
+{
+"expr": "200×(10+5)%",
+"mode": "deg"
+},
+{
+"expr": "200×(10+5)%",
+"mode": "rad"
+},
+{
+"expr": "%",
+"mode": "deg"
+},
+{
+"expr": "%",
+"mode": "rad"
+},
+{
+"expr": "5%%",
+"mode": "deg"
+},
+{
+"expr": "5%%",
+"mode": "rad"
+},
+{
+"expr": "π",
+"mode": "deg"
+},
+{
+"expr": "π",
+"mode": "rad"
+},
+{
+"expr": "2π",
+"mode": "deg"
+},
+{
+"expr": "2π",
+"mode": "rad"
+},
+{
+"expr": "π×2",
+"mode": "deg"
+},
+{
+"expr": "π×2",
+"mode": "rad"
+},
+{
+"expr": "e",
+"mode": "deg"
+},
+{
+"expr": "e",
+"mode": "rad"
+},
+{
+"expr": "2e",
+"mode": "deg"
+},
+{
+"expr": "2e",
+"mode": "rad"
+},
+{
+"expr": "e^2",
+"mode": "deg"
+},
+{
+"expr": "e^2",
+"mode": "rad"
+},
+{
+"expr": "φ",
+"mode": "deg"
+},
+{
+"expr": "φ",
+"mode": "rad"
+},
+{
+"expr": "c",
+"mode": "deg"
+},
+{
+"expr": "c",
+"mode": "rad"
+},
+{
+"expr": "h",
+"mode": "deg"
+},
+{
+"expr": "h",
+"mode": "rad"
+},
+{
+"expr": "hbar",
+"mode": "deg"
+},
+{
+"expr": "hbar",
+"mode": "rad"
+},
+{
+"expr": "ħ",
+"mode": "deg"
+},
+{
+"expr": "ħ",
+"mode": "rad"
+},
+{
+"expr": "G",
+"mode": "deg"
+},
+{
+"expr": "G",
+"mode": "rad"
+},
+{
+"expr": "kB",
+"mode": "deg"
+},
+{
+"expr": "kB",
+"mode": "rad"
+},
+{
+"expr": "NA",
+"mode": "deg"
+},
+{
+"expr": "NA",
+"mode": "rad"
+},
+{
+"expr": "qe",
+"mode": "deg"
+},
+{
+"expr": "qe",
+"mode": "rad"
+},
+{
+"expr": "me",
+"mode": "deg"
+},
+{
+"expr": "me",
+"mode": "rad"
+},
+{
+"expr": "mp",
+"mode": "deg"
+},
+{
+"expr": "mp",
+"mode": "rad"
+},
+{
+"expr": "mn",
+"mode": "deg"
+},
+{
+"expr": "mn",
+"mode": "rad"
+},
+{
+"expr": "eps0",
+"mode": "deg"
+},
+{
+"expr": "eps0",
+"mode": "rad"
+},
+{
+"expr": "mu0",
+"mode": "deg"
+},
+{
+"expr": "mu0",
+"mode": "rad"
+},
+{
+"expr": "R",
+"mode": "deg"
+},
+{
+"expr": "R",
+"mode": "rad"
+},
+{
+"expr": "sigma",
+"mode": "deg"
+},
+{
+"expr": "sigma",
+"mode": "rad"
+},
+{
+"expr": "atm",
+"mode": "deg"
+},
+{
+"expr": "atm",
+"mode": "rad"
+},
+{
+"expr": "au",
+"mode": "deg"
+},
+{
+"expr": "au",
+"mode": "rad"
+},
+{
+"expr": "g",
+"mode": "deg"
+},
+{
+"expr": "g",
+"mode": "rad"
+},
+{
+"expr": "ke",
+"mode": "deg"
+},
+{
+"expr": "ke",
+"mode": "rad"
+},
+{
+"expr": "2c",
+"mode": "deg"
+},
+{
+"expr": "2c",
+"mode": "rad"
+},
+{
+"expr": "NA×kB",
+"mode": "deg"
+},
+{
+"expr": "NA×kB",
+"mode": "rad"
+},
+{
+"expr": "ε0",
+"mode": "deg"
+},
+{
+"expr": "ε0",
+"mode": "rad"
+},
+{
+"expr": "μ0",
+"mode": "deg"
+},
+{
+"expr": "μ0",
+"mode": "rad"
+},
+{
+"expr": "m_e",
+"mode": "deg"
+},
+{
+"expr": "m_e",
+"mode": "rad"
+},
+{
+"expr": "k_B",
+"mode": "deg"
+},
+{
+"expr": "k_B",
+"mode": "rad"
+},
+{
+"expr": "N_A",
+"mode": "deg"
+},
+{
+"expr": "N_A",
+"mode": "rad"
+},
+{
+"expr": "q_e",
+"mode": "deg"
+},
+{
+"expr": "q_e",
+"mode": "rad"
+},
+{
+"expr": "2(3)",
+"mode": "deg"
+},
+{
+"expr": "2(3)",
+"mode": "rad"
+},
+{
+"expr": "(2)(3)",
+"mode": "deg"
+},
+{
+"expr": "(2)(3)",
+"mode": "rad"
+},
+{
+"expr": "(2)(3)(4)",
+"mode": "deg"
+},
+{
+"expr": "(2)(3)(4)",
+"mode": "rad"
+},
+{
+"expr": "5sin(30)",
+"mode": "deg"
+},
+{
+"expr": "5sin(30)",
+"mode": "rad"
+},
+{
+"expr": "2π(3)",
+"mode": "deg"
+},
+{
+"expr": "2π(3)",
+"mode": "rad"
+},
+{
+"expr": "3!2",
+"mode": "deg"
+},
+{
+"expr": "3!2",
+"mode": "rad"
+},
+{
+"expr": "(2)3",
+"mode": "deg"
+},
+{
+"expr": "(2)3",
+"mode": "rad"
+},
+{
+"expr": "2sin(30)cos(60)",
+"mode": "deg"
+},
+{
+"expr": "2sin(30)cos(60)",
+"mode": "rad"
+},
+{
+"expr": "sin(30)",
+"mode": "deg"
+},
+{
+"expr": "sin(30)",
+"mode": "rad"
+},
+{
+"expr": "sin(90)",
+"mode": "deg"
+},
+{
+"expr": "sin(90)",
+"mode": "rad"
+},
+{
+"expr": "sin(0)",
+"mode": "deg"
+},
+{
+"expr": "sin(0)",
+"mode": "rad"
+},
+{
+"expr": "sin(180)",
+"mode": "deg"
+},
+{
+"expr": "sin(180)",
+"mode": "rad"
+},
+{
+"expr": "cos(60)",
+"mode": "deg"
+},
+{
+"expr": "cos(60)",
+"mode": "rad"
+},
+{
+"expr": "cos(90)",
+"mode": "deg"
+},
+{
+"expr": "cos(90)",
+"mode": "rad"
+},
+{
+"expr": "cos(0)",
+"mode": "deg"
+},
+{
+"expr": "cos(0)",
+"mode": "rad"
+},
+{
+"expr": "tan(45)",
+"mode": "deg"
+},
+{
+"expr": "tan(45)",
+"mode": "rad"
+},
+{
+"expr": "tan(90)",
+"mode": "deg"
+},
+{
+"expr": "tan(90)",
+"mode": "rad"
+},
+{
+"expr": "tan(0)",
+"mode": "deg"
+},
+{
+"expr": "tan(0)",
+"mode": "rad"
+},
+{
+"expr": "tan(30)",
+"mode": "deg"
+},
+{
+"expr": "tan(30)",
+"mode": "rad"
+},
+{
+"expr": "sec(60)",
+"mode": "deg"
+},
+{
+"expr": "sec(60)",
+"mode": "rad"
+},
+{
+"expr": "sec(90)",
+"mode": "deg"
+},
+{
+"expr": "sec(90)",
+"mode": "rad"
+},
+{
+"expr": "csc(30)",
+"mode": "deg"
+},
+{
+"expr": "csc(30)",
+"mode": "rad"
+},
+{
+"expr": "csc(0)",
+"mode": "deg"
+},
+{
+"expr": "csc(0)",
+"mode": "rad"
+},
+{
+"expr": "cot(45)",
+"mode": "deg"
+},
+{
+"expr": "cot(45)",
+"mode": "rad"
+},
+{
+"expr": "cot(0)",
+"mode": "deg"
+},
+{
+"expr": "cot(0)",
+"mode": "rad"
+},
+{
+"expr": "asin(0.5)",
+"mode": "deg"
+},
+{
+"expr": "asin(0.5)",
+"mode": "rad"
+},
+{
+"expr": "asin(2)",
+"mode": "deg"
+},
+{
+"expr": "asin(2)",
+"mode": "rad"
+},
+{
+"expr": "acos(0.5)",
+"mode": "deg"
+},
+{
+"expr": "acos(0.5)",
+"mode": "rad"
+},
+{
+"expr": "acos(−2)",
+"mode": "deg"
+},
+{
+"expr": "acos(−2)",
+"mode": "rad"
+},
+{
+"expr": "atan(1)",
+"mode": "deg"
+},
+{
+"expr": "atan(1)",
+"mode": "rad"
+},
+{
+"expr": "sin(π)",
+"mode": "deg"
+},
+{
+"expr": "sin(π)",
+"mode": "rad"
+},
+{
+"expr": "sin(π/2)",
+"mode": "deg"
+},
+{
+"expr": "sin(π/2)",
+"mode": "rad"
+},
+{
+"expr": "cos(π)",
+"mode": "deg"
+},
+{
+"expr": "cos(π)",
+"mode": "rad"
+},
+{
+"expr": "tan(π/4)",
+"mode": "deg"
+},
+{
+"expr": "tan(π/4)",
+"mode": "rad"
+},
+{
+"expr": "sin(1)",
+"mode": "deg"
+},
+{
+"expr": "sin(1)",
+"mode": "rad"
+},
+{
+"expr": "cos(1)",
+"mode": "deg"
+},
+{
+"expr": "cos(1)",
+"mode": "rad"
+},
+{
+"expr": "tan(1)",
+"mode": "deg"
+},
+{
+"expr": "tan(1)",
+"mode": "rad"
+},
+{
+"expr": "asin(1)",
+"mode": "deg"
+},
+{
+"expr": "asin(1)",
+"mode": "rad"
+},
+{
+"expr": "atan(100)",
+"mode": "deg"
+},
+{
+"expr": "atan(100)",
+"mode": "rad"
+},
+{
+"expr": "sinh(1)",
+"mode": "deg"
+},
+{
+"expr": "sinh(1)",
+"mode": "rad"
+},
+{
+"expr": "cosh(1)",
+"mode": "deg"
+},
+{
+"expr": "cosh(1)",
+"mode": "rad"
+},
+{
+"expr": "tanh(1)",
+"mode": "deg"
+},
+{
+"expr": "tanh(1)",
+"mode": "rad"
+},
+{
+"expr": "asinh(1)",
+"mode": "deg"
+},
+{
+"expr": "asinh(1)",
+"mode": "rad"
+},
+{
+"expr": "acosh(2)",
+"mode": "deg"
+},
+{
+"expr": "acosh(2)",
+"mode": "rad"
+},
+{
+"expr": "acosh(0.5)",
+"mode": "deg"
+},
+{
+"expr": "acosh(0.5)",
+"mode": "rad"
+},
+{
+"expr": "atanh(0.5)",
+"mode": "deg"
+},
+{
+"expr": "atanh(0.5)",
+"mode": "rad"
+},
+{
+"expr": "atanh(1)",
+"mode": "deg"
+},
+{
+"expr": "atanh(1)",
+"mode": "rad"
+},
+{
+"expr": "sech(1)",
+"mode": "deg"
+},
+{
+"expr": "sech(1)",
+"mode": "rad"
+},
+{
+"expr": "csch(1)",
+"mode": "deg"
+},
+{
+"expr": "csch(1)",
+"mode": "rad"
+},
+{
+"expr": "csch(0)",
+"mode": "deg"
+},
+{
+"expr": "csch(0)",
+"mode": "rad"
+},
+{
+"expr": "coth(1)",
+"mode": "deg"
+},
+{
+"expr": "coth(1)",
+"mode": "rad"
+},
+{
+"expr": "coth(0)",
+"mode": "deg"
+},
+{
+"expr": "coth(0)",
+"mode": "rad"
+},
+{
+"expr": "sinh(0)",
+"mode": "deg"
+},
+{
+"expr": "sinh(0)",
+"mode": "rad"
+},
+{
+"expr": "cosh(0)",
+"mode": "deg"
+},
+{
+"expr": "cosh(0)",
+"mode": "rad"
+},
+{
+"expr": "tanh(10)",
+"mode": "deg"
+},
+{
+"expr": "tanh(10)",
+"mode": "rad"
+},
+{
+"expr": "ln(e)",
+"mode": "deg"
+},
+{
+"expr": "ln(e)",
+"mode": "rad"
+},
+{
+"expr": "ln(1)",
+"mode": "deg"
+},
+{
+"expr": "ln(1)",
+"mode": "rad"
+},
+{
+"expr": "ln(0)",
+"mode": "deg"
+},
+{
+"expr": "ln(0)",
+"mode": "rad"
+},
+{
+"expr": "ln(−1)",
+"mode": "deg"
+},
+{
+"expr": "ln(−1)",
+"mode": "rad"
+},
+{
+"expr": "ln(10)",
+"mode": "deg"
+},
+{
+"expr": "ln(10)",
+"mode": "rad"
+},
+{
+"expr": "log(1000)",
+"mode": "deg"
+},
+{
+"expr": "log(1000)",
+"mode": "rad"
+},
+{
+"expr": "log(100)",
+"mode": "deg"
+},
+{
+"expr": "log(100)",
+"mode": "rad"
+},
+{
+"expr": "log(0.001)",
+"mode": "deg"
+},
+{
+"expr": "log(0.001)",
+"mode": "rad"
+},
+{
+"expr": "log(2)",
+"mode": "deg"
+},
+{
+"expr": "log(2)",
+"mode": "rad"
+},
+{
+"expr": "log(0)",
+"mode": "deg"
+},
+{
+"expr": "log(0)",
+"mode": "rad"
+},
+{
+"expr": "log2(8)",
+"mode": "deg"
+},
+{
+"expr": "log2(8)",
+"mode": "rad"
+},
+{
+"expr": "log2(1024)",
+"mode": "deg"
+},
+{
+"expr": "log2(1024)",
+"mode": "rad"
+},
+{
+"expr": "log2(10)",
+"mode": "deg"
+},
+{
+"expr": "log2(10)",
+"mode": "rad"
+},
+{
+"expr": "log2(0)",
+"mode": "deg"
+},
+{
+"expr": "log2(0)",
+"mode": "rad"
+},
+{
+"expr": "exp(1)",
+"mode": "deg"
+},
+{
+"expr": "exp(1)",
+"mode": "rad"
+},
+{
+"expr": "exp(0)",
+"mode": "deg"
+},
+{
+"expr": "exp(0)",
+"mode": "rad"
+},
+{
+"expr": "exp(10)",
+"mode": "deg"
+},
+{
+"expr": "exp(10)",
+"mode": "rad"
+},
+{
+"expr": "exp(−1)",
+"mode": "deg"
+},
+{
+"expr": "exp(−1)",
+"mode": "rad"
+},
+{
+"expr": "sqrt(16)",
+"mode": "deg"
+},
+{
+"expr": "sqrt(16)",
+"mode": "rad"
+},
+{
+"expr": "sqrt(2)",
+"mode": "deg"
+},
+{
+"expr": "sqrt(2)",
+"mode": "rad"
+},
+{
+"expr": "sqrt(−1)",
+"mode": "deg"
+},
+{
+"expr": "sqrt(−1)",
+"mode": "rad"
+},
+{
+"expr": "√16",
+"mode": "deg"
+},
+{
+"expr": "√16",
+"mode": "rad"
+},
+{
+"expr": "√(16)",
+"mode": "deg"
+},
+{
+"expr": "√(16)",
+"mode": "rad"
+},
+{
+"expr": "√2",
+"mode": "deg"
+},
+{
+"expr": "√2",
+"mode": "rad"
+},
+{
+"expr": "√(2+2)",
+"mode": "deg"
+},
+{
+"expr": "√(2+2)",
+"mode": "rad"
+},
+{
+"expr": "√9×2",
+"mode": "deg"
+},
+{
+"expr": "√9×2",
+"mode": "rad"
+},
+{
+"expr": "³√27",
+"mode": "deg"
+},
+{
+"expr": "³√27",
+"mode": "rad"
+},
+{
+"expr": "³√(27)",
+"mode": "deg"
+},
+{
+"expr": "³√(27)",
+"mode": "rad"
+},
+{
+"expr": "³√2",
+"mode": "deg"
+},
+{
+"expr": "³√2",
+"mode": "rad"
+},
+{
+"expr": "cbrt(27)",
+"mode": "deg"
+},
+{
+"expr": "cbrt(27)",
+"mode": "rad"
+},
+{
+"expr": "cbrt(−8)",
+"mode": "deg"
+},
+{
+"expr": "cbrt(−8)",
+"mode": "rad"
+},
+{
+"expr": "cbrt(2)",
+"mode": "deg"
+},
+{
+"expr": "cbrt(2)",
+"mode": "rad"
+},
+{
+"expr": "root(3,27)",
+"mode": "deg"
+},
+{
+"expr": "root(3,27)",
+"mode": "rad"
+},
+{
+"expr": "root(2,16)",
+"mode": "deg"
+},
+{
+"expr": "root(2,16)",
+"mode": "rad"
+},
+{
+"expr": "root(0,5)",
+"mode": "deg"
+},
+{
+"expr": "root(0,5)",
+"mode": "rad"
+},
+{
+"expr": "root(3,−8)",
+"mode": "deg"
+},
+{
+"expr": "root(3,−8)",
+"mode": "rad"
+},
+{
+"expr": "logb(2,8)",
+"mode": "deg"
+},
+{
+"expr": "logb(2,8)",
+"mode": "rad"
+},
+{
+"expr": "logb(10,1000)",
+"mode": "deg"
+},
+{
+"expr": "logb(10,1000)",
+"mode": "rad"
+},
+{
+"expr": "logb(3,81)",
+"mode": "deg"
+},
+{
+"expr": "logb(3,81)",
+"mode": "rad"
+},
+{
+"expr": "logb(2,0)",
+"mode": "deg"
+},
+{
+"expr": "logb(2,0)",
+"mode": "rad"
+},
+{
+"expr": "2^0.5",
+"mode": "deg"
+},
+{
+"expr": "2^0.5",
+"mode": "rad"
+},
+{
+"expr": "2^−1",
+"mode": "deg"
+},
+{
+"expr": "2^−1",
+"mode": "rad"
+},
+{
+"expr": "2^(−1)",
+"mode": "deg"
+},
+{
+"expr": "2^(−1)",
+"mode": "rad"
+},
+{
+"expr": "(−8)^(1/3)",
+"mode": "deg"
+},
+{
+"expr": "(−8)^(1/3)",
+"mode": "rad"
+},
+{
+"expr": "10^20",
+"mode": "deg"
+},
+{
+"expr": "10^20",
+"mode": "rad"
+},
+{
+"expr": "10^14",
+"mode": "deg"
+},
+{
+"expr": "10^14",
+"mode": "rad"
+},
+{
+"expr": "10^13",
+"mode": "deg"
+},
+{
+"expr": "10^13",
+"mode": "rad"
+},
+{
+"expr": "10^15",
+"mode": "deg"
+},
+{
+"expr": "10^15",
+"mode": "rad"
+},
+{
+"expr": "2^100",
+"mode": "deg"
+},
+{
+"expr": "2^100",
+"mode": "rad"
+},
+{
+"expr": "2^1023",
+"mode": "deg"
+},
+{
+"expr": "2^1023",
+"mode": "rad"
+},
+{
+"expr": "2^1024",
+"mode": "deg"
+},
+{
+"expr": "2^1024",
+"mode": "rad"
+},
+{
+"expr": "0^0",
+"mode": "deg"
+},
+{
+"expr": "0^0",
+"mode": "rad"
+},
+{
+"expr": "0^−1",
+"mode": "deg"
+},
+{
+"expr": "0^−1",
+"mode": "rad"
+},
+{
+"expr": "(−2)^2",
+"mode": "deg"
+},
+{
+"expr": "(−2)^2",
+"mode": "rad"
+},
+{
+"expr": "−2^2",
+"mode": "deg"
+},
+{
+"expr": "−2^2",
+"mode": "rad"
+},
+{
+"expr": "2^3!",
+"mode": "deg"
+},
+{
+"expr": "2^3!",
+"mode": "rad"
+},
+{
+"expr": "5^2^0",
+"mode": "deg"
+},
+{
+"expr": "5^2^0",
+"mode": "rad"
+},
+{
+"expr": "5!",
+"mode": "deg"
+},
+{
+"expr": "5!",
+"mode": "rad"
+},
+{
+"expr": "0!",
+"mode": "deg"
+},
+{
+"expr": "0!",
+"mode": "rad"
+},
+{
+"expr": "1!",
+"mode": "deg"
+},
+{
+"expr": "1!",
+"mode": "rad"
+},
+{
+"expr": "10!",
+"mode": "deg"
+},
+{
+"expr": "10!",
+"mode": "rad"
+},
+{
+"expr": "20!",
+"mode": "deg"
+},
+{
+"expr": "20!",
+"mode": "rad"
+},
+{
+"expr": "170!",
+"mode": "deg"
+},
+{
+"expr": "170!",
+"mode": "rad"
+},
+{
+"expr": "171!",
+"mode": "deg"
+},
+{
+"expr": "171!",
+"mode": "rad"
+},
+{
+"expr": "(−1)!",
+"mode": "deg"
+},
+{
+"expr": "(−1)!",
+"mode": "rad"
+},
+{
+"expr": "2.5!",
+"mode": "deg"
+},
+{
+"expr": "2.5!",
+"mode": "rad"
+},
+{
+"expr": "3!+2!",
+"mode": "deg"
+},
+{
+"expr": "3!+2!",
+"mode": "rad"
+},
+{
+"expr": "(2+3)!",
+"mode": "deg"
+},
+{
+"expr": "(2+3)!",
+"mode": "rad"
+},
+{
+"expr": "10 nCr 3",
+"mode": "deg"
+},
+{
+"expr": "10 nCr 3",
+"mode": "rad"
+},
+{
+"expr": "nCr(5,2)",
+"mode": "deg"
+},
+{
+"expr": "nCr(5,2)",
+"mode": "rad"
+},
+{
+"expr": "nCr(5,0)",
+"mode": "deg"
+},
+{
+"expr": "nCr(5,0)",
+"mode": "rad"
+},
+{
+"expr": "nCr(5,5)",
+"mode": "deg"
+},
+{
+"expr": "nCr(5,5)",
+"mode": "rad"
+},
+{
+"expr": "nCr(5,6)",
+"mode": "deg"
+},
+{
+"expr": "nCr(5,6)",
+"mode": "rad"
+},
+{
+"expr": "nCr(50,25)",
+"mode": "deg"
+},
+{
+"expr": "nCr(50,25)",
+"mode": "rad"
+},
+{
+"expr": "nPr(5,2)",
+"mode": "deg"
+},
+{
+"expr": "nPr(5,2)",
+"mode": "rad"
+},
+{
+"expr": "nPr(10,3)",
+"mode": "deg"
+},
+{
+"expr": "nPr(10,3)",
+"mode": "rad"
+},
+{
+"expr": "nPr(3,5)",
+"mode": "deg"
+},
+{
+"expr": "nPr(3,5)",
+"mode": "rad"
+},
+{
+"expr": "5 nPr 2",
+"mode": "deg"
+},
+{
+"expr": "5 nPr 2",
+"mode": "rad"
+},
+{
+"expr": "17 mod 5",
+"mode": "deg"
+},
+{
+"expr": "17 mod 5",
+"mode": "rad"
+},
+{
+"expr": "mod(17,5)",
+"mode": "deg"
+},
+{
+"expr": "mod(17,5)",
+"mode": "rad"
+},
+{
+"expr": "mod(−7,3)",
+"mode": "deg"
+},
+{
+"expr": "mod(−7,3)",
+"mode": "rad"
+},
+{
+"expr": "mod(7,−3)",
+"mode": "deg"
+},
+{
+"expr": "mod(7,−3)",
+"mode": "rad"
+},
+{
+"expr": "mod(5,0)",
+"mode": "deg"
+},
+{
+"expr": "mod(5,0)",
+"mode": "rad"
+},
+{
+"expr": "gcd(12,18)",
+"mode": "deg"
+},
+{
+"expr": "gcd(12,18)",
+"mode": "rad"
+},
+{
+"expr": "gcd(0,5)",
+"mode": "deg"
+},
+{
+"expr": "gcd(0,5)",
+"mode": "rad"
+},
+{
+"expr": "gcd(−12,18)",
+"mode": "deg"
+},
+{
+"expr": "gcd(−12,18)",
+"mode": "rad"
+},
+{
+"expr": "lcm(4,6)",
+"mode": "deg"
+},
+{
+"expr": "lcm(4,6)",
+"mode": "rad"
+},
+{
+"expr": "lcm(0,5)",
+"mode": "deg"
+},
+{
+"expr": "lcm(0,5)",
+"mode": "rad"
+},
+{
+"expr": "lcm(21,6)",
+"mode": "deg"
+},
+{
+"expr": "lcm(21,6)",
+"mode": "rad"
+},
+{
+"expr": "gcd(12.4,18.2)",
+"mode": "deg"
+},
+{
+"expr": "gcd(12.4,18.2)",
+"mode": "rad"
+},
+{
+"expr": "abs(−5)",
+"mode": "deg"
+},
+{
+"expr": "abs(−5)",
+"mode": "rad"
+},
+{
+"expr": "abs(5)",
+"mode": "deg"
+},
+{
+"expr": "abs(5)",
+"mode": "rad"
+},
+{
+"expr": "round(2.5)",
+"mode": "deg"
+},
+{
+"expr": "round(2.5)",
+"mode": "rad"
+},
+{
+"expr": "round(−2.5)",
+"mode": "deg"
+},
+{
+"expr": "round(−2.5)",
+"mode": "rad"
+},
+{
+"expr": "round(2.4)",
+"mode": "deg"
+},
+{
+"expr": "round(2.4)",
+"mode": "rad"
+},
+{
+"expr": "round(−2.6)",
+"mode": "deg"
+},
+{
+"expr": "round(−2.6)",
+"mode": "rad"
+},
+{
+"expr": "round(0.5)",
+"mode": "deg"
+},
+{
+"expr": "round(0.5)",
+"mode": "rad"
+},
+{
+"expr": "floor(−1.5)",
+"mode": "deg"
+},
+{
+"expr": "floor(−1.5)",
+"mode": "rad"
+},
+{
+"expr": "floor(1.9)",
+"mode": "deg"
+},
+{
+"expr": "floor(1.9)",
+"mode": "rad"
+},
+{
+"expr": "ceil(1.2)",
+"mode": "deg"
+},
+{
+"expr": "ceil(1.2)",
+"mode": "rad"
+},
+{
+"expr": "ceil(−1.2)",
+"mode": "deg"
+},
+{
+"expr": "ceil(−1.2)",
+"mode": "rad"
+},
+{
+"expr": "sgn(−3)",
+"mode": "deg"
+},
+{
+"expr": "sgn(−3)",
+"mode": "rad"
+},
+{
+"expr": "sgn(3)",
+"mode": "deg"
+},
+{
+"expr": "sgn(3)",
+"mode": "rad"
+},
+{
+"expr": "sign(0)",
+"mode": "deg"
+},
+{
+"expr": "sign(0)",
+"mode": "rad"
+},
+{
+"expr": "sign(−0.1)",
+"mode": "deg"
+},
+{
+"expr": "sign(−0.1)",
+"mode": "rad"
+},
+{
+"expr": "min(3,1,2)",
+"mode": "deg"
+},
+{
+"expr": "min(3,1,2)",
+"mode": "rad"
+},
+{
+"expr": "max(3,1,2)",
+"mode": "deg"
+},
+{
+"expr": "max(3,1,2)",
+"mode": "rad"
+},
+{
+"expr": "min(5)",
+"mode": "deg"
+},
+{
+"expr": "min(5)",
+"mode": "rad"
+},
+{
+"expr": "max(−1,−5)",
+"mode": "deg"
+},
+{
+"expr": "max(−1,−5)",
+"mode": "rad"
+},
+{
+"expr": "avg(1,2,3)",
+"mode": "deg"
+},
+{
+"expr": "avg(1,2,3)",
+"mode": "rad"
+},
+{
+"expr": "mean(2,4)",
+"mode": "deg"
+},
+{
+"expr": "mean(2,4)",
+"mode": "rad"
+},
+{
+"expr": "avg(1)",
+"mode": "deg"
+},
+{
+"expr": "avg(1)",
+"mode": "rad"
+},
+{
+"expr": "mean(1,2,3,4)",
+"mode": "deg"
+},
+{
+"expr": "mean(1,2,3,4)",
+"mode": "rad"
+},
+{
+"expr": "diff(x^2, 3)",
+"mode": "deg"
+},
+{
+"expr": "diff(x^2, 3)",
+"mode": "rad"
+},
+{
+"expr": "diff(x^3, 2)",
+"mode": "deg"
+},
+{
+"expr": "diff(x^3, 2)",
+"mode": "rad"
+},
+{
+"expr": "diff(sin(x), 0)",
+"mode": "deg"
+},
+{
+"expr": "diff(sin(x), 0)",
+"mode": "rad"
+},
+{
+"expr": "diff(sin(x), 30)",
+"mode": "deg"
+},
+{
+"expr": "diff(sin(x), 30)",
+"mode": "rad"
+},
+{
+"expr": "diff(cos(x), 0)",
+"mode": "deg"
+},
+{
+"expr": "diff(cos(x), 0)",
+"mode": "rad"
+},
+{
+"expr": "diff(ln(x), 1)",
+"mode": "deg"
+},
+{
+"expr": "diff(ln(x), 1)",
+"mode": "rad"
+},
+{
+"expr": "diff(ln(x), 0.002)",
+"mode": "deg"
+},
+{
+"expr": "diff(ln(x), 0.002)",
+"mode": "rad"
+},
+{
+"expr": "diff(x, 5)",
+"mode": "deg"
+},
+{
+"expr": "diff(x, 5)",
+"mode": "rad"
+},
+{
+"expr": "diff(2x, 5)",
+"mode": "deg"
+},
+{
+"expr": "diff(2x, 5)",
+"mode": "rad"
+},
+{
+"expr": "diff(x^2)",
+"mode": "deg"
+},
+{
+"expr": "diff(x^2)",
+"mode": "rad"
+},
+{
+"expr": "diff(exp(x), 0)",
+"mode": "deg"
+},
+{
+"expr": "diff(exp(x), 0)",
+"mode": "rad"
+},
+{
+"expr": "diff(1/x, 2)",
+"mode": "deg"
+},
+{
+"expr": "diff(1/x, 2)",
+"mode": "rad"
+},
+{
+"expr": "integrate(x^2, 0, 3)",
+"mode": "deg"
+},
+{
+"expr": "integrate(x^2, 0, 3)",
+"mode": "rad"
+},
+{
+"expr": "integrate(x, 0, 10)",
+"mode": "deg"
+},
+{
+"expr": "integrate(x, 0, 10)",
+"mode": "rad"
+},
+{
+"expr": "integrate(sin(x), 0, π)",
+"mode": "deg"
+},
+{
+"expr": "integrate(sin(x), 0, π)",
+"mode": "rad"
+},
+{
+"expr": "integrate(sin(x), 0, 180)",
+"mode": "deg"
+},
+{
+"expr": "integrate(sin(x), 0, 180)",
+"mode": "rad"
+},
+{
+"expr": "integrate(1/x, 1, e)",
+"mode": "deg"
+},
+{
+"expr": "integrate(1/x, 1, e)",
+"mode": "rad"
+},
+{
+"expr": "integrate(x^2, 3, 0)",
+"mode": "deg"
+},
+{
+"expr": "integrate(x^2, 3, 0)",
+"mode": "rad"
+},
+{
+"expr": "integrate(x, 2, 2)",
+"mode": "deg"
+},
+{
+"expr": "integrate(x, 2, 2)",
+"mode": "rad"
+},
+{
+"expr": "integrate(1/x, 0, 1)",
+"mode": "deg"
+},
+{
+"expr": "integrate(1/x, 0, 1)",
+"mode": "rad"
+},
+{
+"expr": "int(x^2, 0, 1)",
+"mode": "deg"
+},
+{
+"expr": "int(x^2, 0, 1)",
+"mode": "rad"
+},
+{
+"expr": "integrate(exp(x), 0, 1)",
+"mode": "deg"
+},
+{
+"expr": "integrate(exp(x), 0, 1)",
+"mode": "rad"
+},
+{
+"expr": "sum(x, 1, 100)",
+"mode": "deg"
+},
+{
+"expr": "sum(x, 1, 100)",
+"mode": "rad"
+},
+{
+"expr": "sum(x^2, 1, 10)",
+"mode": "deg"
+},
+{
+"expr": "sum(x^2, 1, 10)",
+"mode": "rad"
+},
+{
+"expr": "sum(1/x, 1, 10)",
+"mode": "deg"
+},
+{
+"expr": "sum(1/x, 1, 10)",
+"mode": "rad"
+},
+{
+"expr": "sum(x, 5, 1)",
+"mode": "deg"
+},
+{
+"expr": "sum(x, 5, 1)",
+"mode": "rad"
+},
+{
+"expr": "sum(x, 1, 100001)",
+"mode": "deg"
+},
+{
+"expr": "sum(x, 1, 100001)",
+"mode": "rad"
+},
+{
+"expr": "sum(1/x, 0, 3)",
+"mode": "deg"
+},
+{
+"expr": "sum(1/x, 0, 3)",
+"mode": "rad"
+},
+{
+"expr": "prod(x, 1, 5)",
+"mode": "deg"
+},
+{
+"expr": "prod(x, 1, 5)",
+"mode": "rad"
+},
+{
+"expr": "prod(x, 1, 10)",
+"mode": "deg"
+},
+{
+"expr": "prod(x, 1, 10)",
+"mode": "rad"
+},
+{
+"expr": "prod(x, 3, 1)",
+"mode": "deg"
+},
+{
+"expr": "prod(x, 3, 1)",
+"mode": "rad"
+},
+{
+"expr": "prod(x, 1, 50001)",
+"mode": "deg"
+},
+{
+"expr": "prod(x, 1, 50001)",
+"mode": "rad"
+},
+{
+"expr": "limit(sin(x)/x, x, 0)",
+"mode": "deg"
+},
+{
+"expr": "limit(sin(x)/x, x, 0)",
+"mode": "rad"
+},
+{
+"expr": "limit(x^2, x, 3)",
+"mode": "deg"
+},
+{
+"expr": "limit(x^2, x, 3)",
+"mode": "rad"
+},
+{
+"expr": "limit(1/x, x, 0)",
+"mode": "deg"
+},
+{
+"expr": "limit(1/x, x, 0)",
+"mode": "rad"
+},
+{
+"expr": "limit(1/x^2, x, 0)",
+"mode": "deg"
+},
+{
+"expr": "limit(1/x^2, x, 0)",
+"mode": "rad"
+},
+{
+"expr": "limit((x^2−1)/(x−1), x, 1)",
+"mode": "deg"
+},
+{
+"expr": "limit((x^2−1)/(x−1), x, 1)",
+"mode": "rad"
+},
+{
+"expr": "limit(1/x, x, 1000)",
+"mode": "deg"
+},
+{
+"expr": "limit(1/x, x, 1000)",
+"mode": "rad"
+},
+{
+"expr": "limit(ln(x), x, 0)",
+"mode": "deg"
+},
+{
+"expr": "limit(ln(x), x, 0)",
+"mode": "rad"
+},
+{
+"expr": "sqrt(diff(x^2, 3)+10)",
+"mode": "deg"
+},
+{
+"expr": "sqrt(diff(x^2, 3)+10)",
+"mode": "rad"
+},
+{
+"expr": "2×integrate(x, 0, 2)",
+"mode": "deg"
+},
+{
+"expr": "2×integrate(x, 0, 2)",
+"mode": "rad"
+},
+{
+"expr": "sin(30)+cos(60)",
+"mode": "deg"
+},
+{
+"expr": "sin(30)+cos(60)",
+"mode": "rad"
+},
+{
+"expr": "sin(sin(30))",
+"mode": "deg"
+},
+{
+"expr": "sin(sin(30))",
+"mode": "rad"
+},
+{
+"expr": "(1+2)×(3+4)÷(5−2)",
+"mode": "deg"
+},
+{
+"expr": "(1+2)×(3+4)÷(5−2)",
+"mode": "rad"
+},
+{
+"expr": "((2+3)×(4−1))^2",
+"mode": "deg"
+},
+{
+"expr": "((2+3)×(4−1))^2",
+"mode": "rad"
+},
+{
+"expr": "2^(1+1)^2",
+"mode": "deg"
+},
+{
+"expr": "2^(1+1)^2",
+"mode": "rad"
+},
+{
+"expr": "ln(exp(2))",
+"mode": "deg"
+},
+{
+"expr": "ln(exp(2))",
+"mode": "rad"
+},
+{
+"expr": "log(10^5)",
+"mode": "deg"
+},
+{
+"expr": "log(10^5)",
+"mode": "rad"
+},
+{
+"expr": "abs(sin(−30))",
+"mode": "deg"
+},
+{
+"expr": "abs(sin(−30))",
+"mode": "rad"
+},
+{
+"expr": "(",
+"mode": "deg"
+},
+{
+"expr": "(",
+"mode": "rad"
+},
+{
+"expr": ")",
+"mode": "deg"
+},
+{
+"expr": ")",
+"mode": "rad"
+},
+{
+"expr": "()",
+"mode": "deg"
+},
+{
+"expr": "()",
+"mode": "rad"
+},
+{
+"expr": "2+",
+"mode": "deg"
+},
+{
+"expr": "2+",
+"mode": "rad"
+},
+{
+"expr": "+",
+"mode": "deg"
+},
+{
+"expr": "+",
+"mode": "rad"
+},
+{
+"expr": "2++",
+"mode": "deg"
+},
+{
+"expr": "2++",
+"mode": "rad"
+},
+{
+"expr": "×2",
+"mode": "deg"
+},
+{
+"expr": "×2",
+"mode": "rad"
+},
+{
+"expr": "abc",
+"mode": "deg"
+},
+{
+"expr": "abc",
+"mode": "rad"
+},
+{
+"expr": "2 3",
+"mode": "deg"
+},
+{
+"expr": "2 3",
+"mode": "rad"
+},
+{
+"expr": "2^",
+"mode": "deg"
+},
+{
+"expr": "2^",
+"mode": "rad"
+},
+{
+"expr": "1/",
+"mode": "deg"
+},
+{
+"expr": "1/",
+"mode": "rad"
+},
+{
+"expr": "(1+2",
+"mode": "deg"
+},
+{
+"expr": "(1+2",
+"mode": "rad"
+},
+{
+"expr": "1+2)",
+"mode": "deg"
+},
+{
+"expr": "1+2)",
+"mode": "rad"
+},
+{
+"expr": "sin",
+"mode": "deg"
+},
+{
+"expr": "sin",
+"mode": "rad"
+},
+{
+"expr": "sin()",
+"mode": "deg"
+},
+{
+"expr": "sin()",
+"mode": "rad"
+},
+{
+"expr": "sin(",
+"mode": "deg"
+},
+{
+"expr": "sin(",
+"mode": "rad"
+},
+{
+"expr": "x",
+"mode": "deg"
+},
+{
+"expr": "x",
+"mode": "rad"
+},
+{
+"expr": "y(2)",
+"mode": "deg"
+},
+{
+"expr": "y(2)",
+"mode": "rad"
+},
+{
+"expr": "5 5",
+"mode": "deg"
+},
+{
+"expr": "5 5",
+"mode": "rad"
+},
+{
+"expr": "2π3",
+"mode": "deg"
+},
+{
+"expr": "2π3",
+"mode": "rad"
+},
+{
+"expr": "nCr(5)",
+"mode": "deg"
+},
+{
+"expr": "nCr(5)",
+"mode": "rad"
+},
+{
+"expr": "gcd(5)",
+"mode": "deg"
+},
+{
+"expr": "gcd(5)",
+"mode": "rad"
+},
+{
+"expr": "diff()",
+"mode": "deg"
+},
+{
+"expr": "diff()",
+"mode": "rad"
+},
+{
+"expr": "integrate(x)",
+"mode": "deg"
+},
+{
+"expr": "integrate(x)",
+"mode": "rad"
+},
+{
+"expr": "unknown(5)",
+"mode": "deg"
+},
+{
+"expr": "unknown(5)",
+"mode": "rad"
+},
+{
+"expr": "@",
+"mode": "deg"
+},
+{
+"expr": "@",
+"mode": "rad"
+},
+{
+"expr": "1,2",
+"mode": "deg"
+},
+{
+"expr": "1,2",
+"mode": "rad"
+},
+{
+"expr": "",
+"mode": "deg"
+},
+{
+"expr": "",
+"mode": "rad"
+},
+{
+"expr": "   ",
+"mode": "deg"
+},
+{
+"expr": "   ",
+"mode": "rad"
+},
+{
+"expr": "0",
+"mode": "deg"
+},
+{
+"expr": "0",
+"mode": "rad"
+},
+{
+"expr": "-0",
+"mode": "deg"
+},
+{
+"expr": "-0",
+"mode": "rad"
+},
+{
+"expr": "y(4)",
+"mode": "deg",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(4)",
+"mode": "rad",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(2)",
+"mode": "deg",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(2)",
+"mode": "rad",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(0.5)",
+"mode": "deg",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(0.5)",
+"mode": "rad",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(−1)×2",
+"mode": "deg",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(−1)×2",
+"mode": "rad",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(1)+y(2)",
+"mode": "deg",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(1)+y(2)",
+"mode": "rad",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y()",
+"mode": "deg",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y()",
+"mode": "rad",
+"yDef": "x^2−5x+6"
+},
+{
+"expr": "y(30)",
+"mode": "deg",
+"yDef": "sin(x)"
+},
+{
+"expr": "y(30)",
+"mode": "rad",
+"yDef": "sin(x)"
+},
+{
+"expr": "y(π/2)",
+"mode": "deg",
+"yDef": "sin(x)"
+},
+{
+"expr": "y(π/2)",
+"mode": "rad",
+"yDef": "sin(x)"
+},
+{
+"expr": "y(0)",
+"mode": "deg",
+"yDef": "1/x"
+},
+{
+"expr": "y(0)",
+"mode": "rad",
+"yDef": "1/x"
+},
+{
+"expr": "y(−1)",
+"mode": "deg",
+"yDef": "ln(x)"
+},
+{
+"expr": "y(−1)",
+"mode": "rad",
+"yDef": "ln(x)"
+},
+{
+"expr": "y(3)",
+"mode": "deg",
+"yDef": "2x+1"
+},
+{
+"expr": "y(3)",
+"mode": "rad",
+"yDef": "2x+1"
+},
+{
+"expr": "y(7)",
+"mode": "deg",
+"yDef": "x*x"
+},
+{
+"expr": "y(7)",
+"mode": "rad",
+"yDef": "x*x"
+},
+{
+"expr": "y(16)",
+"mode": "deg",
+"yDef": "sqrt(x)"
+},
+{
+"expr": "y(16)",
+"mode": "rad",
+"yDef": "sqrt(x)"
+},
+{
+"expr": "y(4)",
+"mode": "deg",
+"yDef": null
+}
+]

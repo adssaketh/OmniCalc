@@ -1,0 +1,10 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - build/**
+
+linter:
+  rules:
+    # The engine mirrors TypeScript line by line; keep braces/types as written there.
+    avoid_print: true

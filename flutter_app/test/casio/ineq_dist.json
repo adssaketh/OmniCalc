@@ -1,0 +1,1005 @@
+{
+ "ineq": [
+  {
+   "coef": [
+    1,
+    2,
+    -3
+   ],
+   "rel": "<",
+   "solution": [
+    {
+     "lo": {
+      "v": "-3.0",
+      "closed": false
+     },
+     "hi": {
+      "v": "1.0",
+      "closed": false
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    2,
+    -3
+   ],
+   "rel": "≥",
+   "solution": [
+    {
+     "lo": null,
+     "hi": {
+      "v": "-3.0",
+      "closed": true
+     }
+    },
+    {
+     "lo": {
+      "v": "1.0",
+      "closed": true
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    2,
+    -3
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": null,
+     "hi": {
+      "v": "-3.0",
+      "closed": false
+     }
+    },
+    {
+     "lo": {
+      "v": "1.0",
+      "closed": false
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    2,
+    -3
+   ],
+   "rel": "≤",
+   "solution": [
+    {
+     "lo": {
+      "v": "-3.0",
+      "closed": true
+     },
+     "hi": {
+      "v": "1.0",
+      "closed": true
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    0
+   ],
+   "rel": "≥",
+   "solution": [
+    "All Real Numbers"
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    0
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": null,
+     "hi": {
+      "v": "0.0",
+      "closed": false
+     }
+    },
+    {
+     "lo": {
+      "v": "0.0",
+      "closed": false
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    0
+   ],
+   "rel": "<",
+   "solution": [
+    "No-Solution"
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    0
+   ],
+   "rel": "≤",
+   "solution": [
+    {
+     "lo": {
+      "v": "0.0",
+      "closed": true
+     },
+     "hi": {
+      "v": "0.0",
+      "closed": true
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    -1,
+    0,
+    0
+   ],
+   "rel": "≥",
+   "solution": [
+    {
+     "lo": {
+      "v": "0.0",
+      "closed": true
+     },
+     "hi": {
+      "v": "0.0",
+      "closed": true
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    -1,
+    0,
+    0
+   ],
+   "rel": "≤",
+   "solution": [
+    "All Real Numbers"
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    1
+   ],
+   "rel": ">",
+   "solution": [
+    "All Real Numbers"
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    1
+   ],
+   "rel": "<",
+   "solution": [
+    "No-Solution"
+   ]
+  },
+  {
+   "coef": [
+    2,
+    -3,
+    -6
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": null,
+     "hi": {
+      "v": "-1.13745860881769",
+      "closed": false
+     }
+    },
+    {
+     "lo": {
+      "v": "2.63745860881769",
+      "closed": false
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    2,
+    -3,
+    -6
+   ],
+   "rel": "≤",
+   "solution": [
+    {
+     "lo": {
+      "v": "-1.13745860881769",
+      "closed": true
+     },
+     "hi": {
+      "v": "2.63745860881769",
+      "closed": true
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    -2,
+    4,
+    1
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": {
+      "v": "-0.224744871391589",
+      "closed": false
+     },
+     "hi": {
+      "v": "2.22474487139159",
+      "closed": false
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    -2,
+    1
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": null,
+     "hi": {
+      "v": "1.0",
+      "closed": false
+     }
+    },
+    {
+     "lo": {
+      "v": "1.0",
+      "closed": false
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    -2,
+    1
+   ],
+   "rel": "≥",
+   "solution": [
+    "All Real Numbers"
+   ]
+  },
+  {
+   "coef": [
+    1,
+    -2,
+    1
+   ],
+   "rel": "≤",
+   "solution": [
+    {
+     "lo": {
+      "v": "1.0",
+      "closed": true
+     },
+     "hi": {
+      "v": "1.0",
+      "closed": true
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    2,
+    -3,
+    0,
+    0
+   ],
+   "rel": "≥",
+   "solution": [
+    {
+     "lo": {
+      "v": "0.0",
+      "closed": true
+     },
+     "hi": {
+      "v": "0.0",
+      "closed": true
+     }
+    },
+    {
+     "lo": {
+      "v": "1.5",
+      "closed": true
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    3,
+    3,
+    -1,
+    0
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": {
+      "v": "-1.26376261582597",
+      "closed": false
+     },
+     "hi": {
+      "v": "0.0",
+      "closed": false
+     }
+    },
+    {
+     "lo": {
+      "v": "0.263762615825973",
+      "closed": false
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    -2,
+    -1,
+    2
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": {
+      "v": "-1.0",
+      "closed": false
+     },
+     "hi": {
+      "v": "1.0",
+      "closed": false
+     }
+    },
+    {
+     "lo": {
+      "v": "2.0",
+      "closed": false
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    -2,
+    -1,
+    2
+   ],
+   "rel": "≤",
+   "solution": [
+    {
+     "lo": null,
+     "hi": {
+      "v": "-1.0",
+      "closed": true
+     }
+    },
+    {
+     "lo": {
+      "v": "1.0",
+      "closed": true
+     },
+     "hi": {
+      "v": "2.0",
+      "closed": true
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    -1,
+    0,
+    4,
+    0
+   ],
+   "rel": "≥",
+   "solution": [
+    {
+     "lo": null,
+     "hi": {
+      "v": "-2.0",
+      "closed": true
+     }
+    },
+    {
+     "lo": {
+      "v": "0.0",
+      "closed": true
+     },
+     "hi": {
+      "v": "2.0",
+      "closed": true
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": {
+      "v": "-0.000000000000000000000000000000000000000000000000000000000000115244433669415",
+      "closed": false
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    0,
+    0
+   ],
+   "rel": "≥",
+   "solution": [
+    {
+     "lo": {
+      "v": "-0.000000000000000000000000000000000000000000000000000000000000115244433669415",
+      "closed": true
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    -3,
+    3,
+    -1
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": {
+      "v": "1.0",
+      "closed": false
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    -3,
+    3,
+    -1
+   ],
+   "rel": "≤",
+   "solution": [
+    {
+     "lo": null,
+     "hi": {
+      "v": "1.0",
+      "closed": true
+     }
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    1,
+    0
+   ],
+   "rel": ">",
+   "solution": [
+    {
+     "lo": {
+      "v": "0.0",
+      "closed": false
+     },
+     "hi": null
+    }
+   ]
+  },
+  {
+   "coef": [
+    1,
+    0,
+    1,
+    0
+   ],
+   "rel": "<",
+   "solution": [
+    {
+     "lo": null,
+     "hi": {
+      "v": "0.0",
+      "closed": false
+     }
+    }
+   ]
+  }
+ ],
+ "dist": [
+  {
+   "type": "normalPd",
+   "args": [
+    36,
+    2,
+    35
+   ],
+   "value": "0.17603266338215"
+  },
+  {
+   "type": "normalPd",
+   "args": [
+    0,
+    1,
+    0
+   ],
+   "value": "0.398942280401433"
+  },
+  {
+   "type": "normalPd",
+   "args": [
+    1.5,
+    0.5,
+    1
+   ],
+   "value": "0.483941449038287"
+  },
+  {
+   "type": "normalPd",
+   "args": [
+    -2,
+    3,
+    1
+   ],
+   "value": "0.0806569081730478"
+  },
+  {
+   "type": "normalPd",
+   "args": [
+    10,
+    4,
+    8.5
+   ],
+   "value": "0.0929637734674422"
+  },
+  {
+   "type": "normalCd",
+   "args": [
+    -1,
+    1,
+    1,
+    0
+   ],
+   "value": "0.682689492137086"
+  },
+  {
+   "type": "normalCd",
+   "args": [
+    0,
+    2,
+    1,
+    1
+   ],
+   "value": "0.682689492137086"
+  },
+  {
+   "type": "normalCd",
+   "args": [
+    35,
+    38,
+    2,
+    35
+   ],
+   "value": "0.433192798731142"
+  },
+  {
+   "type": "normalCd",
+   "args": [
+    -5,
+    0.3,
+    2,
+    1
+   ],
+   "value": "0.361819450792751"
+  },
+  {
+   "type": "normalCd",
+   "args": [
+    90,
+    110,
+    15,
+    100
+   ],
+   "value": "0.495014924906154"
+  },
+  {
+   "type": "invNorm",
+   "args": [
+    0.5,
+    1,
+    0
+   ],
+   "value": "0.0"
+  },
+  {
+   "type": "invNorm",
+   "args": [
+    0.975,
+    1,
+    0
+   ],
+   "value": "1.95996398454005"
+  },
+  {
+   "type": "invNorm",
+   "args": [
+    0.025,
+    1,
+    0
+   ],
+   "value": "-1.95996398454005"
+  },
+  {
+   "type": "invNorm",
+   "args": [
+    0.9,
+    2,
+    35
+   ],
+   "value": "37.5631031310892"
+  },
+  {
+   "type": "invNorm",
+   "args": [
+    0.3,
+    15,
+    100
+   ],
+   "value": "92.1339923093794"
+  },
+  {
+   "type": "invNorm",
+   "args": [
+    0.999,
+    1,
+    0
+   ],
+   "value": "3.09023230616781"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    10,
+    15,
+    0.6
+   ],
+   "value": "0.185937844764672"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    10,
+    15,
+    0.6
+   ],
+   "value": "0.782722294349824"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    11,
+    15,
+    0.6
+   ],
+   "value": "0.12677580324864"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    11,
+    15,
+    0.6
+   ],
+   "value": "0.909498097598464"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    12,
+    15,
+    0.6
+   ],
+   "value": "0.06338790162432"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    12,
+    15,
+    0.6
+   ],
+   "value": "0.972885999222784"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    13,
+    15,
+    0.6
+   ],
+   "value": "0.02194196594688"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    13,
+    15,
+    0.6
+   ],
+   "value": "0.994827965169664"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    14,
+    15,
+    0.6
+   ],
+   "value": "0.00470184984576"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    14,
+    15,
+    0.6
+   ],
+   "value": "0.999529815015424"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    0,
+    10,
+    0.5
+   ],
+   "value": "0.0009765625"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    0,
+    10,
+    0.5
+   ],
+   "value": "0.0009765625"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    5,
+    10,
+    0.5
+   ],
+   "value": "0.24609375"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    5,
+    10,
+    0.5
+   ],
+   "value": "0.623046875"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    3,
+    8,
+    0.25
+   ],
+   "value": "0.2076416015625"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    3,
+    8,
+    0.25
+   ],
+   "value": "0.886184692382812"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    40,
+    100,
+    0.4
+   ],
+   "value": "0.081219144996106"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    40,
+    100,
+    0.4
+   ],
+   "value": "0.543294485882069"
+  },
+  {
+   "type": "binomPd",
+   "args": [
+    120,
+    200,
+    0.55
+   ],
+   "value": "0.0207630386148911"
+  },
+  {
+   "type": "binomCd",
+   "args": [
+    120,
+    200,
+    0.55
+   ],
+   "value": "0.932690355517908"
+  },
+  {
+   "type": "poissonPd",
+   "args": [
+    0,
+    1
+   ],
+   "value": "0.367879441171442"
+  },
+  {
+   "type": "poissonCd",
+   "args": [
+    0,
+    1
+   ],
+   "value": "0.367879441171442"
+  },
+  {
+   "type": "poissonPd",
+   "args": [
+    1,
+    1
+   ],
+   "value": "0.367879441171442"
+  },
+  {
+   "type": "poissonCd",
+   "args": [
+    1,
+    1
+   ],
+   "value": "0.735758882342885"
+  },
+  {
+   "type": "poissonPd",
+   "args": [
+    3,
+    2.5
+   ],
+   "value": "0.213763017249736"
+  },
+  {
+   "type": "poissonCd",
+   "args": [
+    3,
+    2.5
+   ],
+   "value": "0.757576133133066"
+  },
+  {
+   "type": "poissonPd",
+   "args": [
+    10,
+    4
+   ],
+   "value": "0.00529247667642012"
+  },
+  {
+   "type": "poissonCd",
+   "args": [
+    10,
+    4
+   ],
+   "value": "0.997160233879486"
+  },
+  {
+   "type": "poissonPd",
+   "args": [
+    7,
+    7
+   ],
+   "value": "0.149002779674338"
+  },
+  {
+   "type": "poissonCd",
+   "args": [
+    7,
+    7
+   ],
+   "value": "0.598713835523037"
+  },
+  {
+   "type": "poissonPd",
+   "args": [
+    25,
+    20.5
+   ],
+   "value": "0.0501376493354936"
+  },
+  {
+   "type": "poissonCd",
+   "args": [
+    25,
+    20.5
+   ],
+   "value": "0.864130765809566"
+  }
+ ]
+}
