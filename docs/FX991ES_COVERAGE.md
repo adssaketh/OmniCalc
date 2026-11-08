@@ -1,6 +1,6 @@
 # fx-991ES PLUS coverage matrix
 
-Status after **Phase 7e** (everything through INEQ, VERIF, DIST and persistence). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
+Status after **Phase 8d** (everything through INEQ, VERIF, DIST, persistence and the Phase 8 hardening rows; only O04 and the four sheet rows I02, L05, M04, N06 are Partial). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
 `test/casio/coverage_test.dart` reads this table: a row marked Done or Partial must name an existing test file, and a row
 marked Deferred must name the phase that will do it.
 

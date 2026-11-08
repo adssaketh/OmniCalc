@@ -195,3 +195,27 @@ Generated from `docs/FX991ES_COVERAGE.md`. Tick each box after trying it on a ph
 - [ ] EQN: `=` shows one solution at a time, the last `=` returns to the editor.
 - [ ] VERIF stops accepting input at 99 bytes.
 - [ ] Stack ERROR on `1+(2+(3+(4+(5+(6+(7+(8+(9+(10+(11+(12+0))))))))))))`.
+
+## Phase 8b: things to try on a phone (performance, accessibility)
+- [ ] TalkBack on: ÷ is read "divide", − "minus", . "decimal point", the fraction key "fraction", ◀ ▶ ▲ ▼ "left/right/up/down", Σ "sum".
+- [ ] TalkBack on: after `=` the answer is read without a swipe; nothing is read while typing (portrait). Landscape is not a live region yet.
+- [ ] Type a 200-character expression and press `=`: typing stays smooth, no freeze.
+- [ ] `∫`, `d/dx`, `Σ`, `∏` and CALC with them: the screen stays usable, AC stops the calculation.
+- [ ] DIST Binomial CD with x = 1000000 and Poisson CD with a large x finish quickly (no freeze).
+- [ ] System font 1.3x to 2x on the Calculator, Converter, Finance, Physics, Chemistry, Grapher and Recents screens: no clipped text. The OmniCalc name in the header shrinks on narrow screens (deliberate difference).
+- [ ] CALC with `∫(X,0,A)` asks `X?` and then `A?` (not confirmed against a real fx-991ES).
+
+## Phase 8c: things to try on a phone (display rows)
+- [ ] A41: SHIFT on `×10ˣ` types `0.ṅ`; `0.ṅ` with period 3 plus `=` gives 1/3 in COMP; DEL removes a digit and its mark; a period longer than 14 digits is treated as a terminating decimal.
+- [ ] C01: `1÷3+1÷2` in Math display shows a stacked 5/6; Linear display shows `5⌟6`.
+- [ ] H10: in Linear display a complex result and Pol/Rec results use two lines (a and bi, r and θ, X and Y). In MathO they stay on one line.
+- [ ] A18: SETUP Disp = Comma shows a decimal comma in results only (input keeps the dot); CONT 1 to 5 changes display brightness.
+- [ ] Changing the display format while a result is shown: the result refreshes after the next key (known).
+- [ ] Recurring marks expand only in COMP (known).
+
+## Known open items (Phase 8d, not on a phone)
+- [ ] O04: the manual's INEQ Linear Display layout (guide pp. 83-84) is image-only and is not drawn. Row stays Partial until a page photo or a real-calculator photo is supplied.
+- [ ] I02, L05, M04, N06 stay Partial by design (full-height sheets instead of the Casio screens).
+- [ ] Parity goldens (tag `golden`) have no baselines yet; the 118 screenshot baselines catch layout changes only (test font), not differences from the web app.
+- [ ] Stack ERROR sizes, the byte size per function (99-byte limit, 200-byte history) and the RCL display form are unverified on a real device (D-ERR-2, D-VERIF-1, D-HIST-1, D-KEY-1).
+
