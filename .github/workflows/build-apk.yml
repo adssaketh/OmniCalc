@@ -108,6 +108,32 @@ jobs:
           fi
           grep distributionUrl "$P"
 
+      # Maven Central answers some jars (the Kotlin compiler) with a redirect to a GitHub release download, and that sometimes
+      # answers 504. When GitHub is failing, every Maven Central address is pointed at a mirror for this build.
+      - name: Use a Maven mirror when GitHub release downloads fail
+        run: |
+          CODE="$(curl -sIL --max-time 60 -o /dev/null -w '%{http_code}' https://github.com/JetBrains/kotlin/releases/download/v2.2.21/kotlin-compiler-embeddable-2.2.21.jar || true)"
+          echo "Kotlin jar on GitHub -> HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::warning::GitHub release download answered $CODE, using the Tencent Maven mirror"
+            mkdir -p ~/.gradle/init.d
+            cat > ~/.gradle/init.d/mirror.gradle <<'EOF'
+          def mirror = 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/'
+          def swap = { repos ->
+            repos.all { r ->
+              if (r instanceof MavenArtifactRepository && r.url.toString().contains('repo.maven.apache.org')) { r.url = uri(mirror) }
+            }
+          }
+          beforeSettings { s -> swap(s.pluginManagement.repositories) }
+          settingsEvaluated { s -> swap(s.pluginManagement.repositories) }
+          allprojects {
+            swap(buildscript.repositories)
+            swap(repositories)
+            afterEvaluate { swap(repositories) }
+          }
+          EOF
+          fi
+
       # Each build gets a higher versionCode (the run number of this workflow, as in earlier releases), so a newer APK
       # can always be installed over an older one signed with the same key. The pubspec build number (+N) is not used.
       # The Gradle distribution is downloaded from GitHub on the first run and that download sometimes answers 504, so
