@@ -15,12 +15,16 @@ Future<void> openEsTab(WidgetTester tester) async {
   await settle(tester);
 }
 
+/// A key by its label. Labels with the `▭` placeholder are drawn with real square boxes (a Text.rich), so they are found
+/// by the key the key button gives them; every other label is plain text.
+Finder keyLabel(String label) => label.contains('▭') ? find.byKey(ValueKey('key-label:$label')) : find.text(label);
+
 Future<void> esKey(WidgetTester tester, String label) async {
-  final f = find.text(label).first;
+  final f = keyLabel(label).first;
   await tester.ensureVisible(f);
   // The ES tab has seven rows since Phase 7b: when the page is scrolled far down, the first rows sit under the pinned
   // display. Scroll the page back until the key can be hit, as a person would.
-  for (var i = 0; i < 6 && find.text(label).hitTestable().evaluate().isEmpty; i++) {
+  for (var i = 0; i < 6 && keyLabel(label).hitTestable().evaluate().isEmpty; i++) {
     await tester.drag(find.byType(Scrollable).first, const Offset(0, 160), warnIfMissed: false);
     await tester.pump(const Duration(milliseconds: 50));
   }
@@ -34,7 +38,7 @@ void main() {
       await pumpApp(tester);
       await openEsTab(tester);
       for (final label in ['SHIFT', 'ALPHA', 'INS', 'CALC', '◀', '▲', '▼', '▶', '▭/▭', '√▭', 'ⁿ√▭', '|▭|', 'log▭▭', 'x²', 'x⁻¹', 'xʸ', 'X', 'Y']) {
-        expect(find.text(label), findsWidgets, reason: label);
+        expect(keyLabel(label), findsWidgets, reason: label);
       }
     });
 

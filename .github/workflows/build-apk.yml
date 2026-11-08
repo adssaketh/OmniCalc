@@ -72,6 +72,15 @@ jobs:
             flutter create --platforms=android --org com.saketh --project-name omnicalc .
           fi
 
+      # The generated project has the default Flutter icon and label; replace them with OmniCalc's own.
+      - name: Apply OmniCalc launcher icon and name
+        run: |
+          dart pub global activate flutter_launcher_icons 0.14.3
+          dart pub global run flutter_launcher_icons
+          sed -i 's|android:label="[^"]*"|android:label="OmniCalc"|' android/app/src/main/AndroidManifest.xml
+          grep -n 'android:label\|android:icon' android/app/src/main/AndroidManifest.xml
+          ls android/app/src/main/res/mipmap-xxxhdpi/ android/app/src/main/res/mipmap-anydpi-v26/ 2>/dev/null || true
+
       # Each build gets a higher versionCode (the run number of this workflow, as in earlier releases), so a newer APK
       # can always be installed over an older one signed with the same key. The pubspec build number (+N) is not used.
       - name: Build release APK

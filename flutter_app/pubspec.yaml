@@ -26,3 +26,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+# Launcher icon: the original OmniCalc icon. Applied in CI after the Android project is generated
+# (dart pub global run flutter_launcher_icons), because android/ is not committed.
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: false
+  image_path: "assets/icon/icon-only.png"
+  adaptive_icon_background: "assets/icon/icon-background.png"
+  adaptive_icon_foreground: "assets/icon/icon-foreground.png"

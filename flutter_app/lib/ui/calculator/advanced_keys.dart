@@ -12,6 +12,47 @@ enum _Role { onSurface, primary, tertiary }
 
 enum _Kind { normal, formula, angle, active }
 
+/// The placeholder in a key label (`∫▭▭`, `▭/▭`, `√▭`). The label text keeps this character (the screen reader and the tests
+/// look keys up by it), but it is drawn as a real square box: the font's `▭` is a flat rectangle.
+const String _boxChar = '▭';
+
+/// The spans of [text] with every `▭` replaced by a hollow square about as tall as a capital letter, centred on the line.
+/// [fontSize] and [color] are those of the surrounding text.
+List<InlineSpan> boxSpans(String text, double fontSize, Color color) {
+  if (!text.contains(_boxChar)) return [TextSpan(text: text)];
+  final out = <InlineSpan>[];
+  final run = StringBuffer();
+  void flush() {
+    if (run.isEmpty) return;
+    out.add(TextSpan(text: run.toString()));
+    run.clear();
+  }
+
+  final side = fontSize * 0.72;
+  for (var i = 0; i < text.length; i++) {
+    final ch = text[i];
+    if (ch != _boxChar) {
+      run.write(ch);
+      continue;
+    }
+    flush();
+    out.add(WidgetSpan(
+      // `middle`, not `baseline`: the key row sits in an IntrinsicHeight, and a baseline-aligned child has to report a dry baseline.
+      alignment: PlaceholderAlignment.middle,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: fontSize * 0.06),
+        child: SizedBox(
+          width: side,
+          height: side,
+          child: DecoratedBox(decoration: BoxDecoration(border: Border.all(color: color, width: side * 0.14 < 1.1 ? 1.1 : side * 0.14))),
+        ),
+      ),
+    ));
+  }
+  flush();
+  return out;
+}
+
 /// One key of an advanced tab (a `<button className={btnClass}>` of renderAdvancedTabContent).
 class _Adv {
   const _Adv(
@@ -563,9 +604,11 @@ class _AdvButton extends StatelessWidget {
       // one Text.rich, not a Row: like the plain sub label it may run past the key without a layout overflow
       return Text.rich(
         TextSpan(children: [
-          if (def.shiftLabel != null) TextSpan(text: def.shiftLabel, style: layer(t.primary, def.shiftArmed)),
+          if (def.shiftLabel != null)
+            TextSpan(style: layer(t.primary, def.shiftArmed), children: boxSpans(def.shiftLabel!, def.subSize, t.primary)),
           if (def.shiftLabel != null && def.alphaLabel != null) const TextSpan(text: '  '),
-          if (def.alphaLabel != null) TextSpan(text: def.alphaLabel, style: layer(t.tertiary, def.alphaArmed)),
+          if (def.alphaLabel != null)
+            TextSpan(style: layer(t.tertiary, def.alphaArmed), children: boxSpans(def.alphaLabel!, def.subSize, t.tertiary)),
         ]),
         maxLines: 1,
         softWrap: false,
@@ -577,7 +620,18 @@ class _AdvButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(def.label, semanticsLabel: spokenKey(def.label), maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: labelStyle),
+        if (def.label.contains(_boxChar))
+          Text.rich(
+            TextSpan(children: boxSpans(def.label, labelStyle.fontSize ?? inheritedSize, labelColor)),
+            key: ValueKey('key-label:${def.label}'),
+            semanticsLabel: spokenKey(def.label),
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.visible,
+            style: labelStyle,
+          )
+        else
+          Text(def.label, semanticsLabel: spokenKey(def.label), maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: labelStyle),
         if (def.shiftLabel != null || def.alphaLabel != null)
           layerLabels()
         else

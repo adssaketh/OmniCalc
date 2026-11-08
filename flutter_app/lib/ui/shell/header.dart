@@ -436,6 +436,9 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
           height: 56,
           child: Stack(
             clipBehavior: Clip.none,
+            // the 44 px buttons are centred in the 56 px pill, like the logo and the name; without this a Stack puts its
+            // one non-positioned child at the top, 6 px above the middle
+            alignment: Alignment.center,
             children: [
               Positioned.fill(
                 child: IgnorePointer(

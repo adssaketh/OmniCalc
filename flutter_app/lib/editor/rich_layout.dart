@@ -24,6 +24,14 @@ const double kPlaceholderWidthEm = 0.56;
 const double kPlaceholderHeightEm = 0.78;
 const double kPlaceholderTopEm = 0.74;
 
+/// Big operators (∫ Σ ∏) are drawn as shapes, not as a font glyph, so every device gets the same size and the limit boxes
+/// can be placed from the real edges of the sign. Height of the sign and the height of its centre above the baseline, in em
+/// of the row's size; the centre is the centre of an empty body box, so the sign and the box beside it line up. [kBigOpGapEm]
+/// is the clear space between the sign and a limit box above or below it.
+const double kBigOpHeightEm = 1.0;
+const double kBigOpCenterEm = 0.35;
+const double kBigOpGapEm = 0.10;
+
 /// Style of the text at a given font size (the display's `appText(...)` with the size filled in).
 typedef StyleForSize = TextStyle Function(double size);
 
@@ -105,7 +113,10 @@ class RowLayout {
     required this.count,
     this.emptyBox = false,
     this.boxColor,
-  });
+    double? visAscent,
+    double? visDescent,
+  })  : visAscent = visAscent ?? ascent,
+        visDescent = visDescent ?? descent;
 
   final List<Piece> pieces;
   final double width;
@@ -113,6 +124,12 @@ class RowLayout {
   /// Above and below the baseline, including raised and lowered groups.
   final double ascent;
   final double descent;
+
+  /// What can be seen above and below the baseline: an empty slot is its hollow box, plain text is as tall as its digits
+  /// and capitals (not the font's full line box); anything with groups or structures is its real [ascent] and [descent].
+  /// Limit boxes are spaced from these, so the gap above a sign equals the gap below it.
+  final double visAscent;
+  final double visDescent;
 
   /// Font size of this row's own text.
   final double size;
@@ -244,6 +261,21 @@ RowLayout layoutRow(
     x = slot ? kPlaceholderWidthEm * size : (level == 0 ? 0 : kEmptyGroupEm * size);
   }
 
+  // what is visible: the hollow box of an empty slot, the height of digits and capitals for plain text, otherwise the lot
+  final plain = any && pieces.every((p) => p is RunPiece);
+  final double visAscent;
+  final double visDescent;
+  if (!any) {
+    visAscent = kPlaceholderTopEm * size;
+    visDescent = (kPlaceholderHeightEm - kPlaceholderTopEm) * size;
+  } else if (plain) {
+    visAscent = math.min(ascent, 0.78 * size);
+    visDescent = math.min(descent, 0.04 * size);
+  } else {
+    visAscent = ascent;
+    visDescent = descent;
+  }
+
   return RowLayout(
     pieces: pieces,
     width: x,
@@ -253,7 +285,78 @@ RowLayout layoutRow(
     count: nodes.length,
     emptyBox: slot && !any,
     boxColor: slot && !any ? styleFor(size).color : null,
+    visAscent: visAscent,
+    visDescent: visDescent,
   );
+}
+
+enum BigOp { integral, sigma, prod }
+
+/// Width of each sign in em of its height.
+double bigOpWidthEm(BigOp op) => switch (op) {
+      BigOp.integral => 0.52,
+      BigOp.sigma => 0.78,
+      BigOp.prod => 0.84,
+    };
+
+/// Draws a big operator filling [box] (its exact ink area) in [color].
+void paintBigOp(Canvas canvas, BigOp op, Rect box, Color color) {
+  final w = box.width;
+  final h = box.height;
+  final fill = Paint()
+    ..color = color
+    ..style = PaintingStyle.fill
+    ..isAntiAlias = true;
+  Offset p(double fx, double fy) => Offset(box.left + fx * w, box.top + fy * h);
+  switch (op) {
+    case BigOp.prod:
+      // a bar across the top with two straight legs under it, the bar a little wider than the legs
+      final bar = 0.13 * h;
+      final leg = 0.15 * h;
+      final inset = 0.12 * w;
+      canvas.drawRect(Rect.fromLTWH(box.left, box.top, w, bar), fill);
+      canvas.drawRect(Rect.fromLTWH(box.left + inset, box.top, leg, h), fill);
+      canvas.drawRect(Rect.fromLTWH(box.right - inset - leg, box.top, leg, h), fill);
+    case BigOp.sigma:
+      // top bar, two diagonals meeting left of the middle, bottom bar; the bars turn a little towards the inside at the right
+      final t = 0.11 * h;
+      final path = Path()
+        ..moveTo(box.left + 0.02 * w, box.top)
+        ..lineTo(box.right, box.top)
+        ..lineTo(box.right, box.top + 0.20 * h)
+        ..lineTo(box.right - t * 0.9, box.top + 0.20 * h)
+        ..lineTo(box.right - t * 0.9, box.top + t)
+        ..lineTo(box.left + 0.20 * w, box.top + t)
+        ..lineTo(p(0.60, 0.5).dx, p(0.60, 0.5).dy)
+        ..lineTo(box.left + 0.20 * w, box.bottom - t)
+        ..lineTo(box.right - t * 0.9, box.bottom - t)
+        ..lineTo(box.right - t * 0.9, box.bottom - 0.20 * h)
+        ..lineTo(box.right, box.bottom - 0.20 * h)
+        ..lineTo(box.right, box.bottom)
+        ..lineTo(box.left + 0.02 * w, box.bottom)
+        ..lineTo(p(0.48, 0.5).dx, p(0.48, 0.5).dy)
+        ..close();
+      canvas.drawPath(path, fill);
+    case BigOp.integral:
+      // one long slanted S: a ball at each end, a thin stroke between them
+      final sw = 0.075 * h;
+      final r = 0.065 * h;
+      final stroke = Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = sw
+        ..strokeCap = StrokeCap.round
+        ..isAntiAlias = true;
+      final start = p(0.16, 0.93);
+      final end = p(0.84, 0.07);
+      final path = Path()
+        ..moveTo(start.dx, start.dy)
+        ..cubicTo(p(0.40, 1.04).dx, p(0.40, 1.04).dy, p(0.50, 0.86).dx, p(0.50, 0.86).dy, p(0.50, 0.50).dx, p(0.50, 0.50).dy)
+        ..cubicTo(p(0.50, 0.14).dx, p(0.50, 0.14).dy, p(0.60, -0.04).dx, p(0.60, -0.04).dy, end.dx, end.dy);
+      canvas.drawPath(path, stroke);
+      canvas.drawCircle(start, r, fill);
+      canvas.drawCircle(end, r, fill);
+  }
 }
 
 /// The radical sign and its overbar as one open path: a small tick, down to the bottom, up to the top, then across.
@@ -392,17 +495,17 @@ StructPiece _layoutStruct(
       final f = slotRow(0);
       final lo = slotRow(1, small: true);
       final hi = slotRow(2, small: true);
-      final sym = n is IntegralNode ? '∫' : (n is SigmaNode ? 'Σ' : '∏');
-      final big = TextPainter(
-        text: TextSpan(text: sym, style: styleFor(size * 1.35)),
-        textDirection: textDirection,
-        maxLines: 1,
-      )..layout();
-      final bigBase = big.computeDistanceToActualBaseline(TextBaseline.alphabetic);
-      final bigDescent = big.height - bigBase;
-      final symW = math.max(big.width, math.max(lo.width, hi.width));
-      final hiBase = bigBase * 0.55 + hi.descent + 0.05 * size;
-      final loBase = -(bigDescent * 0.55 + lo.ascent + 0.05 * size);
+      final kind = n is IntegralNode ? BigOp.integral : (n is SigmaNode ? BigOp.sigma : BigOp.prod);
+      final opH = kBigOpHeightEm * size;
+      final opW = bigOpWidthEm(kind) * opH;
+      // the sign spans [signBottom, signTop] above the baseline; the limit boxes keep one gap from it, measured to the edge
+      // of what they show, so the box above and the box below are the same distance away
+      final signTop = kBigOpCenterEm * size + opH / 2;
+      final signBottom = kBigOpCenterEm * size - opH / 2;
+      final gap = kBigOpGapEm * size;
+      final hiBase = signTop + gap + hi.visDescent;
+      final loBase = signBottom - gap - lo.visAscent;
+      final symW = math.max(opW, math.max(lo.width, hi.width));
       final fDx = symW + 0.14 * size;
       return StructPiece(x, index,
           width: fDx + f.width,
@@ -413,8 +516,12 @@ StructPiece _layoutStruct(
             SlotPlace(lo, (symW - lo.width) / 2, loBase),
             SlotPlace(hi, (symW - hi.width) / 2, hiBase),
           ],
-          decorate: (canvas, ox, baselineY) =>
-              big.paint(canvas, Offset(ox + (symW - big.width) / 2, baselineY - bigBase)));
+          decorate: (canvas, ox, baselineY) => paintBigOp(
+                canvas,
+                kind,
+                Rect.fromLTWH(ox + (symW - opW) / 2, baselineY - signTop, opW, opH),
+                color,
+              ));
     case DerivNode():
       final f = slotRow(0);
       final at = slotRow(1, small: true);
