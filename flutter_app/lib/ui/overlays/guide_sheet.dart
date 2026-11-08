@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../../editor/expr_doc.dart';
+import '../../editor/nodes.dart';
+import '../../editor/rich_expression_view.dart';
 import '../../engine/calc_error.dart';
 import '../../engine/evaluator.dart';
 import '../../engine/types.dart';
@@ -564,7 +567,19 @@ class _ExampleRow extends StatelessWidget {
                       runSpacing: 6,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Text(ex.expr, style: calcText(size: 15, weight: FontWeight.w600, color: t.onSurface, lineHeight: 22.5)),
+                        if (ex.load != null && ExprDoc.fromExample(ex.load!).root.any((n) => n is StructNode))
+                          // the example as it looks on the calculator's display: the boxes filled in
+                          RichExpressionView(
+                            key: const ValueKey('guide-example-structure'),
+                            doc: ExprDoc.fromExample(ex.load!),
+                            max: 20,
+                            min: 20,
+                            fit: false,
+                            color: t.onSurface,
+                            weight: FontWeight.w600,
+                          )
+                        else
+                          Text(ex.expr, style: calcText(size: 15, weight: FontWeight.w600, color: t.onSurface, lineHeight: 22.5)),
                         if (ex.angle != null)
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

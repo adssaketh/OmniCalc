@@ -52,6 +52,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   late final CalculatorController _c;
   PinnedSlotController? _pinned;
   int _loadedSeq = -1;
+  late final NavigationState _navigation;
   bool _pinnedShown = false;
   Widget? _pinnedWidget;
 
@@ -88,6 +89,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     _c.onShowMatVecResult = () => showMatVecResult(context, _c);
     HardwareKeyboard.instance.addHandler(_onHardwareKey);
     CasioRuntime.instance.addListener(_casioChanged);
+    _navigation = context.read<NavigationState>()..addListener(_checkExternal);
   }
 
   void _casioChanged() {
@@ -108,7 +110,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pinned = context.read<PinnedSlotController>();
-    // The `useEffect` on externalExpression / externalSeq: runs once on mount and whenever a new expression arrives.
+    // The `useEffect` on externalExpression / externalSeq: runs once on mount ...
+    _checkExternal();
+  }
+
+  /// ... and whenever a new expression arrives. `context.read` does not rebuild this screen, so while it is already shown
+  /// (the guide's Try button or a history entry used on top of it) the navigation state is listened to directly.
+  void _checkExternal() {
+    if (!mounted) return;
     final nav = context.read<NavigationState>();
     if (nav.externalSeq != _loadedSeq) {
       _loadedSeq = nav.externalSeq;
@@ -123,6 +132,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_onHardwareKey);
     CasioRuntime.instance.removeListener(_casioChanged);
+    _navigation.removeListener(_checkExternal);
     _idle?.cancel();
     _c.removeListener(_touchIdle);
     final pinned = _pinned;

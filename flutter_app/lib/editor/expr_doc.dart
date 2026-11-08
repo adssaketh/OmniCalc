@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show listEquals;
 
+import 'example_doc.dart';
 import 'linear.dart';
 import 'nodes.dart';
 
@@ -31,6 +32,13 @@ class ExprDoc {
   factory ExprDoc.fromLinear(String s) {
     final p = parseLinear(s);
     return ExprDoc._(p.nodes, p.path, p.offset);
+  }
+
+  /// Like [fromLinear], but `∫(f,a,b)`, `Σ(f,a,b)`, `∏(f,a,b)` and `d/dx(f,x)` become the structures of the natural display
+  /// (boxes filled in). For text from outside the editor: the guide's examples and the history.
+  factory ExprDoc.fromExample(String s) {
+    final nodes = nodesFromExample(s);
+    return ExprDoc._(nodes, const [], nodes.length);
   }
 
   factory ExprDoc.fromNodes(List<Node> nodes) => ExprDoc._(List<Node>.of(nodes), const [], nodes.length);

@@ -626,7 +626,7 @@ class CalculatorController extends ChangeNotifier {
   /// The `useEffect` on `externalExpression` / `externalSeq`: loads text from outside; empty text is ignored.
   void loadExternal(String expression) {
     if (expression.isEmpty) return;
-    _expression = expression;
+    _doc = ExprDoc.fromExample(expression);
     _lastQuestion = '';
     _lastAnswer = '';
     _hasEvaluated = false;

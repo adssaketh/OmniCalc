@@ -94,13 +94,13 @@ const List<GuideSection> kGuideSections = <GuideSection>[
       'Press =.',
     ],
     examples: <GuideExample>[
-      GuideExample(expr: 'diff(x^2, 3)', note: 'Slope of x² at x = 3. The rule 2x gives 6.', angle: null, setup: null, load: null),
-      GuideExample(expr: 'diff(x^3, 2)', note: 'Slope of x³ at x = 2. The rule 3x² gives 12.', angle: null, setup: null, load: null),
-      GuideExample(expr: 'diff(sqrt(x), 4)', note: 'Slope of √x at x = 4', angle: null, setup: null, load: null),
-      GuideExample(expr: 'diff(sin(x), 0)', note: 'Slope of sin(x) at 0. Use RAD for trig.', angle: AngleMode.rad, setup: null, load: null),
+      GuideExample(expr: 'diff(x^2, 3)', note: 'Slope of x² at x = 3. The rule 2x gives 6.', angle: null, setup: null, load: 'd/dx(x^2,3)'),
+      GuideExample(expr: 'diff(x^3, 2)', note: 'Slope of x³ at x = 2. The rule 3x² gives 12.', angle: null, setup: null, load: 'd/dx(x^3,2)'),
+      GuideExample(expr: 'diff(sqrt(x), 4)', note: 'Slope of √x at x = 4', angle: null, setup: null, load: 'd/dx(sqrt(x),4)'),
+      GuideExample(expr: 'diff(sin(x), 0)', note: 'Slope of sin(x) at 0. Use RAD for trig.', angle: AngleMode.rad, setup: null, load: 'd/dx(sin(x),0)'),
     ],
     tips: <String>[
-      'You can also type diff(x^2, 3) yourself. The examples below use that form, and Try types it for you.',
+      'Try loads the example into the calculator as boxes, ready for =. The typed form diff(x^2, 3) works too.',
       'With trig functions, switch to RAD first. In DEG mode the slope is measured per degree.',
     ],
   ),
@@ -118,15 +118,15 @@ const List<GuideSection> kGuideSections = <GuideSection>[
       'Press =. AC stops a long calculation.',
     ],
     examples: <GuideExample>[
-      GuideExample(expr: 'integrate(x^2, 0, 3)', note: 'Area under x² from 0 to 3', angle: null, setup: null, load: null),
-      GuideExample(expr: 'integrate(x, 0, 4)', note: 'A triangle: ½ × 4 × 4 = 8', angle: null, setup: null, load: null),
-      GuideExample(expr: 'integrate(1÷x, 1, e)', note: 'Area under 1/x from 1 to e', angle: null, setup: null, load: null),
-      GuideExample(expr: 'integrate(sin(x), 0, π)', note: 'One arch of sin(x). Use RAD for trig.', angle: AngleMode.rad, setup: null, load: null),
+      GuideExample(expr: 'integrate(x^2, 0, 3)', note: 'Area under x² from 0 to 3', angle: null, setup: null, load: '∫(x^2,0,3)'),
+      GuideExample(expr: 'integrate(x, 0, 4)', note: 'A triangle: ½ × 4 × 4 = 8', angle: null, setup: null, load: '∫(x,0,4)'),
+      GuideExample(expr: 'integrate(1÷x, 1, e)', note: 'Area under 1/x from 1 to e', angle: null, setup: null, load: '∫(1÷x,1,e)'),
+      GuideExample(expr: 'integrate(sin(x), 0, π)', note: 'One arch of sin(x). Use RAD for trig.', angle: AngleMode.rad, setup: null, load: '∫(sin(x),0,π)'),
     ],
     tips: <String>[
       'Swap the two limits and the answer changes sign.',
       'Get π and e from the Constants tab.',
-      'You can also type integrate(x^2, 0, 3) yourself. The examples below use that form.',
+      'Try loads the example as boxes. The typed form integrate(x^2, 0, 3) works too.',
     ],
   ),
   GuideSection(
@@ -143,12 +143,12 @@ const List<GuideSection> kGuideSections = <GuideSection>[
       'Press =.',
     ],
     examples: <GuideExample>[
-      GuideExample(expr: 'sum(x^2, 1, 5)', note: '1² + 2² + 3² + 4² + 5²', angle: null, setup: null, load: null),
-      GuideExample(expr: 'sum(x, 1, 100)', note: 'Add every number from 1 to 100', angle: null, setup: null, load: null),
-      GuideExample(expr: 'prod(x, 1, 5)', note: '1 × 2 × 3 × 4 × 5, which is 5 factorial', angle: null, setup: null, load: null),
+      GuideExample(expr: 'sum(x^2, 1, 5)', note: '1² + 2² + 3² + 4² + 5²', angle: null, setup: null, load: 'Σ(x^2,1,5)'),
+      GuideExample(expr: 'sum(x, 1, 100)', note: 'Add every number from 1 to 100', angle: null, setup: null, load: 'Σ(x,1,100)'),
+      GuideExample(expr: 'prod(x, 1, 5)', note: '1 × 2 × 3 × 4 × 5, which is 5 factorial', angle: null, setup: null, load: '∏(x,1,5)'),
     ],
     tips: <String>[
-      'You can also type sum(x^2, 1, 5) or prod(x, 1, 5) yourself. The examples below use that form.',
+      'Try loads the example as boxes. The typed forms sum(x^2, 1, 5) and prod(x, 1, 5) work too.',
     ],
   ),
   GuideSection(
