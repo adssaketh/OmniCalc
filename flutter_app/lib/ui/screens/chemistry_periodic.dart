@@ -368,19 +368,26 @@ class ElementDetailSheet extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-                child: Row(
+                // Three pills side by side were too narrow for "Use in calculator" on a phone and it broke into three lines.
+                // The main action takes a full-width row of its own; Copy mass and Close share the row under it.
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: ChemButton(
-                        label: 'Copy mass',
-                        secondary: true,
-                        onTap: () => Clipboard.setData(ClipboardData(text: chemNum(e.mass, 8))),
-                      ),
+                    ChemButton(label: 'Use in calculator', onTap: onInsertMass ?? () {}),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ChemButton(
+                            label: 'Copy mass',
+                            secondary: true,
+                            onTap: () => Clipboard.setData(ClipboardData(text: chemNum(e.mass, 8))),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(child: ChemButton(label: 'Close', secondary: true, onTap: () => Navigator.of(context).pop())),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(child: ChemButton(label: 'Use in calculator', onTap: onInsertMass ?? () {})),
-                    const SizedBox(width: 8),
-                    ChemButton(label: 'Close', secondary: true, onTap: () => Navigator.of(context).pop()),
                   ],
                 ),
               ),

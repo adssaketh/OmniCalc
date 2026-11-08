@@ -6,20 +6,27 @@ import '../../engine/casio/base_n.dart';
 import 'calc_style.dart';
 import '../../engine/casio/stat.dart';
 import 'calculator_controller.dart';
+import 'key_glyph.dart';
 import 'spoken.dart';
 
 enum _Role { onSurface, primary, tertiary }
 
 enum _Kind { normal, formula, angle, active }
 
-/// The placeholder in a key label (`∫▭▭`, `▭/▭`, `√▭`). The label text keeps this character (the screen reader and the tests
-/// look keys up by it), but it is drawn as a real square box: the font's `▭` is a flat rectangle.
+/// The placeholder in a key label. The label text keeps this character (the screen reader and the tests look keys up by
+/// it), but it is drawn as a real square box: the font's `▭` is a flat rectangle. Whole structure labels are drawn by
+/// [KeyGlyph].
 const String _boxChar = '▭';
 
 /// The spans of [text] with every `▭` replaced by a hollow square about as tall as a capital letter, centred on the line.
 /// [fontSize] and [color] are those of the surrounding text.
 List<InlineSpan> boxSpans(String text, double fontSize, Color color) {
   if (!text.contains(_boxChar)) return [TextSpan(text: text)];
+  // The structure keys are drawn as the structure itself (limit boxes round a sign, a box over a bar over a box ...).
+  final kind = keyGlyphKind(text);
+  if (kind != null) {
+    return [WidgetSpan(alignment: PlaceholderAlignment.middle, child: KeyGlyph(kind: kind, u: fontSize, color: color))];
+  }
   final out = <InlineSpan>[];
   final run = StringBuffer();
   void flush() {

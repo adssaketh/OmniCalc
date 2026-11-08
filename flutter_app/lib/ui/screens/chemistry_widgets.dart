@@ -164,6 +164,10 @@ class ChemButton extends StatelessWidget {
         ),
         child: Text(
           label,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
           style: appText(size: 14, weight: FontWeight.w700, color: secondary ? t.onSurface : t.onPrimary, height: 20 / 14),
         ),
       ),

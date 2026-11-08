@@ -279,7 +279,13 @@ class _AppShellState extends State<AppShell> {
             controller: _scroll,
             slivers: [
               SliverToBoxAdapter(child: SizedBox(height: _topH + 6)),
-              SliverFillRemaining(
+              // The calculator and the grapher lay themselves out in a bounded height (keypad rows share the space), so they
+              // keep SliverFillRemaining. Every other screen is plain content that grows: it fills at least the space
+              // under the bars (web `min-h-full`) and scrolls to its real end. SliverFillRemaining(hasScrollBody: false)
+              // sizes by intrinsic height, and a LayoutBuilder inside it (the amortization table) reports 0, so the scroll
+              // stopped short and the last rows stayed under the bottom bar.
+              if (mode == CalculatorMode.standard || mode == CalculatorMode.scientific || mode == CalculatorMode.grapher)
+                SliverFillRemaining(
                 hasScrollBody: false,
                 child: Align(
                   alignment: Alignment.topCenter,
@@ -302,7 +308,28 @@ class _AppShellState extends State<AppShell> {
                     ),
                   ),
                 ),
-              ),
+              )
+              else
+                SliverLayoutBuilder(
+                  builder: (context, c) => SliverToBoxAdapter(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: math.max(0.0, c.viewportMainAxisExtent - (_topH + 6))),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 1650),
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(hPad, vPad, hPad, vPad + (large ? 24 : bottomBars + 12)),
+                            child: M3ScreenEnter(
+                              key: ValueKey(mode),
+                              child: widget.screenBuilder(context, mode),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

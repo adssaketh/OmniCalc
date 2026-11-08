@@ -17,6 +17,7 @@ import '../icons/nav_icon.dart';
 import '../widgets/m3_sheet.dart';
 import '../widgets/pressable.dart';
 import 'guide_content.dart';
+import 'guide_content_extra.dart';
 import 'history_tape_sheet.dart' show pillRadiusAll;
 
 /// `ExampleResult` of GuideSheet.tsx.
@@ -172,7 +173,7 @@ class _GuideSheetState extends State<GuideSheet> {
                           ],
                         ),
                       ),
-                      for (final section in kGuideSections) ...[
+                      for (final section in [...kGuideSections, ...kGuideSectionsExtra]) ...[
                         const SizedBox(height: 12),
                         _SectionCard(
                           key: ValueKey('guide-section-${section.id}'),
@@ -492,6 +493,7 @@ class _SectionBody extends StatelessWidget {
             ],
           ],
         ),
+      if (section.examples.isNotEmpty)
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

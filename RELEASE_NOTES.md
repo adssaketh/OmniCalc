@@ -10,6 +10,15 @@ OmniCalc has been rebuilt from the ground up with the same look, and it now incl
 - **Chemistry.** A periodic table of all 118 elements, a formula parser with molar mass and mass percent, an equation balancer and solvers for gases, solutions, acids and bases, thermochemistry, kinetics, equilibrium and more. Chemistry is off by default; turn it on in Settings.
 - **Everything else carries over.** The converter, currency, finance, physics and grapher screens, all themes (light, dark and dynamic) and the liquid-glass bars.
 
+## Fixes in this build
+
+- The app icon on the home screen is the OmniCalc icon, and the app is named OmniCalc.
+- Live exchange rates work: the app now has permission to use the network.
+- The structure keys (∫, Σ, ∏, fraction, roots, |x|, log) are drawn the way they appear in the display, and the boxes round ∫, Σ and ∏ are evenly spaced.
+- Loan / EMI and the other long screens scroll all the way down when a table is opened.
+- The header buttons are centred in the header, and the Use in calculator button in the periodic table no longer wraps.
+- The in-app guide has new topics for the natural display, the Casio modes and exchange rates.
+
 ## Good to know
 
 - Statistics, matrix, vector and table editors open as full-height sheets, and INEQ, EQN and DIST open as dialogs, instead of copying the Casio screens line for line.
