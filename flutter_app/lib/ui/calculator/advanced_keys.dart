@@ -5,6 +5,7 @@ import '../../theme/tokens.dart';
 import '../../engine/casio/base_n.dart';
 import 'calc_style.dart';
 import '../../engine/casio/stat.dart';
+import '../../state/drawer_layout.dart';
 import 'calculator_controller.dart';
 import 'key_glyph.dart';
 import 'spoken.dart';
@@ -468,6 +469,13 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
   }
 }
 
+/// The keys of [tab] in the default order as (id, label, sub), for the Customize sheet.
+List<({String id, String label, String sub})> advancedKeyEntries(AdvancedTab tab, CalculatorController c) {
+  final keys = _keysFor(tab, c, () {});
+  final ids = DrawerLayout.idsOf([for (final k in keys) (label: k.label, sub: k.sub)]);
+  return [for (var i = 0; i < keys.length; i++) (id: ids[i], label: keys[i].label, sub: keys[i].sub)];
+}
+
 /// `renderAdvancedTabContent(isLandscapeMode)`: the keys of the selected tab, plus the format hint under the Calculus
 /// and Probability tabs in portrait.
 class AdvancedTabContent extends StatelessWidget {
@@ -488,7 +496,9 @@ class AdvancedTabContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = M3Theme.of(context);
     final tab = controller.advancedTab;
-    final keys = _keysFor(tab, controller, onToggleAngleMode);
+    final defaults = _keysFor(tab, controller, onToggleAngleMode);
+    final order = DrawerLayout.instance.keyIndexes(tab, DrawerLayout.idsOf([for (final k in defaults) (label: k.label, sub: k.sub)]));
+    final keys = [for (final i in order) defaults[i]];
     final cols = landscape ? 4 : (width >= 640 ? 6 : 4);
     final gap = tw(width, 6, sm: 8);
     final rows = <List<_Adv>>[];

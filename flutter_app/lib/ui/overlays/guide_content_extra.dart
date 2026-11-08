@@ -44,6 +44,24 @@ const List<GuideSection> kGuideSectionsExtra = <GuideSection>[
     ],
   ),
   GuideSection(
+    id: 'customize',
+    badge: '⇅',
+    title: 'Arrange the pills and keys',
+    summary: 'Put the Advanced tabs and the keys inside each tab in the order you use them.',
+    where: 'fx ADV → Customize',
+    syntax: null,
+    steps: <String>[
+      'Open the Advanced keys (the fx ADV button) and tap Customize at the top of the panel.',
+      'Under Pills, hold the handle at the right of a pill and drag it up or down. The row of pills on the calculator follows at once, and so do the [ and ] keys on a keyboard.',
+      'Under Keys, tap the pill whose keys you want to arrange, then drag its keys into the order you like.',
+      'Reset (for one pill) or Reset all puts the original order back.',
+    ],
+    examples: <GuideExample>[],
+    tips: <String>[
+      'Your order is saved on the phone and is still there the next time you open OmniCalc.',
+    ],
+  ),
+  GuideSection(
     id: 'rates',
     badge: '₹ \$',
     title: 'Live exchange rates',

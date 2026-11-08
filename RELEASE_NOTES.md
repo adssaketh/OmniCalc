@@ -18,6 +18,8 @@ OmniCalc has been rebuilt from the ground up with the same look, and it now incl
 - Loan / EMI and the other long screens scroll all the way down when a table is opened.
 - The header buttons are centred in the header, and the Use in calculator button in the periodic table no longer wraps.
 - Differentiation, integration, sums and products work from the Calculus tab (they gave a Syntax ERROR when the variable was typed with the x key). The duplicate formula keys under them and the repeated power keys are gone, and rand() and randInt() work again.
+- The guide's Try buttons now load the example into the calculator, and the integral, derivative, sum and product examples are shown in the natural look with limits.
+- New: Customize in the Advanced panel lets you drag the pills and the keys of each pill into your own order (saved on the phone, with Reset).
 - The in-app guide has new topics for the natural display, the Casio modes and exchange rates.
 
 ## Good to know

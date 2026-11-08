@@ -13,6 +13,7 @@ import 'theme/app_theme.dart';
 import 'theme/dynamic_colors.dart';
 import 'theme/tokens.dart';
 import 'state/casio_settings.dart';
+import 'state/drawer_layout.dart';
 import 'ui/overlays/overlays.dart';
 import 'ui/screens/screens.dart';
 import 'ui/shell/app_shell.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final settings = await SettingsStore.load();
   await CasioRuntime.instance.load();
+  await DrawerLayout.instance.load();
   final history = await HistoryStore.load();
   runApp(OmniCalcApp(
     settings: settings,

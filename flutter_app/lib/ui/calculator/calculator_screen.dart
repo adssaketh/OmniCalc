@@ -12,6 +12,7 @@ import '../../engine/casio/stat.dart';
 import '../../engine/types.dart';
 import '../../services/feedback_service.dart';
 import '../../state/casio_settings.dart';
+import '../../state/drawer_layout.dart';
 import '../../state/history_store.dart';
 import '../../state/navigation_state.dart';
 import '../../state/settings_store.dart';
@@ -28,6 +29,7 @@ import '../shell/swipeable_tab_container.dart';
 import 'advanced_keys.dart';
 import 'calc_style.dart';
 import 'calculator_controller.dart';
+import 'customize_sheet.dart';
 import 'data_sheets.dart';
 import 'ineq_dist_panels.dart';
 import 'mode_menu.dart';
@@ -1075,8 +1077,11 @@ class _PortraitKeys extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: CachedIntrinsicHeight(
                 estimate: 300,
-                child: _AdvancedDrawer(
-                    controller: c, onToggleAngle: onToggleAngle, width: w),
+                child: ListenableBuilder(
+                  listenable: DrawerLayout.instance,
+                  builder: (context, _) => _AdvancedDrawer(
+                      controller: c, onToggleAngle: onToggleAngle, width: w),
+                ),
               ),
             )
           : const SizedBox(width: double.infinity),
@@ -1122,8 +1127,9 @@ class _AdvancedDrawer extends StatelessWidget {
     final c = controller;
     final sm = width >= 640;
     final tabs = [
-      for (final d in advancedTabDefs)
-        TabItem(id: d.id.name, label: d.label, badge: d.badge)
+      for (final id in DrawerLayout.instance.tabs)
+        for (final d in advancedTabDefs)
+          if (d.id == id) TabItem(id: d.id.name, label: d.label, badge: d.badge)
     ];
     return Container(
       padding: EdgeInsets.all(sm ? 16 : 12),
@@ -1165,6 +1171,20 @@ class _AdvancedDrawer extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
+                M3Key(
+                  key: const ValueKey('customize-open'),
+                  foreground: t.primary,
+                  background: t.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(9999),
+                  onTap: () => showCustomizeDrawerSheet(context, c),
+                  semanticLabel: 'Customize keys',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Text('Customize',
+                        style: calcText(size: 12, weight: FontWeight.w600, color: t.primary, lineHeight: 16)),
+                  ),
+                ),
+                const SizedBox(width: 6),
                 M3Key(
                   foreground: t.primary,
                   background: t.surfaceContainerHigh,
@@ -1404,9 +1424,11 @@ class _Landscape extends StatelessWidget {
                             onToggleAngle: onToggleAngle)),
                     SizedBox(width: gap),
                     Expanded(
-                        child: _LandscapeKeys(
-                            controller: controller,
-                            onToggleAngle: onToggleAngle)),
+                        child: ListenableBuilder(
+                            listenable: DrawerLayout.instance,
+                            builder: (context, _) => _LandscapeKeys(
+                                controller: controller,
+                                onToggleAngle: onToggleAngle))),
                   ],
                 ),
               ),
@@ -1702,8 +1724,9 @@ class _LandscapeKeys extends StatelessWidget {
     final r = tw(w, 22, sm: 26);
     final sm = w >= 640;
     final tabs = [
-      for (final d in advancedTabDefs)
-        TabItem(id: d.id.name, label: d.label, badge: d.badge)
+      for (final id in DrawerLayout.instance.tabs)
+        for (final d in advancedTabDefs)
+          if (d.id == id) TabItem(id: d.id.name, label: d.label, badge: d.badge)
     ];
 
     Widget digit(String d) => _Key(

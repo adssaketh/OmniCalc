@@ -25,6 +25,7 @@ import '../../engine/chemistry/calc_functions.dart';
 import '../../engine/evaluator.dart';
 import '../../engine/types.dart';
 import '../../services/feedback_service.dart';
+import '../../state/drawer_layout.dart';
 import '../../state/history_store.dart';
 
 /// Runs one Casio calculation in a background isolate (∫, d/dx, Σ, ∏ can take seconds). Message:
@@ -2059,11 +2060,12 @@ class CalculatorController extends ChangeNotifier {
 
     // [ and ] switch the advanced tab
     if (key == '[' || key == ']') {
-      final curIdx = AdvancedTab.values.indexOf(_advancedTab);
-      final n = AdvancedTab.values.length;
+      final order = DrawerLayout.instance.tabs;
+      final curIdx = order.indexOf(_advancedTab);
+      final n = order.length;
       final target = key == '['
-          ? AdvancedTab.values[curIdx > 0 ? curIdx - 1 : n - 1]
-          : AdvancedTab.values[curIdx < n - 1 ? curIdx + 1 : 0];
+          ? order[curIdx > 0 ? curIdx - 1 : n - 1]
+          : order[curIdx < n - 1 ? curIdx + 1 : 0];
       _advancedTab = target;
       playSound(ClickType.toggle);
       notifyListeners();
