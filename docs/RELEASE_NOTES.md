@@ -1,6 +1,6 @@
 # Release notes
 
-## 1.2.0+3 (Flutter rewrite, phase 8e)
+## 1.2.0+3 (phase 8e)
 
 New
 - INEQ: the answer now shows the header line of the manual (`A<X<B`, `X≤A,B≤X`, `X=A,B≤X`, `A<X<B,C<X`) above the solution in Math display.
@@ -9,7 +9,7 @@ New
 Still open
 - The four full-height sheet rows I02, L05, M04, N06 stay Partial by design. Examples 1 and 3 in Linear Display and the double-root header `X<A,A<X` are unverified on a real device.
 
-## 1.2.0 (Flutter rewrite, phase 8c)
+## 1.2.0 (phase 8c)
 
 New
 - SETUP: Decimal point (Disp) dot or comma for results, and Display contrast (CONT 1-5).
