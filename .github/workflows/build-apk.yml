@@ -94,8 +94,16 @@ jobs:
 
       # Each build gets a higher versionCode (the run number of this workflow, as in earlier releases), so a newer APK
       # can always be installed over an older one signed with the same key. The pubspec build number (+N) is not used.
+      # The Gradle distribution is downloaded from GitHub on the first run and that download sometimes answers 504, so
+      # a failed build is tried again (up to three times) before the job fails.
       - name: Build release APK
-        run: flutter build apk --release --build-number=${{ github.run_number }}
+        run: |
+          for attempt in 1 2 3; do
+            if flutter build apk --release --build-number=${{ github.run_number }}; then exit 0; fi
+            echo "::warning::Build attempt $attempt failed"
+            sleep 45
+          done
+          exit 1
 
       - name: Upload release APK
         uses: actions/upload-artifact@v4
