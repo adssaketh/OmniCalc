@@ -29,7 +29,7 @@ total is the whole inventory.
 | A15 | `ALPHA` | Done | 8a | test/ui/calculator_es_test.dart |
 | A16 | REPLAY pad (◀ ▶ ▲ ▼) | Done | 8a | test/ui/calculator_es_test.dart |
 | A17 | `MODE` menu (COMP, CMPLX, BASE-N, EQN, STAT, MATRIX, VECTOR, TABLE; the last four open sheets instead of Casio screens) | Done | 7d-2 | test/ui/data_modes_test.dart |
-| A18 | `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec, complex format, STAT frequency and TABLE format settings; Disp and CONT remain) | Partial | 8 | test/casio/casio_settings_test.dart |
+| A18 | `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec, complex format, STAT frequency and TABLE format settings, Disp dot or comma, CONT 1-5 as display brightness) | Done | 8c | test/ui/overlays/settings_disp_cont_test.dart |
 | A19 | `CLR` Setup / Memory / All, each with Yes / Cancel (Modes tab) | Done | 7e | test/ui/verif_clr_power_test.dart |
 | A20 | `STO` | Done | 7b | test/casio/casio_engine_test.dart |
 | A21 | `RCL` (ES tab key, RCL annunciator; recalls the exact value into the line) | Done | - | test/casio/variables_test.dart |
@@ -52,7 +52,7 @@ total is the whole inventory.
 | A38 | `LCM(` | Done | 7b | test/casio/guide_examples_test.dart |
 | A39 | `Int(` | Done | 7b | test/casio/guide_examples_test.dart |
 | A40 | `Intg(` | Done | 7b | test/casio/guide_examples_test.dart |
-| A41 | recurring-decimal input | Deferred | 8 | - |
+| A41 | recurring-decimal input (SHIFT on `×10ˣ` = `0.ṅ`; COMP mode, period up to 14 digits; DEL removes a digit and its mark) | Done | 8c | test/casio/phase8c_display_test.dart |
 | B01 | `x²` | Done | 7b | test/casio/guide_examples_test.dart |
 | B02 | `x³` | Done | 7b | test/casio/guide_examples_test.dart |
 | B03 | `xʸ` / `^` | Done | 7b | test/casio/casio_engine_test.dart |
@@ -67,7 +67,7 @@ total is the whole inventory.
 | B12 | `ln` | Done | 7b | test/casio/guide_examples_test.dart |
 | B13 | `x!` | Done | 7b | test/casio/guide_examples_test.dart |
 | B14 | `Abs` | Done | 7b | test/casio/guide_examples_test.dart |
-| C01 | stacked fraction (input 8a; the result is shown as `a⌟b` text, stacked result layout waits) | Partial | 8 | test/casio/casio_controller_test.dart |
+| C01 | stacked fraction (input 8a; MathO results are drawn stacked, LineIO keeps `a⌟b`) | Done | 8c | test/casio/phase8c_display_test.dart |
 | C02 | mixed fraction | Done | 7b | test/casio/casio_engine_test.dart |
 | C03 | `S⇔D` | Done | 7b | test/casio/casio_controller_test.dart |
 | C04 | `ab/c ⇔ d/c` | Done | 7b | test/casio/casio_controller_test.dart |
@@ -108,7 +108,7 @@ total is the whole inventory.
 | H07 | `▸r∠θ` | Done | 7d-1 | test/casio/complex_test.dart |
 | H08 | `▸a+bi` | Done | 7d-1 | test/casio/complex_test.dart |
 | H09 | SETUP complex format a+bi / r∠θ | Done | 7d-1 | test/casio/complex_test.dart |
-| H10 | Linear Display: a and bi (or r and θ) on separate lines (engine gives the lines; the screen shows one line) | Partial | 8 | test/casio/complex_test.dart |
+| H10 | Linear Display: a and bi (or r and θ) on separate lines (Pol/Rec too; MathO shows both on one line) | Done | 8c | test/casio/phase8c_display_test.dart |
 | H11 | CALC in CMPLX (p.47-48 example 2) | Done | - | test/casio/calc_cmplx_test.dart |
 | J01 | DEC, HEX, BIN, OCT calculation and result conversion | Done | 7d-1 | test/casio/base_n_test.dart |
 | J02 | number-mode prefixes `d h b o` | Done | 7d-1 | test/casio/base_n_test.dart |

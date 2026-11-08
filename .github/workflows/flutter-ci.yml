@@ -86,6 +86,11 @@ jobs:
             echo "enabled=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Signing secrets not set, skipping the signed release APK."
           fi
+          if [ "$(grep -c . <<<"$KEYSTORE_B64")" -gt 0 ]; then
+            echo "### APK: signed release built (secrets present)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### APK: UNSIGNED only (OMNI_KEYSTORE_B64 not set)" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Align and sign release APK
         if: steps.signing.outputs.enabled == 'true'
@@ -118,3 +123,27 @@ jobs:
           path: OmniCalc-flutter-release-signed.apk
           if-no-files-found: error
           retention-days: 90
+
+  screenshots:
+    # Regression screenshots rendered by this app. Pinned Flutter so pixels stay stable; see flutter_app/PHASE8C_NOTES.md.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.9'
+          cache: true
+      - run: flutter pub get
+      - name: Compare screenshots
+        run: OMNI_SCREENSHOTS=1 flutter test test/screenshots --reporter expanded
+      - name: Keep failure images
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-failures
+          path: flutter_app/test/screenshots/failures/
+          if-no-files-found: ignore
+          retention-days: 14

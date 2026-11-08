@@ -629,8 +629,10 @@ class _PortraitDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Phase 8c: also rebuilds when a SETUP choice changes (CONT), because the screen keeps this widget cached
     return ListenableBuilder(
-        listenable: controller, builder: (context, _) => _build(context));
+        listenable: Listenable.merge(<Listenable>[controller, CasioRuntime.instance]),
+        builder: (context, _) => _build(context));
   }
 
   Widget _build(BuildContext context) {
@@ -659,7 +661,7 @@ class _PortraitDisplay extends StatelessWidget {
       onOpenGuide: () => nav.setGuideOpen(true),
     );
 
-    final Widget answer;
+    Widget answer;
     if (c.isErrorResult) {
       answer = ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 120),
@@ -684,17 +686,29 @@ class _PortraitDisplay extends StatelessWidget {
         ),
       );
     } else {
+      final lines = c.resultLines;
       final fit = Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
-        child: RichExpressionView(
-          doc: c.hasEvaluated ? c.resultDoc : c.doc,
-          max: 72,
-          min: 26,
-          color: c.hasEvaluated ? t.primary : t.onSurface,
-          showCaret: c.caretVisible,
-          caretColor: t.primary,
-          onCaretHit: c.placeCaret,
-        ),
+        child: lines.length > 1
+            // Phase 8c: Linear Display writes a complex result (and Pol/Rec) on separate lines
+            ? Column(
+                key: const ValueKey('result-lines'),
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  for (final l in lines)
+                    RichExpressionView(doc: ExprDoc.plain(l), max: 40, min: 20, color: t.primary),
+                ],
+              )
+            : RichExpressionView(
+                doc: c.hasEvaluated ? c.resultDoc : c.doc,
+                max: 72,
+                min: 26,
+                color: c.hasEvaluated ? t.primary : t.onSurface,
+                showCaret: c.caretVisible,
+                caretColor: t.primary,
+                onCaretHit: c.placeCaret,
+              ),
       );
       // Phase 8b: a finished result is a live region, so TalkBack reads the answer after `=` without a swipe
       answer = c.hasEvaluated
@@ -704,6 +718,11 @@ class _PortraitDisplay extends StatelessWidget {
                   trigger: '${c.expression}|${c.lastQuestion}', child: fit),
             )
           : fit;
+      // Phase 8c: SETUP > CONT. Level 5 is the normal look and adds no widget at all.
+      final contrast = CasioRuntime.instance.settings.contrast;
+      if (contrast < 5) {
+        answer = Opacity(key: const ValueKey('display-contrast'), opacity: 0.4 + 0.15 * (contrast - 1), child: answer);
+      }
     }
 
     final card = Container(

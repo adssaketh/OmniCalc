@@ -249,7 +249,7 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         // Phase 7b: the result keys of the unit
         layered('S⇔D', 'fraction ⇔ dec', main: c.toggleForm, shift: c.toggleMixedFraction, shiftLabel: 'ab/c⇔d/c', size: 12),
         _Adv('FACT', 'prime factors', c.factorResult, labelSize: 12, textSm: true),
-        _Adv('×10ˣ', 'exponent', c.esTimesTen, labelSize: 12, textSm: true),
+        layered('×10ˣ', 'exponent', main: c.esTimesTen, shift: c.esRecurring, shiftLabel: '0.ṅ', size: 12),
         inp('÷R', 'remainder', '÷R', textSm: true),
         layered('ENG', 'engineering', main: () => c.engShift(right: true), shift: () => c.engShift(right: false), shiftLabel: '←', size: 12),
         inp('Ans', 'last result', 'Ans', textSm: true),

@@ -1,6 +1,7 @@
 // The calculator controller with the Casio engine: results, S⇔D, error state, Ans continuation (Phase 7b).
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:omnicalc/editor/nodes.dart';
 import 'package:omnicalc/engine/casio/config.dart';
 import 'package:omnicalc/engine/casio/engine.dart';
 import 'package:omnicalc/engine/types.dart';
@@ -32,7 +33,8 @@ void main() {
     type(c, '3÷4');
     c.handleEvaluate();
     expect(c.lastAnswer, '3⌟4');
-    expect(c.resultDoc.linear, '3⌟4');
+    // Phase 8c (C01): in MathO the answer line draws the fraction stacked; the text form is what lastAnswer keeps
+    expect(c.resultDoc.root.single, isA<FracNode>());
     expect(c.expression, '(3÷4)');
     expect(c.isErrorResult, isFalse);
     expect(c.canToggleForm, isTrue);

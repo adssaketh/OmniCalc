@@ -256,3 +256,7 @@ A calculation whose operands wait deeper than 10 numeric levels or 24 command le
 
 ## D-EQN-1 EQN solution screen
 EQN shows one solution at a time with buttons `=`, ▲, ▼ and AC (manual p.71), and a position counter (for example 1 / 2) that the unit does not have.
+- **Display contrast (D-CONT-1):** CONT levels 1-5 dim the display (opacity 0.4 to 1.0, 5 = normal); a phone screen has no LCD contrast.
+- **Disp (D-DISP-1):** the decimal point setting changes results only; input keeps the dot (manual).
+- **Pol/Rec in MathO (D-POLREC-1):** both outputs are shown on one line (`r = 5, θ = 53.13`); LineIO shows two lines.
+- **Recurring decimals outside COMP (D-RECUR-1):** the recurring mark is expanded only in COMP; other modes receive the raw mark.

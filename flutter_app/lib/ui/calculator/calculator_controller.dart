@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import '../../editor/expr_doc.dart';
 import '../../editor/linear.dart';
 import '../../editor/nodes.dart';
+import '../../editor/result_doc.dart';
 import '../../editor/rich_layout.dart' show CaretHit;
 import '../../engine/calc_error.dart';
 import '../../engine/casio/base_n.dart';
@@ -14,6 +15,7 @@ import '../../engine/casio/complex.dart';
 import '../../engine/casio/config.dart';
 import '../../engine/casio/cval.dart' show CVal, CasioError, CasioErrorKind;
 import '../../engine/casio/engine.dart';
+import '../../engine/casio/recurring_input.dart';
 import '../../engine/casio/format.dart';
 import '../../engine/casio/matrix.dart';
 import '../../engine/casio/stat.dart';
@@ -197,7 +199,11 @@ class CalculatorController extends ChangeNotifier {
   String get _expression => _doc.linear;
   set _expression(String v) => _doc = ExprDoc.fromLinear(v);
 
+  /// Row A41: after the recurring key every digit typed is marked as part of the period.
+  bool _recurMode = false;
+
   void _clearModifiers() {
+    _recurMode = false;
     _shift = false;
     _alpha = false;
     _insArmed = false;
@@ -491,6 +497,9 @@ class CalculatorController extends ChangeNotifier {
   bool _continuesAns = false;
   String? _resultRemainder;
   Map<String, String> _resultExtra = const <String, String>{};
+
+  /// Linear Display lines of each form of a CMPLX result (`a` and `bi`, or `r` and `∠θ`), parallel to [_forms].
+  List<List<String>> _formLines = const <List<String>>[];
   bool _resultFactorable = false;
   String _answerDisplay = '';
   bool _isEqualsPressed = false;
@@ -566,13 +575,43 @@ class CalculatorController extends ChangeNotifier {
       _hasEvaluated && (_resultError || (_forms.isEmpty && !_reErrorResult.hasMatch(_expression.trim())));
 
   /// What the answer line shows after `=` (fractions as `7⌟6`, √ and π forms, DMS, recurring decimals, `3 R 2`).
-  ExprDoc get resultDoc => _answerDisplay.isEmpty ? _doc : ExprDoc.plain(_answerDisplay);
+  ExprDoc get resultDoc => _answerDisplay.isEmpty
+      ? _doc
+      : resultDocFor(_answerDisplay, stacked: engine.config.displayFormat == CasioDisplayFormat.mathO);
+
+  /// `Pol` / `Rec` give two values: `r = 2, θ = 45` (manual p.44). With SETUP > Disp > Comma the separator is `;`.
+  String _withExtra(String firstDisplay) {
+    if (_resultExtra.isEmpty) return firstDisplay;
+    final sep = engine.config.commaDecimal ? ';' : ',';
+    final b = StringBuffer('${_resultExtra.containsKey('θ') ? 'r' : 'X'} = $firstDisplay');
+    for (final e in _resultExtra.entries) {
+      b.write('$sep ${e.key} = ${e.value}');
+    }
+    return b.toString();
+  }
 
   /// The other forms of the last result exist (S⇔D has something to switch to).
   bool get canToggleForm => _hasEvaluated && _forms.length > 1;
 
   /// `Pol`/`Rec` second outputs, for example {'θ': '45'} (empty for other results).
   Map<String, String> get resultExtra => _resultExtra;
+
+  /// Phase 8c (row H10): with Linear Display (LineIO) a CMPLX result is written as `a` and `bi` (or `r` and `∠θ`) on
+  /// separate lines (manual p.56 note) and `Pol` / `Rec` as `r = 2` over `θ = 45` (manual p.44). Empty means one line.
+  List<String> get resultLines {
+    if (!_hasEvaluated || _resultError || engine.config.displayFormat != CasioDisplayFormat.lineIO) return const <String>[];
+    if (_formLines.isNotEmpty) {
+      final l = _formLines[_formIndex.clamp(0, _formLines.length - 1)];
+      return l.length > 1 ? l : const <String>[];
+    }
+    if (_resultExtra.isNotEmpty) {
+      return <String>[
+        '${_resultExtra.containsKey('θ') ? 'r' : 'X'} = $_lastAnswer',
+        for (final e in _resultExtra.entries) '${e.key} = ${e.value}',
+      ];
+    }
+    return const <String>[];
+  }
 
   /// The result is a positive integer of at most 10 digits that FACT may factor.
   bool get canFactor => _hasEvaluated && _resultFactorable;
@@ -597,7 +636,14 @@ class CalculatorController extends ChangeNotifier {
   // -- Handlers ---------------------------------------------------------------------------------------------------
   void handleInput(String token) {
     playSound(ClickType.num);
+    var recur = _recurMode;
+    if (recur && token.length == 1 && '0123456789'.contains(token)) {
+      token = '$token${CasioRecurringInput.mark}';
+    } else {
+      recur = false;
+    }
     _clearModifiers();
+    _recurMode = recur;
     _syntaxError = null;
     if (_busy) return;
     // VERIF takes at most 99 bytes (manual p.85): further input is refused
@@ -823,7 +869,9 @@ class CalculatorController extends ChangeNotifier {
     }
     // On the tree: one character or token before the caret; an empty group goes away; a group with content is entered
     // first. For text without groups this removes exactly what the old string handler removed.
+    final onMark = _doc.textBeforeCaret.endsWith(CasioRecurringInput.mark);
     _doc.backspace(_multiCharTokens);
+    if (onMark) _doc.backspace(_multiCharTokens); // a period digit and its overline go together
     if (_doc.root.isEmpty) _expression = '0';
     notifyListeners();
   }
@@ -1013,6 +1061,25 @@ class CalculatorController extends ChangeNotifier {
       _doc.moveLeft(); // into the group, at its end
       _lastWasPower = true;
     }
+    notifyListeners();
+  }
+
+  /// SHIFT `×10ˣ` (manual p.26): the recurring-decimal key. It types the decimal point when the number has none, and the
+  /// digits typed next form the repeating period. Natural Display only (the unit refuses it in Linear Display).
+  void esRecurring() {
+    if (engine.config.displayFormat == CasioDisplayFormat.lineIO) {
+      playSound(ClickType.num);
+      _clearModifiers();
+      notifyListeners();
+      return;
+    }
+    final before = _hasEvaluated ? '' : _doc.textBeforeCaret;
+    final number = RegExp(r'[0-9.]*$').firstMatch(before)?.group(0) ?? '';
+    if (!number.contains('.')) {
+      handleInput(number.isEmpty ? '0' : '.');
+      if (number.isEmpty) handleInput('.');
+    }
+    _recurMode = true;
     notifyListeners();
   }
 
@@ -1299,6 +1366,7 @@ class CalculatorController extends ChangeNotifier {
     _resultError = false;
     _resultRemainder = out.remainder;
     _resultExtra = out.extra;
+    _formLines = const <List<String>>[];
     _resultFactorable = out.factorable;
     _answerDisplay = out.remainder != null ? '${out.text} R ${out.remainder}' : out.text;
     _setPlain(_answerDisplay);
@@ -1548,6 +1616,7 @@ class CalculatorController extends ChangeNotifier {
         final o = complexEngine.evaluate(expr, engine.config);
         final forms = [for (final f in o.forms) CasioShown(f.text, f.expr)];
         _commitCustom(forms, shown);
+        _formLines = [for (final f in o.forms) f.lines];
       } else if (_mode == CasioMode.stat) {
         final o = StatCalc.evaluate(expr, CasioStat.fromData(statData), engine);
         _commitCustom(o.forms, shown);
@@ -1592,6 +1661,7 @@ class CalculatorController extends ChangeNotifier {
     _resultError = false;
     _resultRemainder = null;
     _resultExtra = const <String, String>{};
+    _formLines = const <List<String>>[];
     _resultFactorable = false;
     _lastQuestion = shown;
     _lastAnswer = first.display;
@@ -1626,6 +1696,7 @@ class CalculatorController extends ChangeNotifier {
     _resultError = false;
     _resultRemainder = outcome?.remainder;
     _resultExtra = outcome?.extra ?? const <String, String>{};
+    _formLines = const <List<String>>[];
     _resultFactorable = outcome?.factorable ?? false;
 
     _lastQuestion = shown;
@@ -1642,7 +1713,7 @@ class CalculatorController extends ChangeNotifier {
 
     _recordReplay(shown, formatted);
     _setPlain(outcome?.remainder != null ? first0(outcome!) : reusable);
-    _answerDisplay = formatted == _expression ? '' : formatted;
+    _answerDisplay = _resultExtra.isNotEmpty ? _withExtra(formatted) : (formatted == _expression ? '' : formatted);
     _hasEvaluated = true;
     _persist();
   }
@@ -1656,6 +1727,7 @@ class CalculatorController extends ChangeNotifier {
     _resultError = true;
     _resultFactorable = false;
     _resultExtra = const <String, String>{};
+    _formLines = const <List<String>>[];
     _answerDisplay = '';
     _continuesAns = false;
     _hasEvaluated = true;
@@ -1685,7 +1757,7 @@ class CalculatorController extends ChangeNotifier {
 
   void _showForm(CasioShown f) {
     _setPlain(f.expr);
-    _answerDisplay = f.display == f.expr ? '' : f.display;
+    _answerDisplay = _resultExtra.isNotEmpty ? _withExtra(f.display) : (f.display == f.expr ? '' : f.display);
     _lastAnswer = f.display;
     notifyListeners();
   }

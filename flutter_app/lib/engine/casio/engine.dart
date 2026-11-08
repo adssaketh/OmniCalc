@@ -7,6 +7,7 @@ import '../evaluator.dart';
 import '../types.dart';
 import 'calculus.dart';
 import 'config.dart';
+import 'recurring_input.dart';
 import 'cval.dart';
 import 'evaluator.dart';
 import 'format.dart';
@@ -100,7 +101,7 @@ class CasioEngine {
   /// Evaluate [input]. [continuesAns] says that the text begins with the previous result (the user pressed an operator right
   /// after `=`): the previous result is then used at full precision as `Ans`, as on the unit.
   CasioOutcome evaluate(String input, {bool continuesAns = false, AngleMode? legacyAngle, bool commit = true}) {
-    var expr = ChemCalcFunctions.resolve(input).trim();
+    var expr = CasioRecurringInput.expand(ChemCalcFunctions.resolve(input)).trim();
     if ((!config.useCasio && !hasCasioCalculus(expr)) || needsLegacy(expr)) {
       return _legacy(expr, legacyAngle);
     }

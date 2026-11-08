@@ -29,6 +29,7 @@ class CasioSettings {
     this.complexPolar = false,
     this.statFreq = false,
     this.tableFg = false,
+    this.contrast = 5,
   });
 
   /// "Calculation style: Casio (default)"; false is "OmniCalc (legacy)".
@@ -44,6 +45,7 @@ class CasioSettings {
   final int digits;
   final bool mixedFractions;
   final bool recurring;
+  /// SETUP ▸ Disp: Comma shows results with a comma (input always uses a dot) and `;` between multiple results.
   final bool commaDecimal;
 
   /// Angle unit Gra (OmniCalc's own angle setting has only DEG and RAD).
@@ -57,6 +59,10 @@ class CasioSettings {
 
   /// SETUP ▸ Table: f(x),g(x) (true) or f(x) (false) (TABLE itself arrives in Phase 7d-2).
   final bool tableFg;
+
+  /// SETUP ▸ CONT (manual p.6): 1 (lightest) to 5. The phone has no LCD contrast, so it is the opacity of the calculator
+  /// display; 5 is the full-strength look the app always had.
+  final int contrast;
 
   CasioSettings copyWith({
     bool? useCasio,
@@ -72,6 +78,7 @@ class CasioSettings {
     bool? complexPolar,
     bool? statFreq,
     bool? tableFg,
+    int? contrast,
   }) =>
       CasioSettings(
         useCasio: useCasio ?? this.useCasio,
@@ -87,6 +94,7 @@ class CasioSettings {
         complexPolar: complexPolar ?? this.complexPolar,
         statFreq: statFreq ?? this.statFreq,
         tableFg: tableFg ?? this.tableFg,
+        contrast: contrast ?? this.contrast,
       );
 
   Map<String, Object?> toJson() => <String, Object?>{
@@ -103,6 +111,7 @@ class CasioSettings {
         'complexPolar': complexPolar,
         'statFreq': statFreq,
         'tableFg': tableFg,
+        'contrast': contrast,
       };
 
   factory CasioSettings.fromJson(Map<String, Object?> j) {
@@ -130,6 +139,7 @@ class CasioSettings {
       complexPolar: b('complexPolar', d.complexPolar),
       statFreq: b('statFreq', d.statFreq),
       tableFg: b('tableFg', d.tableFg),
+      contrast: j['contrast'] is int ? (j['contrast']! as int).clamp(1, 5) : d.contrast,
     );
   }
 

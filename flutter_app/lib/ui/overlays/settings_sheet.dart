@@ -51,7 +51,9 @@ enum SettingsSubSheet {
   percentStyle,
   resultDisplay,
   numberFormat,
-  fractionFormat
+  fractionFormat,
+  decimalPoint,
+  contrast
 }
 
 /// `ThemeOption`.
@@ -1200,6 +1202,22 @@ class _SettingsSheetState extends State<SettingsSheet> {
                         onTap: () => CasioRuntime.instance.update((c) => c.copyWith(recurring: !c.recurring)),
                       ),
                       _SettingsRow(
+                        key: const ValueKey('row-disp'),
+                        icon: LucideIconId.hash,
+                        title: 'Decimal point (Disp)',
+                        subtitle: cs.commaDecimal ? 'Comma in results (1,5)' : 'Dot in results (1.5)',
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.decimalPoint),
+                      ),
+                      _SettingsRow(
+                        key: const ValueKey('row-contrast'),
+                        icon: LucideIconId.hash,
+                        title: 'Display contrast (CONT)',
+                        subtitle: casioContrastLabel(cs.contrast),
+                        chevron: true,
+                        onTap: () => _openSub(SettingsSubSheet.contrast),
+                      ),
+                      _SettingsRow(
                         key: const ValueKey('row-complex-format'),
                         icon: LucideIconId.hash,
                         title: 'Complex format',
@@ -1555,6 +1573,35 @@ class _SettingsSheetState extends State<SettingsSheet> {
           onClose: _closeSub,
         ),
         _ChoiceSheet<bool>(
+          isOpen: isOpen && _active == SettingsSubSheet.decimalPoint,
+          title: 'Decimal point (Disp)',
+          description: 'Results only: a dot is always shown while typing. With a comma, several results are separated by ;',
+          selected: cs.commaDecimal,
+          options: const [
+            _ChoiceOption<bool>(false, 'Dot (.)', '1.5'),
+            _ChoiceOption<bool>(true, 'Comma (,)', '1,5'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) => c.copyWith(commaDecimal: id));
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<int>(
+          isOpen: isOpen && _active == SettingsSubSheet.contrast,
+          title: 'Display contrast (CONT)',
+          description: 'How strong the calculator display is drawn. 5 is the normal look',
+          selected: cs.contrast,
+          options: [
+            for (final n in const [5, 4, 3, 2, 1]) _ChoiceOption<int>(n, casioContrastLabel(n), n == 5 ? 'Default' : 'Lighter'),
+          ],
+          onSelect: (id) {
+            CasioRuntime.instance.update((c) => c.copyWith(contrast: id));
+            _closeSub();
+          },
+          onClose: _closeSub,
+        ),
+        _ChoiceSheet<bool>(
           isOpen: isOpen && _active == SettingsSubSheet.complexFormat,
           title: 'Complex format',
           description: 'How CMPLX results are written (▸r∠θ and ▸a+bi override it for one result)',
@@ -1868,4 +1915,10 @@ String casioNumberFormatLabel(CasioSettings c) => switch (c.numberFormat) {
       CasioNumberFormat.norm2 => 'Norm 2',
       CasioNumberFormat.fix => 'Fix ${c.digits}',
       CasioNumberFormat.sci => 'Sci ${c.digits}',
+    };
+
+/// Names of the five CONT levels (SETUP ▸ CONT, manual p.6).
+String casioContrastLabel(int level) => switch (level) {
+      5 => '5 (normal)',
+      _ => '$level',
     };
