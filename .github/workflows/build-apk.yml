@@ -109,13 +109,13 @@ jobs:
           grep distributionUrl "$P"
 
       # Maven Central answers some jars (the Kotlin compiler) with a redirect to a GitHub release download, and that sometimes
-      # answers 504. When GitHub is failing, every Maven Central address is pointed at a mirror for this build.
-      - name: Use a Maven mirror when GitHub release downloads fail
+      # answers 504. Every Maven Central address is pointed at a mirror for this build when the mirror answers.
+      - name: Use a Maven mirror for Maven Central
         run: |
-          CODE="$(curl -sIL --max-time 60 -o /dev/null -w '%{http_code}' https://github.com/JetBrains/kotlin/releases/download/v2.2.21/kotlin-compiler-embeddable-2.2.21.jar || true)"
-          echo "Kotlin jar on GitHub -> HTTP $CODE"
-          if [ "$CODE" != "200" ]; then
-            echo "::warning::GitHub release download answered $CODE, using the Tencent Maven mirror"
+          CODE="$(curl -sIL --max-time 60 -o /dev/null -w '%{http_code}' https://mirrors.cloud.tencent.com/nexus/repository/maven-public/org/jetbrains/kotlin/kotlin-stdlib/2.0.0/kotlin-stdlib-2.0.0.pom || true)"
+          echo "Tencent Maven mirror -> HTTP $CODE"
+          if [ "$CODE" = "200" ]; then
+            echo "Using the Tencent Maven mirror for Maven Central"
             mkdir -p ~/.gradle/init.d
             cat > ~/.gradle/init.d/mirror.gradle <<'EOF'
           def mirror = 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/'
