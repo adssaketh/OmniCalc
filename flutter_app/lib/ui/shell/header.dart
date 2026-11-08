@@ -301,12 +301,22 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
         children: [
           const OmniCalcLogo(size: 36),
           const SizedBox(width: 2 + 8),
-          Text(
-            'OmniCalc',
-            softWrap: false,
-            style: appText(size: 18, weight: FontWeight.w700, letterSpacingEm: -0.025, color: t.onSurface),
+          // Phase 8b: the name takes the room between the logo and the buttons and only shrinks when it does not fit (narrow
+          // phones, large system font). At normal widths it is exactly the natural size, as in the web header.
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'OmniCalc',
+                  softWrap: false,
+                  style: appText(size: 18, weight: FontWeight.w700, letterSpacingEm: -0.025, color: t.onSurface),
+                ),
+              ),
+            ),
           ),
-          const Spacer(),
           for (var i = 0; i < actions.length; i++) ...[
             if (i > 0) const SizedBox(width: 2),
             actions[i],

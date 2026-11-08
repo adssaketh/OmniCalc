@@ -6,6 +6,7 @@ import '../../engine/casio/base_n.dart';
 import 'calc_style.dart';
 import '../../engine/casio/stat.dart';
 import 'calculator_controller.dart';
+import 'spoken.dart';
 
 enum _Role { onSurface, primary, tertiary }
 
@@ -576,7 +577,7 @@ class _AdvButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(def.label, maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: labelStyle),
+        Text(def.label, semanticsLabel: spokenKey(def.label), maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: labelStyle),
         if (def.shiftLabel != null || def.alphaLabel != null)
           layerLabels()
         else

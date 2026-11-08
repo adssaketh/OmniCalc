@@ -1263,20 +1263,22 @@ class CalculatorController extends ChangeNotifier {
   void _runSession() {
     final calc = _calc;
     if (calc != null) {
+      // CALC with ∫ d/dx Σ ∏ can take seconds: it runs in the background and AC interrupts it (Phase 8b)
+      if (!kIsWeb && calc.canRunInBackground && CasioEngine.hasCasioCalculus(calc.expression)) {
+        calc.store(_sessionVals);
+        _evaluateInBackground(calc.expression, (outcome, error) {
+          if (error != null || outcome == null) {
+            _stage = _SessionStage.error;
+            _showSessionError(CasioEngine.messageOf(error ?? const CalcError('Math ERROR')));
+          } else {
+            calc.finish(outcome);
+            _commitCalcResult(calc, outcome);
+          }
+        });
+        return;
+      }
       try {
-        final out = calc.run(_sessionVals);
-        _sessionHeader = '${calc.text} =';
-        _sessionExtraLine = '';
-        _forms = out.forms;
-        _formIndex = 0;
-        _resultError = false;
-        _resultRemainder = out.remainder;
-        _resultExtra = out.extra;
-        _resultFactorable = out.factorable;
-        _answerDisplay = out.remainder != null ? '${out.text} R ${out.remainder}' : out.text;
-        _setPlain(_answerDisplay);
-        _hasEvaluated = true;
-        _stage = _SessionStage.result;
+        _commitCalcResult(calc, calc.run(_sessionVals));
       } catch (e) {
         _stage = _SessionStage.error;
         _showSessionError(CasioEngine.messageOf(e));
@@ -1287,6 +1289,21 @@ class CalculatorController extends ChangeNotifier {
     final initial = _sessionVals[solver.variable] ?? CVal.zero;
     final given = Map<String, CVal>.of(_sessionVals)..remove(solver.variable);
     _runSolveStep(() => solver.start(given, initial));
+  }
+
+  void _commitCalcResult(CasioCalc calc, CasioOutcome out) {
+    _sessionHeader = '${calc.text} =';
+    _sessionExtraLine = '';
+    _forms = out.forms;
+    _formIndex = 0;
+    _resultError = false;
+    _resultRemainder = out.remainder;
+    _resultExtra = out.extra;
+    _resultFactorable = out.factorable;
+    _answerDisplay = out.remainder != null ? '${out.text} R ${out.remainder}' : out.text;
+    _setPlain(_answerDisplay);
+    _hasEvaluated = true;
+    _stage = _SessionStage.result;
   }
 
   void _runSolveStep(SolveOutcome Function() step) {

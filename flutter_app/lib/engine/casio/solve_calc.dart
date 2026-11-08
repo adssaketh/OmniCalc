@@ -329,6 +329,26 @@ class CasioCalc {
 
   CVal current(String v) => _engine.memory.vars[v] ?? CVal.zero;
 
+  /// The expression after the `Var=` of a `Var=expression` line.
+  String get expression => _expr;
+
+  /// A real-number CALC can be calculated in a background isolate (Phase 8b); CMPLX CALC keeps its own engine and runs in place.
+  bool get canRunInBackground => _cx == null;
+
+  /// Stores [values] in the variables without calculating (the background run calculates [expression] itself).
+  void store(Map<String, CVal> values) {
+    for (final e in values.entries) {
+      _engine.memory.vars[e.key] = e.value;
+    }
+  }
+
+  /// Stores the result of a background run in the `Var=` variable, as [run] does.
+  void finish(CasioOutcome out) {
+    final t = target;
+    final v = out.value;
+    if (t != null && v != null) _engine.memory.vars[t] = v;
+  }
+
   /// Stores [values] in the variables and calculates. The result is the outcome of the expression; with a [target] it is
   /// also stored there.
   CasioOutcome run(Map<String, CVal> values) {

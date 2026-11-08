@@ -140,21 +140,68 @@ class CasioDist {
     return math.exp(_lnChoose(n, x) + x * math.log(p) + (n - x) * _log1p(-p));
   }
 
+  /// Up to this many terms the CDFs are summed term by term from 0 (the values the tests were written against). Above it the sum
+  /// starts at the sample and walks away from the mean only as far as the terms still matter (Phase 8b: x can be 1e10, which
+  /// used to run for minutes on the UI thread).
+  static const int _kFullSumLimit = 100000;
+
   static double _binomCdf(int x, int n, double p) {
-    var s = 0.0;
-    for (var k = 0; k <= x; k++) {
-      s += _binomPmf(k, n, p);
+    if (x >= n) return 1;
+    if (x <= _kFullSumLimit) {
+      var s = 0.0;
+      for (var k = 0; k <= x; k++) {
+        s += _binomPmf(k, n, p);
+      }
+      return s > 1 ? 1 : s;
     }
-    return s > 1 ? 1 : s;
+    final mean = n * p;
+    if (x < mean) {
+      // lower tail: walk down from x while the terms still change the sum
+      var s = 0.0;
+      for (var k = x; k >= 0; k--) {
+        final t = _binomPmf(k, n, p);
+        s += t;
+        if (t == 0 || t < s * 1e-18) break;
+      }
+      return s > 1 ? 1 : s;
+    }
+    // upper tail: 1 − P(X > x), walking up from x + 1
+    var s = 0.0;
+    for (var k = x + 1; k <= n; k++) {
+      final t = _binomPmf(k, n, p);
+      s += t;
+      if (t == 0 || t < s * 1e-18) break;
+    }
+    final r = 1 - s;
+    return r < 0 ? 0 : r;
   }
 
   static double _poissonPmf(int x, double mu) => math.exp(-mu + x * math.log(mu) - lnGamma(x + 1.0));
 
   static double _poissonCdf(int x, double mu) {
-    var s = 0.0;
-    for (var k = 0; k <= x; k++) {
-      s += _poissonPmf(k, mu);
+    if (x <= _kFullSumLimit) {
+      var s = 0.0;
+      for (var k = 0; k <= x; k++) {
+        s += _poissonPmf(k, mu);
+      }
+      return s > 1 ? 1 : s;
     }
-    return s > 1 ? 1 : s;
+    if (x < mu) {
+      var s = 0.0;
+      for (var k = x; k >= 0; k--) {
+        final t = _poissonPmf(k, mu);
+        s += t;
+        if (t == 0 || t < s * 1e-18) break;
+      }
+      return s > 1 ? 1 : s;
+    }
+    var s = 0.0;
+    for (var k = x + 1;; k++) {
+      final t = _poissonPmf(k, mu);
+      s += t;
+      if (t == 0 || t < s * 1e-18) break;
+    }
+    final r = 1 - s;
+    return r < 0 ? 0 : r;
   }
 }

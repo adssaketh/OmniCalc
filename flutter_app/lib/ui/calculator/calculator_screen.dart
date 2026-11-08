@@ -31,6 +31,7 @@ import 'calculator_controller.dart';
 import 'data_sheets.dart';
 import 'ineq_dist_panels.dart';
 import 'mode_menu.dart';
+import 'spoken.dart';
 
 /// Screen builder of the shell: the calculator for `standard`, the Phase 5 stand-ins for the other modes.
 Widget calculatorOrPlaceholder(BuildContext context, CalculatorMode mode) {
@@ -315,6 +316,7 @@ Widget _label(String s, double size, FontWeight weight, Color color,
     {bool mono = false, double? letterSpacingEm}) {
   return Text(
     s,
+    semanticsLabel: spokenKey(s),
     maxLines: 1,
     softWrap: false,
     style: calcText(
@@ -694,9 +696,13 @@ class _PortraitDisplay extends StatelessWidget {
           onCaretHit: c.placeCaret,
         ),
       );
+      // Phase 8b: a finished result is a live region, so TalkBack reads the answer after `=` without a swipe
       answer = c.hasEvaluated
-          ? M3ResultUpdate(
-              trigger: '${c.expression}|${c.lastQuestion}', child: fit)
+          ? Semantics(
+              liveRegion: true,
+              child: M3ResultUpdate(
+                  trigger: '${c.expression}|${c.lastQuestion}', child: fit),
+            )
           : fit;
     }
 
