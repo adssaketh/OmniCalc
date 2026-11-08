@@ -1519,7 +1519,7 @@ class CalculatorController extends ChangeNotifier {
       if (openCount > closeCount) exprToEval += ')' * (openCount - closeCount);
       if (hasEquation && isPlainNumber) exprToEval = 'y($trimmed)';
       final formatted = engine.evaluate(exprToEval, legacyAngle: _angleMode, commit: false).text;
-      return formatted == trimmed ? '' : formatted;
+      return formatted == trimmed ? '' : _previewReadable(formatted);
     } catch (_) {
       return '';
     }
@@ -2165,3 +2165,9 @@ class _ReplayEntry {
   final String answer;
   final int bytes;
 }
+
+/// Live preview is small plain text: write fractions as 56/5 or 1 1/6, not with the ⌟ mark.
+String _previewReadable(String s) => s.replaceAllMapped(
+      RegExp(r'(\d+)⌟(\d+)⌟(\d+)|(\d+)⌟(\d+)'),
+      (m) => m.group(3) != null ? '${m[1]} ${m[2]}/${m[3]}' : '${m[4]}/${m[5]}',
+    );
