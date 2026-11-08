@@ -92,6 +92,22 @@ jobs:
           grep -n 'android:label\|android:icon' android/app/src/main/AndroidManifest.xml
           ls android/app/src/main/res/mipmap-xxxhdpi/ android/app/src/main/res/mipmap-anydpi-v26/ 2>/dev/null || true
 
+      # services.gradle.org redirects to a GitHub release asset, and GitHub's answer for it is sometimes a 504 for hours. When
+      # that download is not reachable, the same Gradle zip is taken from a public mirror instead.
+      - name: Make sure the Gradle distribution can be downloaded
+        run: |
+          P=android/gradle/wrapper/gradle-wrapper.properties
+          URL="$(sed -n 's|^distributionUrl=||p' "$P" | sed 's|\\||g')"
+          CODE="$(curl -sIL --max-time 60 -o /dev/null -w '%{http_code}' "$URL" || true)"
+          echo "$URL -> HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            ZIP="$(basename "$URL")"
+            MIRROR="https://mirrors.cloud.tencent.com/gradle/$ZIP"
+            echo "::warning::$URL answered $CODE, using $MIRROR"
+            sed -i "s|^distributionUrl=.*|distributionUrl=https\\://mirrors.cloud.tencent.com/gradle/$ZIP|" "$P"
+          fi
+          grep distributionUrl "$P"
+
       # Each build gets a higher versionCode (the run number of this workflow, as in earlier releases), so a newer APK
       # can always be installed over an older one signed with the same key. The pubspec build number (+N) is not used.
       # The Gradle distribution is downloaded from GitHub on the first run and that download sometimes answers 504, so
