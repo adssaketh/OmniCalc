@@ -6,6 +6,7 @@ import 'package:omnicalc/theme/tokens.dart';
 import 'package:omnicalc/ui/calculator/advanced_keys.dart';
 import 'package:omnicalc/ui/calculator/calculator_controller.dart';
 import 'package:omnicalc/ui/calculator/customize_sheet.dart';
+import 'package:omnicalc/ui/calculator/key_glyph.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -73,5 +74,25 @@ void main() {
     expect(DrawerLayout.instance.tabs[1], first);
     expect(DrawerLayout.instance.tabs.first, second);
     expect(find.byKey(const ValueKey('customize-reset-all')), findsOneWidget);
+  });
+
+  testWidgets('integral, sum and product rows are drawn as the structure, and a dragged row has no square box behind it', (tester) async {
+    tester.view.physicalSize = const Size(900, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(MaterialApp(home: M3Theme(tokens: staticTokens('iris', isDark: false), child: Scaffold(body: CustomizeDrawerSheet(controller: c)))));
+    await tester.drag(find.byKey(const ValueKey('customize-keys-calculus')), const Offset(0, -300));
+    await tester.pump();
+    expect(find.byType(KeyGlyph), findsWidgets);
+    final handle = find.byKey(const ValueKey('customize-tab-handle-calculus'));
+    final g = await tester.startGesture(tester.getCenter(handle));
+    await tester.pump(const Duration(milliseconds: 100));
+    await g.moveBy(const Offset(0, 60));
+    await tester.pump(const Duration(milliseconds: 100));
+    // while dragging, the proxy is a transparent Material: no elevation, so no square shadow
+    final proxies = tester.widgetList<Material>(find.byType(Material)).where((m) => m.type == MaterialType.transparency && m.elevation == 0);
+    expect(proxies, isNotEmpty);
+    await g.up();
+    await tester.pumpAndSettle();
   });
 }

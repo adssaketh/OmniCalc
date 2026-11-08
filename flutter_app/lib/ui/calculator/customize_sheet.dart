@@ -68,6 +68,7 @@ class _CustomizeDrawerSheetState extends State<CustomizeDrawerSheet> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     buildDefaultDragHandles: false,
+                    proxyDecorator: _proxy,
                     onReorder: (o, n) {
                       final list = [...tabs];
                       if (n > o) n -= 1;
@@ -100,6 +101,7 @@ class _CustomizeDrawerSheetState extends State<CustomizeDrawerSheet> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     buildDefaultDragHandles: false,
+                    proxyDecorator: _proxy,
                     onReorder: (o, n) {
                       final list = [...ordered];
                       if (n > o) n -= 1;
@@ -121,6 +123,13 @@ class _CustomizeDrawerSheetState extends State<CustomizeDrawerSheet> {
     );
   }
 
+  // The row being dragged keeps its own rounded shape: no square Material or shadow behind it.
+  Widget _proxy(Widget child, int index, Animation<double> animation) => AnimatedBuilder(
+        animation: animation,
+        builder: (context, child) => Transform.scale(scale: 1 + 0.03 * Curves.easeOut.transform(animation.value), child: child),
+        child: Material(type: MaterialType.transparency, child: child),
+      );
+
   Widget _heading(M3Tokens t, String text) => Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
         child: Text(text, style: appText(size: 13, weight: FontWeight.w600, color: t.onSurfaceVariant)),
@@ -135,8 +144,15 @@ class _CustomizeDrawerSheetState extends State<CustomizeDrawerSheet> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(sub == null || sub.isEmpty ? title : '$title   $sub',
-                  maxLines: 1, overflow: TextOverflow.ellipsis, style: appText(size: 15, weight: FontWeight.w500, color: t.onSurface)),
+              child: Text.rich(
+                TextSpan(children: [
+                  ...boxSpans(title, 15, t.onSurface),
+                  if (sub != null && sub.isNotEmpty) TextSpan(text: '   $sub', style: TextStyle(color: t.onSurfaceVariant)),
+                ]),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: appText(size: 15, weight: FontWeight.w500, color: t.onSurface),
+              ),
             ),
           ),
           ReorderableDragStartListener(

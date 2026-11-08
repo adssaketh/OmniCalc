@@ -112,7 +112,7 @@ class _M3ScreenEnterState extends _OneShotState<M3ScreenEnter> {
           child: Transform.translate(offset: Offset(0, 12 * (1 - t)), child: child),
         );
       },
-      child: widget.child,
+      child: RepaintBoundary(child: widget.child),
     );
   }
 }
@@ -378,24 +378,12 @@ class _M3KeyState extends State<M3Key> {
             curve: M3Curves.emphasized,
             decoration: BoxDecoration(color: widget.background, borderRadius: widget.borderRadius),
             clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.passthrough,
-              children: [
-                widget.child,
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: AnimatedOpacity(
-                      opacity: _pressed ? 0.14 : 0.0,
-                      duration: instant ? Duration.zero : const Duration(milliseconds: 120),
-                      curve: M3Curves.cssEase,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(color: widget.foreground, borderRadius: widget.borderRadius),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            // the pressed tint is painted over the key with the key's own rounded shape, with no opacity layer
+            foregroundDecoration: BoxDecoration(
+              color: widget.foreground.withValues(alpha: _pressed ? 0.14 : 0.0),
+              borderRadius: widget.borderRadius,
             ),
+            child: widget.child,
           ),
         ),
       ),
