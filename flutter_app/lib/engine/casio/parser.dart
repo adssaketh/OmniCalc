@@ -411,6 +411,11 @@ List<_Tok> _lex(String src, {bool complex = false, bool matvec = false}) {
         out.add(_Tok(_T.id, 'e', i++));
         continue;
       }
+      // The Calculus tab's x and y keys (and a keyboard) type lowercase letters; the variables of the unit are X and Y.
+      if (c == 'x' || c == 'y') {
+        out.add(_Tok(_T.id, c.toUpperCase(), i++));
+        continue;
+      }
       if (_variables.contains(c) || _constWords.contains(c)) {
         out.add(_Tok(_T.id, c, i++));
         continue;

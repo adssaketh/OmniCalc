@@ -1,6 +1,7 @@
-// GENERATED FILE - DO NOT EDIT.
-// Source of truth: src/guideContent.ts (GUIDE_QUICK_START, GUIDE_SECTIONS, GUIDE_TIPS).
-// Regenerate with: npx tsx flutter_app/tools/gen_guide.ts
+// Generated from src/guideContent.ts (GUIDE_QUICK_START, GUIDE_SECTIONS, GUIDE_TIPS) by flutter_app/tools/gen_guide.ts.
+// The examples must stay as generated (test/golden/guide_golden_test.dart compares them with the original app's results).
+// The wording of the Differentiation, Integration and Sum and product topics was rewritten by hand for the structure keys
+// (d/dx, ∫, Σ, ∏ with boxes); regenerating would bring back the old text, so merge by hand.
 
 import '../../engine/types.dart';
 
@@ -85,12 +86,12 @@ const List<GuideSection> kGuideSections = <GuideSection>[
     title: 'Differentiation',
     summary: 'Finds how steeply a function is rising or falling at one point (its slope). The answer is a number, not a formula.',
     where: 'fx ADV → Calculus → d/dx',
-    syntax: 'diff(function, point)',
+    syntax: 'd/dx(function, point)   or typed: diff(function, point)',
     steps: <String>[
-      'Tap d/dx. diff( appears in the display.',
-      'Write your function using the x key, for example x then x² to get x^2.',
-      'Tap the comma key, then type the point where you want the slope.',
-      'Tap ( ) to close the bracket and press =.',
+      'Tap d/dx. The d/dx shape appears with a box for the function and a box for the point (x =).',
+      'Fill the first box with your function using the x key. For x², tap x and then the x² key (Powers tab).',
+      'Tap ▶ to move to the box for the point and type the number.',
+      'Press =.',
     ],
     examples: <GuideExample>[
       GuideExample(expr: 'diff(x^2, 3)', note: 'Slope of x² at x = 3. The rule 2x gives 6.', angle: null, setup: null, load: null),
@@ -99,7 +100,7 @@ const List<GuideSection> kGuideSections = <GuideSection>[
       GuideExample(expr: 'diff(sin(x), 0)', note: 'Slope of sin(x) at 0. Use RAD for trig.', angle: AngleMode.rad, setup: null, load: null),
     ],
     tips: <String>[
-      'The d/dx(x²) key types diff(x^2, for you. Just add the point.',
+      'You can also type diff(x^2, 3) yourself. The examples below use that form, and Try types it for you.',
       'With trig functions, switch to RAD first. In DEG mode the slope is measured per degree.',
     ],
   ),
@@ -108,13 +109,13 @@ const List<GuideSection> kGuideSections = <GuideSection>[
     badge: '∫',
     title: 'Integration',
     summary: 'Adds up the area under a curve between two points (a definite integral). The answer is a number.',
-    where: 'fx ADV → Calculus → ∫ dx',
-    syntax: 'integrate(function, from, to)',
+    where: 'fx ADV → Calculus → ∫',
+    syntax: '∫(function, from, to)   or typed: integrate(function, from, to)',
     steps: <String>[
-      'Tap ∫ dx. integrate( appears.',
-      'Write the function using the x key.',
-      'Tap the comma key, type the start value, comma again, then the end value.',
-      'Tap ( ) to close the bracket and press =.',
+      'Tap ∫. A ∫ sign appears with a box for the function after it, a box for the lower limit and a box for the upper limit.',
+      'Fill the function box using the x key.',
+      'Tap ▶ to move to the lower limit and type it, then ▶ again for the upper limit.',
+      'Press =. AC stops a long calculation.',
     ],
     examples: <GuideExample>[
       GuideExample(expr: 'integrate(x^2, 0, 3)', note: 'Area under x² from 0 to 3', angle: null, setup: null, load: null),
@@ -125,6 +126,7 @@ const List<GuideSection> kGuideSections = <GuideSection>[
     tips: <String>[
       'Swap the two limits and the answer changes sign.',
       'Get π and e from the Constants tab.',
+      'You can also type integrate(x^2, 0, 3) yourself. The examples below use that form.',
     ],
   ),
   GuideSection(
@@ -132,13 +134,13 @@ const List<GuideSection> kGuideSections = <GuideSection>[
     badge: 'Σ Π',
     title: 'Sum and product',
     summary: 'Σ adds f(x) for every whole number from a start to an end. Π multiplies them instead.',
-    where: 'fx ADV → Calculus → ∑ and ∏',
-    syntax: 'sum(function, start, end)   prod(function, start, end)',
+    where: 'fx ADV → Calculus → Σ and ∏',
+    syntax: 'Σ(function, start, end)   ∏(function, start, end)   or typed: sum(...) prod(...)',
     steps: <String>[
-      'Tap ∑ (or ∏). sum( appears.',
-      'Write what to add, using x as the counter.',
-      'Comma, then the first value of x, comma, then the last value.',
-      'Close the bracket and press =.',
+      'Tap Σ (or ∏). The sign appears with a box after it for what to add (or multiply), a box below for the first value and a box above for the last value.',
+      'Fill the first box using x as the counter.',
+      'Tap ▶ to go to the first value of x and type it, then ▶ again for the last value.',
+      'Press =.',
     ],
     examples: <GuideExample>[
       GuideExample(expr: 'sum(x^2, 1, 5)', note: '1² + 2² + 3² + 4² + 5²', angle: null, setup: null, load: null),
@@ -146,7 +148,7 @@ const List<GuideSection> kGuideSections = <GuideSection>[
       GuideExample(expr: 'prod(x, 1, 5)', note: '1 × 2 × 3 × 4 × 5, which is 5 factorial', angle: null, setup: null, load: null),
     ],
     tips: <String>[
-      'The ∑(x) and ∏(x) formula keys type the start of the pattern for you.',
+      'You can also type sum(x^2, 1, 5) or prod(x, 1, 5) yourself. The examples below use that form.',
     ],
   ),
   GuideSection(

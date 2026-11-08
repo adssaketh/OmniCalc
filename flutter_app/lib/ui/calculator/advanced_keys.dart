@@ -102,8 +102,13 @@ class _Adv {
   final bool alphaArmed;
 }
 
-const String _hintCalculus = 'Fill the boxes with ▶ • diff(f(x), x_val) • integrate(f(x), a, b) • sum(f(x), 1, n) still work typed';
+const String _hintCalculus = 'Fill each box, then move to the next with ▶ • the variable is x • lim: limit(f(x), x, a)';
 const String _hintProb = 'Syntax: nCr(n, r) • nPr(n, r) • gcd(a, b) • lcm(a, b) • randInt(1, 100)';
+
+/// The keys of [tab] as (label, tap) pairs, wired exactly as on the screen. For tests that press keys without a widget tree.
+@visibleForTesting
+List<({String label, String sub, VoidCallback tap})> advancedKeyActions(AdvancedTab tab, CalculatorController c) =>
+    [for (final k in _keysFor(tab, c, () {})) (label: k.label, sub: k.sub, tap: k.onTap)];
 
 /// The five advanced tabs, keys in the order of the TSX (rows of four).
 List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggleAngle) {
@@ -115,14 +120,16 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
   // The exit key (Phase 4b): leaves the superscript / subscript the caret is in. It stands where `sgn` (Calculus tab; still
   // in Powers and Probability) and `%` (Powers tab; still on the main keypad) used to be, so no function is lost.
   _Adv exitKey() => _Adv('→', 'exit power', () => c.exitGroup(), labelSize: 14, textSm: true, role: _Role.primary);
+  // a formula template of the Chemistry tab (molar mass of a compound)
   _Adv formula(String label, String template) =>
       _Adv(label, 'formula', () => c.handleInsertTemplate(template), kind: _Kind.formula, labelSize: 11, role: _Role.primary, subSize: 9, subOpacity: 0.75);
 
   switch (tab) {
     case AdvancedTab.calculus:
       return [
-        // Phase 7c: the structures of the unit (caret starts in the first slot). The words diff( integrate( sum( prod(
-        // can still be typed; they keep their OmniCalc meaning.
+        // The structures of the unit (the caret starts in the first slot). The text-template keys that used to sit under them
+        // (d/dx(x²), ∫(x²), ∑(x), ∏(x)) and the power keys (x², xʸ, √x, eˣ, on the Powers tab) did the same jobs twice.
+        // The words diff( integrate( sum( prod( can still be typed.
         _Adv('d/dx', 'derivative', c.esDeriv, labelSize: 12, textSm: true),
         _Adv('∫▭▭', 'integral', c.esIntegral, labelSize: 12, textSm: true),
         _Adv('Σ▭▭', 'sum', c.esSigma, labelSize: 12, textSm: true),
@@ -135,14 +142,6 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         _Adv('y', 'y = f(x)', c.handleYKey, labelSize: 14, textSm: true, role: _Role.tertiary, mono: true),
         inp(',', 'comma', ', ', textSm: true),
         _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
-        inp('x²', 'square', '^2'),
-        inp('xʸ', 'power', '^'),
-        fn('√x', 'root', 'sqrt'),
-        tpl('eˣ', 'exp', 'exp('),
-        formula('d/dx(x²)', 'diff(x^2, '),
-        formula('∫(x²)', 'integrate(x^2, 0, '),
-        formula('∑(x)', 'sum(x, 1, '),
-        formula('∏(x)', 'prod(x, 1, '),
       ];
     case AdvancedTab.trig:
       return [

@@ -17,6 +17,7 @@ OmniCalc has been rebuilt from the ground up with the same look, and it now incl
 - The structure keys (∫, Σ, ∏, fraction, roots, |x|, log) are drawn the way they appear in the display, and the boxes round ∫, Σ and ∏ are evenly spaced.
 - Loan / EMI and the other long screens scroll all the way down when a table is opened.
 - The header buttons are centred in the header, and the Use in calculator button in the periodic table no longer wraps.
+- Differentiation, integration, sums and products work from the Calculus tab (they gave a Syntax ERROR when the variable was typed with the x key). The duplicate formula keys under them and the repeated power keys are gone, and rand() and randInt() work again.
 - The in-app guide has new topics for the natural display, the Casio modes and exchange rates.
 
 ## Good to know

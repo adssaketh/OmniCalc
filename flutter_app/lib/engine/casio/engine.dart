@@ -73,7 +73,7 @@ class CasioEngine {
   static bool hasCasioCalculus(String expr) => _casioCalculus.hasMatch(expr);
 
   /// OmniCalc functions that are not on the calculator and keep their legacy meaning.
-  static final RegExp _legacyWords = RegExp(r'\b(min|max|avg|mean|limit|mod)\b');
+  static final RegExp _legacyWords = RegExp(r'\b(min|max|avg|mean|limit|mod|rand|randInt)\b');
 
   static bool needsLegacy(String expr) =>
       _legacyOnly.hasMatch(expr) || _legacyWords.hasMatch(expr) || _hasCommaIntCall(expr);

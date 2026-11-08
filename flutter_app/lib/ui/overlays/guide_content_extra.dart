@@ -20,6 +20,7 @@ const List<GuideSection> kGuideSectionsExtra = <GuideSection>[
     ],
     examples: <GuideExample>[],
     tips: <String>[
+      'For ∫, d/dx, Σ and ∏ the variable is x: the x key on the Calculus tab and the X key on the ES tab both work.',
       'The Math badge on the display shows the expression has a natural-display structure. Angle unit, number format, fraction format, complex format, decimal point and contrast are in Settings (the gear).',
     ],
   ),

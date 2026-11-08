@@ -944,22 +944,6 @@
   "manual": "p.19, p.93-94"
  },
  {
-  "expr": "x",
-  "mode": "deg",
-  "old": "0",
-  "new": "ERROR Syntax ERROR",
-  "id": "D-SYN-1",
-  "manual": "p.19, p.93-94"
- },
- {
-  "expr": "x",
-  "mode": "rad",
-  "old": "0",
-  "new": "ERROR Syntax ERROR",
-  "id": "D-SYN-1",
-  "manual": "p.19, p.93-94"
- },
- {
   "expr": "5 5",
   "mode": "deg",
   "old": "25",
