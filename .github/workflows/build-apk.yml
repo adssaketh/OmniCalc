@@ -92,6 +92,15 @@ jobs:
           grep -n 'android:label\|android:icon' android/app/src/main/AndroidManifest.xml
           ls android/app/src/main/res/mipmap-xxxhdpi/ android/app/src/main/res/mipmap-anydpi-v26/ 2>/dev/null || true
 
+      # TEST BUILD: Impeller (Flutter's renderer) is switched off, to find out whether the black keypad on a cold start
+      # is a renderer problem. Remove this step again once the test is done.
+      - name: Disable Impeller (test)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q 'EnableImpeller' "$M" || sed -i '0,/<activity/s|<activity|<meta-data android:name="io.flutter.embedding.android.EnableImpeller" android:value="false"/>\n        <activity|' "$M"
+          grep -n 'EnableImpeller' "$M"
+          grep -q 'EnableImpeller" android:value="false"' "$M"
+
       # services.gradle.org redirects to a GitHub release asset, and GitHub's answer for it is sometimes a 504 for hours. When
       # that download is not reachable, the same Gradle zip is taken from a public mirror instead.
       - name: Make sure the Gradle distribution can be downloaded
