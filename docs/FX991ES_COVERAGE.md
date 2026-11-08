@@ -1,6 +1,6 @@
 # fx-991ES PLUS coverage matrix
 
-Status after **Phase 7d-1** (COMP engine, calculus, SOLVE, CALC, MODE menu, CMPLX, BASE-N, EQN). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
+Status after **Phase 7e** (everything through INEQ, VERIF, DIST and persistence). Rows follow the function inventory of Part 9 (section 9.5, "Function inventory").
 `test/casio/coverage_test.dart` reads this table: a row marked Done or Partial must name an existing test file, and a row
 marked Deferred must name the phase that will do it.
 
@@ -17,24 +17,24 @@ total is the whole inventory.
 | A03 | `(−)` negative sign | Done | 7b | test/casio/casio_engine_test.dart |
 | A04 | `( )`, closing parenthesis optional at the end | Done | 7b | test/casio/casio_engine_test.dart |
 | A05 | `.` decimal point | Done | 7b | test/casio/casio_engine_test.dart |
-| A06 | `×10ˣ` (E entry; no dedicated key yet) | Partial | 7e | test/casio/casio_engine_test.dart |
+| A06 | `×10ˣ` (types ×10 and opens the raised exponent group) | Done | 7e | test/ui/verif_clr_power_test.dart |
 | A07 | `Ans` | Done | 7b | test/casio/casio_engine_test.dart |
 | A08 | `PreAns` | Done | 7b | test/casio/casio_engine_test.dart |
 | A09 | `AC` | Done | 4 | test/ui/calculator_controller_test.dart |
 | A10 | `DEL` | Done | 4 | test/ui/calculator_controller_test.dart |
 | A11 | `INS` | Done | 8a | test/ui/calculator_es_test.dart |
-| A12 | `ON` | Deferred | 7e | - |
-| A13 | `OFF` | Deferred | 7e | - |
+| A12 | `ON` (a tap on the dark screen wakes the unit; memory is kept) | Done | 7e | test/ui/verif_clr_power_test.dart |
+| A13 | `OFF` (OFF key in the Modes tab and ten idle minutes darken the screen) | Done | 7e | test/ui/verif_clr_power_test.dart |
 | A14 | `SHIFT` | Done | 8a | test/ui/calculator_es_test.dart |
 | A15 | `ALPHA` | Done | 8a | test/ui/calculator_es_test.dart |
 | A16 | REPLAY pad (◀ ▶ ▲ ▼) | Done | 8a | test/ui/calculator_es_test.dart |
 | A17 | `MODE` menu (COMP, CMPLX, BASE-N, EQN, STAT, MATRIX, VECTOR, TABLE; the last four open sheets instead of Casio screens) | Done | 7d-2 | test/ui/data_modes_test.dart |
-| A18 | `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec, complex format, STAT frequency and TABLE format settings; Disp and CONT remain) | Partial | 7e | test/casio/casio_settings_test.dart |
-| A19 | `CLR` Setup / Memory / All | Deferred | 7e | - |
+| A18 | `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec, complex format, STAT frequency and TABLE format settings; Disp and CONT remain) | Partial | 8 | test/casio/casio_settings_test.dart |
+| A19 | `CLR` Setup / Memory / All, each with Yes / Cancel (Modes tab) | Done | 7e | test/ui/verif_clr_power_test.dart |
 | A20 | `STO` | Done | 7b | test/casio/casio_engine_test.dart |
-| A21 | `RCL` (a variable can be typed; no RCL key yet) | Partial | 7e | test/casio/casio_engine_test.dart |
-| A22 | `M+`, `M−` (existing OmniCalc memory keys; the Casio M variable is not tied to them yet) | Partial | 7e | test/ui/calculator_controller_test.dart |
-| A23 | variables `A B C D E F M X Y` | Partial | 7e | test/casio/casio_engine_test.dart |
+| A21 | `RCL` (a variable can be typed; no RCL key yet) | Partial | 8 | test/casio/casio_engine_test.dart |
+| A22 | `M+`, `M−` (existing OmniCalc memory keys; the Casio M variable is not tied to them yet) | Partial | 8 | test/ui/calculator_controller_test.dart |
+| A23 | variables `A B C D E F M X Y` | Partial | 8 | test/casio/casio_engine_test.dart |
 | A24 | `:` multi-statements | Done | 7b | test/casio/guide_examples_test.dart |
 | A25 | `,` | Done | 7b | test/casio/guide_examples_test.dart |
 | A26 | `%` | Done | 7b | test/casio/guide_examples_test.dart |
@@ -46,13 +46,13 @@ total is the whole inventory.
 | A32 | `π` | Done | 7b | test/casio/casio_engine_test.dart |
 | A33 | `e` | Done | 7b | test/casio/casio_engine_test.dart |
 | A34 | `i` | Done | 7d-1 | test/casio/complex_test.dart |
-| A35 | `DRG▸` (the ° ʳ ᵍ marks are done; the menu key is not) | Partial | 7e | test/casio/casio_engine_test.dart |
+| A35 | `DRG▸` (the ° ʳ ᵍ marks are done; the menu key is not) | Partial | 8 | test/casio/casio_engine_test.dart |
 | A36 | `÷R` | Done | 7b | test/casio/guide_examples_test.dart |
 | A37 | `GCD(` | Done | 7b | test/casio/guide_examples_test.dart |
 | A38 | `LCM(` | Done | 7b | test/casio/guide_examples_test.dart |
 | A39 | `Int(` | Done | 7b | test/casio/guide_examples_test.dart |
 | A40 | `Intg(` | Done | 7b | test/casio/guide_examples_test.dart |
-| A41 | recurring-decimal input | Deferred | 7e | - |
+| A41 | recurring-decimal input | Deferred | 8 | - |
 | B01 | `x²` | Done | 7b | test/casio/guide_examples_test.dart |
 | B02 | `x³` | Done | 7b | test/casio/guide_examples_test.dart |
 | B03 | `xʸ` / `^` | Done | 7b | test/casio/casio_engine_test.dart |
@@ -67,7 +67,7 @@ total is the whole inventory.
 | B12 | `ln` | Done | 7b | test/casio/guide_examples_test.dart |
 | B13 | `x!` | Done | 7b | test/casio/guide_examples_test.dart |
 | B14 | `Abs` | Done | 7b | test/casio/guide_examples_test.dart |
-| C01 | stacked fraction (input 8a; the result is shown as `a⌟b` text, stacked result layout waits) | Partial | 7e | test/casio/casio_controller_test.dart |
+| C01 | stacked fraction (input 8a; the result is shown as `a⌟b` text, stacked result layout waits) | Partial | 8 | test/casio/casio_controller_test.dart |
 | C02 | mixed fraction | Done | 7b | test/casio/casio_engine_test.dart |
 | C03 | `S⇔D` | Done | 7b | test/casio/casio_controller_test.dart |
 | C04 | `ab/c ⇔ d/c` | Done | 7b | test/casio/casio_controller_test.dart |
@@ -90,7 +90,7 @@ total is the whole inventory.
 | G01 | CONST (40 entries, CODATA 2014) | Done | 7b | test/casio/casio_engine_test.dart |
 | G02 | CONV (40 entries, NIST SP 811) | Done | 7b | test/casio/casio_engine_test.dart |
 | X01 | input-range checks, every row of manual p.97-100 | Done | 7b | test/casio/casio_engine_test.dart |
-| X02 | error messages (Math, Syntax, Argument; the others belong to their modes) | Partial | 7e | test/casio/casio_engine_test.dart |
+| X02 | error messages (Math, Syntax, Argument; the others belong to their modes) | Partial | 8 | test/casio/casio_engine_test.dart |
 | X03 | calculation style, percent style, result display settings | Done | 7b | test/casio/casio_settings_test.dart |
 | X04 | differences from the legacy engine listed | Done | 7b | test/casio/legacy_diff_test.dart |
 | F01 | `∫` | Done | 7c | test/casio/calculus_test.dart |
@@ -108,8 +108,8 @@ total is the whole inventory.
 | H07 | `▸r∠θ` | Done | 7d-1 | test/casio/complex_test.dart |
 | H08 | `▸a+bi` | Done | 7d-1 | test/casio/complex_test.dart |
 | H09 | SETUP complex format a+bi / r∠θ | Done | 7d-1 | test/casio/complex_test.dart |
-| H10 | Linear Display: a and bi (or r and θ) on separate lines (engine gives the lines; the screen shows one line) | Partial | 7e | test/casio/complex_test.dart |
-| H11 | CALC in CMPLX | Deferred | 7e | - |
+| H10 | Linear Display: a and bi (or r and θ) on separate lines (engine gives the lines; the screen shows one line) | Partial | 8 | test/casio/complex_test.dart |
+| H11 | CALC in CMPLX | Deferred | 8 | - |
 | J01 | DEC, HEX, BIN, OCT calculation and result conversion | Done | 7d-1 | test/casio/base_n_test.dart |
 | J02 | number-mode prefixes `d h b o` | Done | 7d-1 | test/casio/base_n_test.dart |
 | J03 | `and or xor xnor` | Done | 7d-1 | test/casio/base_n_test.dart |
@@ -122,7 +122,7 @@ total is the whole inventory.
 | K03 | EQN quadratic with X/Y-Value Minimum or Maximum | Done | 7d-1 | test/casio/eqn_test.dart |
 | K04 | EQN cubic | Done | 7d-1 | test/casio/eqn_test.dart |
 | K05 | no-solution and infinite-solutions messages | Done | 7d-1 | test/casio/eqn_test.dart |
-| K06 | Coefficient Editor, one solution per `=` with ▲▼ scrolling (a dialog that lists every solution at once) | Partial | 7e | test/casio/eqn_test.dart |
+| K06 | Coefficient Editor, one solution per `=` with ▲▼ scrolling (a dialog that lists every solution at once) | Partial | 8 | test/casio/eqn_test.dart |
 
 | I01 | STAT types: 1-VAR, A+BX, _+CX², ln X, e^X, A·B^X, A·X^B, 1/X | Done | 7d-2 | test/casio/stat_test.dart |
 | I02 | Statistics Editor: x, y, FREQ columns (40/20/26 lines), Ins, Del, Del-A (a full-height sheet) | Partial | 7d-2 | test/ui/data_modes_test.dart |
@@ -147,6 +147,22 @@ total is the whole inventory.
 | N04 | Argument ERROR for End ≤ Start or Step ≤ 0; Pol, Rec, ∫, d/dx, Σ, ∏ not allowed | Done | 7d-2 | test/casio/table_test.dart |
 | N05 | A cell that cannot be calculated shows ERROR; X takes the last x | Done | 7d-2 | test/casio/table_test.dart |
 | N06 | Table sheet (a full-height sheet; the ▲▼ scrolling of the Casio screen is a scrolling list) | Partial | 7d-2 | test/ui/data_modes_test.dart |
-
-Sections O to R (INEQ, VERIF, DIST, persistence) are Deferred to 7e.
-Their rows are added to this file when that phase starts, one row per inventory item.
+| O01 | INEQ quadratic `aX²+bX+c` with `<` `>` `≤` `≥` | Done | 7e | test/casio/ineq_test.dart |
+| O02 | INEQ cubic `aX³+bX²+cX+d` with `<` `>` `≤` `≥` | Done | 7e | test/casio/ineq_test.dart |
+| O03 | Results in interval form (exact endpoints), `All Real Numbers`, `No-Solution` | Done | 7e | test/casio/ineq_test.dart |
+| O04 | Coefficient Editor; changing the type zeroes the coefficients; a = 0 is Math ERROR (a dialog; the Linear Display layout of the manual note is not drawn) | Partial | 8 | test/ui/ineq_dist_panels_test.dart |
+| P01 | VERIF with one relational operator `=` `≠` `>` `<` `≥` `≤` | Done | 7e | test/casio/verif_test.dart |
+| P02 | VERIF chained relations of one direction (`1≤1<1+1`, `3<π<4`, `2²=2+2=4<6`) | Done | 7e | test/casio/verif_test.dart |
+| P03 | TRUE / FALSE with Ans = 1 or 0; variables read as their values | Done | 7e | test/casio/verif_test.dart |
+| P04 | Syntax ERROR forms of p.86 (empty side, relation inside parentheses / fraction / function, mixed directions, `≠` with an ordering relation, consecutive operators, ÷R / Pol / Rec) | Done | 7e | test/casio/verif_test.dart |
+| P05 | VERIF mode on the main line: MODE menu entry, relational keys in the Data tab, `=` answers (the 99-byte limit is not enforced) | Partial | 8 | test/ui/verif_clr_power_test.dart |
+| Q01 | Normal PD (x, σ, μ) | Done | 7e | test/casio/dist_test.dart |
+| Q02 | Normal CD (Lower, Upper, σ, μ) | Done | 7e | test/casio/dist_test.dart |
+| Q03 | Inverse Normal (Area, σ, μ; tail always left) | Done | 7e | test/casio/dist_test.dart |
+| Q04 | Binomial PD / CD (x or List, N, p) | Done | 7e | test/casio/dist_test.dart |
+| Q05 | Poisson PD / CD (x or List, μ) | Done | 7e | test/casio/dist_test.dart |
+| Q06 | List screen: up to 25 samples, edit, Ins, Del, Del-A, one result per sample to five digits | Done | 7e | test/ui/ineq_dist_panels_test.dart |
+| Q07 | Var format result stored in Ans; `ERROR` in the Ans cell for a sample out of range; Argument ERROR for a Var input out of range | Done | 7e | test/ui/ineq_dist_panels_test.dart |
+| R01 | Ans, PreAns, variables A–F, M, X, Y persist across restarts with their exact forms | Done | 7e | test/state/casio_memory_store_test.dart |
+| R02 | SETUP choices and the mode (with BASE-N base and STAT type) persist across restarts | Done | 7e | test/state/casio_memory_store_test.dart |
+| R03 | Calculation replay history (▲▼) cleared by ON, mode change and display-format change | Deferred | 8 | - |

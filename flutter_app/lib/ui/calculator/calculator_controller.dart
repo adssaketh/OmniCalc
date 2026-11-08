@@ -17,6 +17,7 @@ import '../../engine/casio/engine.dart';
 import '../../engine/casio/format.dart';
 import '../../engine/casio/matrix.dart';
 import '../../engine/casio/stat.dart';
+import '../../engine/casio/verif.dart';
 import '../../engine/casio/solve_calc.dart';
 import '../../engine/chemistry/calc_functions.dart';
 import '../../engine/evaluator.dart';
@@ -47,7 +48,7 @@ enum _SessionStage { none, prompt, continueScreen, result, error }
 enum AdvancedTab { calculus, trig, powers, prob, constants, chemistry, es, modes, data }
 
 /// The calculation mode of the MODE menu (manual p.9). EQN is a separate screen (a dialog), so it is not listed here.
-enum CasioMode { comp, cmplx, baseN, stat, matrix, vector, table }
+enum CasioMode { comp, cmplx, baseN, stat, matrix, vector, table, verif }
 
 /// `ADVANCED_TABS` (id, label, badge).
 const List<({AdvancedTab id, String label, String badge})> advancedTabDefs = [
@@ -125,7 +126,14 @@ class CalculatorController extends ChangeNotifier {
     bool soundEnabled = true,
     bool hapticEnabled = true,
     CasioEngine? engine,
+    CasioMode initialMode = CasioMode.comp,
+    BaseMode initialBaseMode = BaseMode.dec,
+    StatType initialStatType = StatType.oneVar,
+    this.onPersist,
   })  : engine = engine ?? CasioEngine(),
+        _mode = initialMode,
+        _baseMode = initialBaseMode,
+        _statType = initialStatType,
         _clipboard = clipboard ?? _systemClipboard,
         _angleMode = angleMode,
         _decimalPrecision = decimalPrecision,
@@ -221,11 +229,16 @@ class CalculatorController extends ChangeNotifier {
   AdvancedTab _advancedTab = AdvancedTab.calculus;
 
   // -- MODE (Phase 7d) ------------------------------------------------------------------------------------------------
-  CasioMode _mode = CasioMode.comp;
-  BaseMode _baseMode = BaseMode.dec;
+  CasioMode _mode;
+  BaseMode _baseMode;
   CasioComplexEngine? _cx;
   final CasioBaseN _bn = CasioBaseN();
   BaseNOutcome? _bnResult;
+
+  /// Called after a result, a mode change or a clear, so that Ans, the variables and the mode survive a restart (Part 9, R).
+  VoidCallback? onPersist;
+
+  void _persist() => onPersist?.call();
 
   /// Set by the screen: opens the MODE menu.
   VoidCallback? onOpenModeMenu;
@@ -252,6 +265,7 @@ class CalculatorController extends ChangeNotifier {
     _resultError = false;
     _hasEvaluated = false;
     _continuesAns = false;
+    _persist();
     notifyListeners();
   }
 
@@ -271,6 +285,7 @@ class CalculatorController extends ChangeNotifier {
         _commitError(e);
       }
     }
+    _persist();
     notifyListeners();
   }
 
@@ -280,7 +295,7 @@ class CalculatorController extends ChangeNotifier {
   }
 
   // -- STAT / MATRIX / VECTOR / TABLE (Phase 7d-2) --------------------------------------------------------------------
-  StatType _statType = StatType.oneVar;
+  StatType _statType;
   StatData? _statData;
   final MatVecStore matVec = MatVecStore();
   CasioMatVec? _mv;
@@ -313,6 +328,7 @@ class CalculatorController extends ChangeNotifier {
         CasioMode.matrix => 'MATRIX',
         CasioMode.vector => 'VECTOR',
         CasioMode.table => 'TABLE',
+        CasioMode.verif => 'VERIF',
       };
 
   /// The Statistics Editor data. A change of the STAT format (FREQ column) starts it over (manual p.59).
@@ -357,6 +373,68 @@ class CalculatorController extends ChangeNotifier {
   void enterTable() {
     setMode(CasioMode.table);
     onOpenTable?.call();
+  }
+
+  /// MODE ▸ VERIF (manual p.85): the calculation line takes `=`, `≠`, `>`, `<`, `≥`, `≤`; `=` answers TRUE or FALSE.
+  void enterVerif() => setMode(CasioMode.verif);
+
+  // -- INEQ, DIST, CLR and power (Phase 7e) -----------------------------------------------------------------------------
+  /// Set by the screen: the INEQ and DIST dialogs, the CLR menu.
+  VoidCallback? onOpenIneq;
+  VoidCallback? onOpenDist;
+  VoidCallback? onOpenClr;
+
+  /// Set by the screen: puts the SETUP choices back to the defaults (CLR ▸ Setup).
+  VoidCallback? onResetSetup;
+
+  void openClrMenu() {
+    playSound(ClickType.toggle);
+    onOpenClr?.call();
+  }
+
+  /// CLR ▸ Setup (manual p.12): the SETUP choices and the mode go back to the defaults; memory stays.
+  void clearSetup() {
+    onResetSetup?.call();
+    _baseMode = BaseMode.dec;
+    _statType = StatType.oneVar;
+    _statData = null;
+    setMode(CasioMode.comp);
+  }
+
+  /// CLR ▸ Memory: Ans, PreAns, the variables A–F, X, Y and the independent memory M.
+  void clearMemory() {
+    engine.memory.clearVariables();
+    _memory = 0;
+    _persist();
+    notifyListeners();
+  }
+
+  /// CLR ▸ All: setup and memory.
+  void clearAll() {
+    engine.memory.clearVariables();
+    _memory = 0;
+    clearSetup();
+  }
+
+  bool _off = false;
+
+  /// The unit is switched off (SHIFT AC, or ten idle minutes): the screen is dark, memory is kept (manual p.7).
+  bool get isOff => _off;
+
+  void powerOff() {
+    if (_off) return;
+    playSound(ClickType.toggle);
+    _clearModifiers();
+    _off = true;
+    _persist();
+    notifyListeners();
+  }
+
+  /// ON wakes the unit. The display starts in the same mode with an empty line.
+  void powerOn() {
+    if (!_off) return;
+    _off = false;
+    notifyListeners();
   }
 
   /// The table function entered on the calculation line, kept for the Table sheet.
@@ -917,6 +995,14 @@ class CalculatorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// `×10ˣ` (manual p.12): types `×10` and opens a raised group for the exponent, with the caret inside it.
+  void esTimesTen() {
+    handleInput('×');
+    handleInput('1');
+    handleInput('0');
+    esPower('');
+  }
+
   /// A key with no function yet: it only lets go of SHIFT / ALPHA / INS.
   void esNotYet() {
     _clearModifiers();
@@ -1251,7 +1337,7 @@ class CalculatorController extends ChangeNotifier {
   }
 
   String _computeLivePreview() {
-    if (_hasEvaluated || _sessionActive || _busy) return '';
+    if (_hasEvaluated || _sessionActive || _busy || _mode == CasioMode.verif) return '';
     final trimmed = _expression.trim();
     // ∫ d/dx Σ ∏ can take seconds: they are calculated only on `=`, in the background
     if (CasioEngine.hasCasioCalculus(trimmed)) return '';
@@ -1384,6 +1470,9 @@ class CalculatorController extends ChangeNotifier {
       } else if (_mode == CasioMode.table) {
         _tableF = expr;
         onOpenTable?.call();
+      } else if (_mode == CasioMode.verif) {
+        final o = CasioVerif.verify(engine, expr);
+        _commitCustom([CasioShown(o.text, o.isTrue ? '1' : '0')], shown);
       } else {
         final o = _bn.evaluate(expr, _baseMode);
         _bnResult = o;
@@ -1416,6 +1505,7 @@ class CalculatorController extends ChangeNotifier {
     _setPlain(first.expr);
     _answerDisplay = first.display == first.expr ? '' : first.display;
     _hasEvaluated = true;
+    _persist();
   }
 
   void _commitResult(CasioOutcome? outcome, String? chemText, String shown) {
@@ -1453,6 +1543,7 @@ class CalculatorController extends ChangeNotifier {
     _setPlain(outcome?.remainder != null ? first0(outcome!) : reusable);
     _answerDisplay = formatted == _expression ? '' : formatted;
     _hasEvaluated = true;
+    _persist();
   }
 
   void _commitError(Object err) {

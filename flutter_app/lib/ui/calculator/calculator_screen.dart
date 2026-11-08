@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
@@ -6,6 +7,8 @@ import 'package:provider/provider.dart';
 
 import '../../editor/expr_doc.dart';
 import '../../editor/rich_expression_view.dart';
+import '../../engine/casio/base_n.dart';
+import '../../engine/casio/stat.dart';
 import '../../engine/types.dart';
 import '../../services/feedback_service.dart';
 import '../../state/casio_settings.dart';
@@ -26,6 +29,7 @@ import 'advanced_keys.dart';
 import 'calc_style.dart';
 import 'calculator_controller.dart';
 import 'data_sheets.dart';
+import 'ineq_dist_panels.dart';
 import 'mode_menu.dart';
 
 /// Screen builder of the shell: the calculator for `standard`, the Phase 5 stand-ins for the other modes.
@@ -54,14 +58,26 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   void initState() {
     super.initState();
     final history = context.read<HistoryStore>();
+    final saved = CasioRuntime.instance.saved;
     _c = CalculatorController(
       feedback: context.read<FeedbackService>(),
       engine: CasioRuntime.instance.engine,
+      // the mode the unit was in when it was last used (Part 9, R)
+      initialMode: CasioMode.values.firstWhere((m) => m.name == saved.mode, orElse: () => CasioMode.comp),
+      initialBaseMode: BaseMode.values.firstWhere((m) => m.name == saved.baseMode, orElse: () => BaseMode.dec),
+      initialStatType: StatType.values.firstWhere((m) => m.name == saved.statType, orElse: () => StatType.oneVar),
       onAddHistoryRich: (
               {required expression, required result, required mode, rich}) =>
           history.add(
               expression: expression, result: result, mode: mode, rich: rich),
     );
+    _c.onPersist = () => CasioRuntime.instance.saveMemory(mode: _c.mode.name, baseMode: _c.baseMode.name, statType: _c.statType.name);
+    _c.onResetSetup = CasioRuntime.instance.reset;
+    _c.onOpenIneq = () => showIneqDialog(context);
+    _c.onOpenDist = () => showDistDialog(context);
+    _c.onOpenClr = () => showClrMenu(context, _c);
+    _c.addListener(_touchIdle);
+    _touchIdle();
     _c.onOpenModeMenu = () => showModeMenu(context, _c);
     _c.onOpenStatTypeMenu = () => showStatTypeDialog(context, _c);
     _c.onOpenStatEditor = () => showStatEditor(context, _c);
@@ -75,6 +91,16 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   void _casioChanged() {
     if (mounted) setState(() {});
+  }
+
+  /// The unit switches itself off after about ten minutes without a key (manual p.7); a tap wakes it, memory is kept.
+  static const Duration _idleOff = Duration(minutes: 10);
+  Timer? _idle;
+
+  void _touchIdle() {
+    _idle?.cancel();
+    if (_c.isOff) return;
+    _idle = Timer(_idleOff, _c.powerOff);
   }
 
   @override
@@ -96,6 +122,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_onHardwareKey);
     CasioRuntime.instance.removeListener(_casioChanged);
+    _idle?.cancel();
+    _c.removeListener(_touchIdle);
     final pinned = _pinned;
     final shown = _pinnedShown;
     if (pinned != null && shown) {
@@ -218,11 +246,24 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     // New widget instances on every controller change, so the keys and the display rebuild.
     return ListenableBuilder(
       listenable: _c,
-      builder: (context, _) => layout.isLandscape
-          ? _Landscape(
-              controller: _c, onToggleAngle: () => _toggleAngle(settingsStore))
-          : _PortraitKeys(
-              controller: _c, onToggleAngle: () => _toggleAngle(settingsStore)),
+      builder: (context, _) {
+        final screen = layout.isLandscape
+            ? _Landscape(controller: _c, onToggleAngle: () => _toggleAngle(settingsStore))
+            : _PortraitKeys(controller: _c, onToggleAngle: () => _toggleAngle(settingsStore));
+        if (!_c.isOff) return screen;
+        // OFF: the display goes dark and a tap (ON) wakes it
+        return Stack(children: [
+          screen,
+          Positioned.fill(
+            child: GestureDetector(
+              key: const ValueKey('calc-off-screen'),
+              behavior: HitTestBehavior.opaque,
+              onTap: _c.powerOn,
+              child: const ColoredBox(color: Color(0xFF000000)),
+            ),
+          ),
+        ]);
+      },
     );
   }
 }

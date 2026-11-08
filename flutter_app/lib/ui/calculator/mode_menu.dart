@@ -10,8 +10,9 @@ import '../../theme/app_theme.dart';
 import '../../theme/tokens.dart';
 import 'calculator_controller.dart';
 import 'data_sheets.dart';
+import 'ineq_dist_panels.dart';
 
-/// The MODE menu (manual p.9): COMP, CMPLX, BASE-N, EQN, STAT, MATRIX, VECTOR and TABLE.
+/// The MODE menu (manual p.9): COMP, CMPLX, STAT, BASE-N, EQN, MATRIX, TABLE, VECTOR, and on the next screen INEQ, VERIF and DIST.
 Future<void> showModeMenu(BuildContext context, CalculatorController c) {
   final t = M3Theme.of(context);
   return showDialog<void>(
@@ -37,6 +38,8 @@ Future<void> showModeMenu(BuildContext context, CalculatorController c) {
                   c.enterVector();
                 case CasioMode.table:
                   c.enterTable();
+                case CasioMode.verif:
+                  c.enterVerif();
                 default:
                   c.setMode(m);
               }
@@ -49,6 +52,14 @@ Future<void> showModeMenu(BuildContext context, CalculatorController c) {
               Navigator.of(ctx).pop();
               showEqnDialog(context);
             },
+            onIneq: () {
+              Navigator.of(ctx).pop();
+              showIneqDialog(context);
+            },
+            onDist: () {
+              Navigator.of(ctx).pop();
+              showDistDialog(context);
+            },
           ),
         ),
       ),
@@ -57,12 +68,14 @@ Future<void> showModeMenu(BuildContext context, CalculatorController c) {
 }
 
 class ModeMenu extends StatelessWidget {
-  const ModeMenu({super.key, required this.controller, required this.onPick, required this.onEqn, this.onStat});
+  const ModeMenu({super.key, required this.controller, required this.onPick, required this.onEqn, this.onStat, this.onIneq, this.onDist});
 
   final CalculatorController controller;
   final void Function(CasioMode) onPick;
   final VoidCallback onEqn;
   final VoidCallback? onStat;
+  final VoidCallback? onIneq;
+  final VoidCallback? onDist;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +104,8 @@ class ModeMenu extends StatelessWidget {
     }
 
     final m = controller.mode;
-    return Column(
+    return SingleChildScrollView(
+      child: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -107,8 +121,12 @@ class ModeMenu extends StatelessWidget {
         item('mode-matrix', '6  MATRIX', 'MatA MatB MatC', selected: m == CasioMode.matrix, onTap: () => onPick(CasioMode.matrix)),
         item('mode-vector', '7  VECTOR', 'VctA VctB VctC', selected: m == CasioMode.vector, onTap: () => onPick(CasioMode.vector)),
         item('mode-table', '8  TABLE', 'f(x), g(x)', selected: m == CasioMode.table, onTap: () => onPick(CasioMode.table)),
+        item('mode-ineq', '9  INEQ', 'inequalities', onTap: onIneq),
+        item('mode-verif', '10  VERIF', 'TRUE or FALSE', selected: m == CasioMode.verif, onTap: () => onPick(CasioMode.verif)),
+        item('mode-dist', '11  DIST', 'distributions', onTap: onDist),
         const SizedBox(height: 12),
       ],
+    ),
     );
   }
 }
@@ -302,6 +320,124 @@ class _EqnPanelState extends State<EqnPanel> {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// The CLR menu (manual p.12): Setup, Memory or All, each with a Yes / Cancel confirmation.
+Future<void> showClrMenu(BuildContext context, CalculatorController c) {
+  final t = M3Theme.of(context);
+  return showDialog<void>(
+    context: context,
+    barrierColor: t.scrim.withValues(alpha: 0.32),
+    builder: (ctx) => M3Theme(
+      tokens: t,
+      child: Dialog(
+        backgroundColor: t.surfaceContainerHigh,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(28))),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: ClrMenu(controller: c, onClose: () => Navigator.of(ctx).pop()),
+        ),
+      ),
+    ),
+  );
+}
+
+enum ClrKind {
+  setup('Setup', 'Initialize all SETUP options and the mode', 'Setup'),
+  memory('Memory', 'Clear Ans, PreAns, variables and M', 'Memory'),
+  all('All', 'Setup and memory', 'All');
+
+  const ClrKind(this.label, this.detail, this.confirm);
+  final String label;
+  final String detail;
+  final String confirm;
+}
+
+class ClrMenu extends StatefulWidget {
+  const ClrMenu({super.key, required this.controller, required this.onClose});
+
+  final CalculatorController controller;
+  final VoidCallback onClose;
+
+  @override
+  State<ClrMenu> createState() => _ClrMenuState();
+}
+
+class _ClrMenuState extends State<ClrMenu> {
+  ClrKind? _pending;
+
+  void _apply(ClrKind k) {
+    switch (k) {
+      case ClrKind.setup:
+        widget.controller.clearSetup();
+      case ClrKind.memory:
+        widget.controller.clearMemory();
+      case ClrKind.all:
+        widget.controller.clearAll();
+    }
+    widget.onClose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = M3Theme.of(context);
+    final pending = _pending;
+    Widget button(Key key, String label, VoidCallback tap, {bool primary = false}) => GestureDetector(
+          key: key,
+          onTap: tap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            decoration: BoxDecoration(color: primary ? t.primary : t.surfaceContainer, borderRadius: BorderRadius.circular(20)),
+            child: Text(label, style: appText(size: 14, weight: FontWeight.w600, color: primary ? t.onPrimary : t.onSurface)),
+          ),
+        );
+    if (pending != null) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Reset ${pending.confirm}?', key: const ValueKey('clr-confirm-title'), style: appText(size: 16, weight: FontWeight.w600, color: t.onSurface)),
+            const SizedBox(height: 4),
+            Text(pending.detail, style: appText(size: 12, weight: FontWeight.w500, color: t.onSurfaceVariant)),
+            const SizedBox(height: 16),
+            Row(children: [
+              Expanded(child: button(const ValueKey('clr-yes'), 'Yes', () => _apply(pending), primary: true)),
+              const SizedBox(width: 10),
+              Expanded(child: button(const ValueKey('clr-cancel'), 'Cancel', widget.onClose)),
+            ]),
+          ],
+        ),
+      );
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+          child: Text('CLR', style: appText(size: 16, weight: FontWeight.w600, color: t.onSurface)),
+        ),
+        for (var i = 0; i < ClrKind.values.length; i++)
+          GestureDetector(
+            key: ValueKey('clr-${ClrKind.values[i].name}'),
+            behavior: HitTestBehavior.opaque,
+            onTap: () => setState(() => _pending = ClrKind.values[i]),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              child: Row(children: [
+                Expanded(child: Text('${i + 1}  ${ClrKind.values[i].label}', style: appText(size: 14, weight: FontWeight.w500, color: t.onSurface))),
+                Text(ClrKind.values[i].detail, style: appText(size: 11, weight: FontWeight.w500, color: t.onSurfaceVariant)),
+              ]),
+            ),
+          ),
+        const SizedBox(height: 12),
+      ],
     );
   }
 }

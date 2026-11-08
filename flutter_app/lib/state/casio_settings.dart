@@ -7,6 +7,7 @@ import '../engine/casio/config.dart';
 import '../engine/casio/engine.dart';
 import '../engine/types.dart';
 import 'app_settings.dart';
+import 'casio_memory_store.dart';
 
 /// Own key: the web-parity `omni_calc_settings` blob is not touched.
 const String casioSettingsStorageKey = 'omni_calc_casio_settings';
@@ -163,6 +164,9 @@ class CasioRuntime extends ChangeNotifier {
 
   CasioSettings get settings => _settings;
 
+  /// The mode names saved with the memory (read by the calculator screen on start).
+  SavedCasioState saved = const SavedCasioState();
+
   /// Reads the saved settings; a missing or unreadable blob gives the defaults.
   Future<void> load([SharedPreferences? prefs]) async {
     _prefs = prefs ?? await SharedPreferences.getInstance();
@@ -175,7 +179,17 @@ class CasioRuntime extends ChangeNotifier {
     } catch (_) {
       _settings = const CasioSettings();
     }
+    // Ans, PreAns, the variables and the mode come back as they were (Part 9, R)
+    saved = CasioMemoryStore.decode(_prefs!.getString(casioMemoryStorageKey), engine.memory);
     notifyListeners();
+  }
+
+  /// Writes Ans, PreAns, the variables and the mode names. Called after each result and mode change.
+  void saveMemory({String? mode, String? baseMode, String? statType}) {
+    saved = SavedCasioState(mode: mode, baseMode: baseMode, statType: statType);
+    try {
+      _prefs?.setString(casioMemoryStorageKey, CasioMemoryStore.encode(engine.memory, mode: mode, baseMode: baseMode, statType: statType));
+    } catch (_) {}
   }
 
   void update(CasioSettings Function(CasioSettings) change) {

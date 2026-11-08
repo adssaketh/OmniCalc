@@ -223,3 +223,18 @@ The display style (Math or Linear) follows the structure typed. The mode does no
 
 ## D-VEC-1 Cross product of 2-dimensional vectors
 VctA×VctB with two 2-dimensional vectors gives a 3-dimensional vector (0, 0, z). The manual's example is not explicit on the display; unverified on a real device.
+
+## D-MODE-3 INEQ and DIST are dialogs, VERIF is a mode
+INEQ and DIST open as dialog panels (like EQN), not as full calculator modes: the coefficient / variable fields are text fields, and the results are lines in the panel. VERIF is a real mode on the calculation line (MODE 10) and answers TRUE / FALSE there. The MODE menu follows the app's order: ... TABLE (8), INEQ (9), VERIF (10), DIST (11); the manual's key numbering differs.
+
+## D-DIST-1 DIST precision
+DIST computes at full double precision. The single-value (Var) result follows the display format; list results (Binomial / Poisson) are shown to 5 significant digits as on the real unit. Argument limits follow the manual (list of 25 samples).
+
+## D-PERSIST-1 What a restart restores
+Ans, PreAns, A–F, M, X, Y (with exact forms) and the current mode / base / STAT type are restored. Editors (STAT data, matrices, vectors, TABLE input) and the typed line are not. The OmniCalc history tape is kept as before and is separate.
+
+## D-POWER-1 OFF and idle
+OFF (Modes tab) and 10 idle minutes put a dark overlay on the unit; a tap wakes it. The app itself keeps running. Memory is untouched.
+
+## D-CLR-1 CLR also clears OmniCalc memory
+CLR → Memory / All additionally clears the OmniCalc M+ memory register, since both share the display.

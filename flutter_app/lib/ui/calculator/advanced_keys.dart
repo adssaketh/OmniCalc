@@ -248,6 +248,7 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         // Phase 7b: the result keys of the unit
         layered('S⇔D', 'fraction ⇔ dec', main: c.toggleForm, shift: c.toggleMixedFraction, shiftLabel: 'ab/c⇔d/c', size: 12),
         _Adv('FACT', 'prime factors', c.factorResult, labelSize: 12, textSm: true),
+        _Adv('×10ˣ', 'exponent', c.esTimesTen, labelSize: 12, textSm: true),
         inp('÷R', 'remainder', '÷R', textSm: true),
         layered('ENG', 'engineering', main: () => c.engShift(right: true), shift: () => c.engShift(right: false), shiftLabel: '←', size: 12),
         inp('Ans', 'last result', 'Ans', textSm: true),
@@ -262,6 +263,8 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
       return [
         _Adv('MODE', c.modeName, c.openModeMenu,
             labelSize: 12, textSm: true, role: _Role.primary),
+        _Adv('CLR', 'setup / memory', c.openClrMenu, labelSize: 12, textSm: true, role: _Role.primary),
+        _Adv('OFF', 'screen off', c.powerOff, labelSize: 12, textSm: true, role: _Role.primary),
         inp('i', 'imaginary', 'i', textSm: true),
         inp('∠', 'polar angle', '∠', textSm: true),
         tpl('Abs', 'modulus', 'Abs('),
@@ -350,12 +353,33 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
             inp('X', 'var X', 'X', textSm: true),
             _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
           ];
+        case CasioMode.verif:
+          // Phase 7e: the relational operators of the VERIF menu (manual p.85); = on the main keypad answers TRUE or FALSE.
+          return [
+            _Adv('MODE', 'menu', c.openModeMenu, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('( )', 'parens', c.handleParentheses, labelSize: 14, textSm: true),
+            inp('=', 'equal', '=', textSm: true),
+            inp('≠', 'not equal', '≠', textSm: true),
+            inp('>', 'greater', '>', textSm: true),
+            inp('<', 'less', '<', textSm: true),
+            inp('≥', 'at least', '≥', textSm: true),
+            inp('≤', 'at most', '≤', textSm: true),
+            inp('π', '3.14159', 'π', textSm: true),
+            inp('e', '2.71828', 'e', textSm: true),
+            inp('A', 'variable', 'A', textSm: true),
+            inp('B', 'variable', 'B', textSm: true),
+            inp('X', 'variable', 'X', textSm: true),
+            inp('Y', 'variable', 'Y', textSm: true),
+          ];
         default:
           return [
             _Adv('STAT', 'statistics', c.openStatTypeMenu, labelSize: 12, textSm: true, role: _Role.primary),
             _Adv('MATRIX', 'MatA..C', c.enterMatrix, labelSize: 12, textSm: true, role: _Role.primary),
             _Adv('VECTOR', 'VctA..C', c.enterVector, labelSize: 12, textSm: true, role: _Role.primary),
             _Adv('TABLE', 'f(x) table', c.enterTable, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('VERIF', 'TRUE / FALSE', c.enterVerif, labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('INEQ', 'inequalities', () => c.onOpenIneq?.call(), labelSize: 12, textSm: true, role: _Role.primary),
+            _Adv('DIST', 'distributions', () => c.onOpenDist?.call(), labelSize: 12, textSm: true, role: _Role.primary),
           ];
       }
     case AdvancedTab.chemistry:
