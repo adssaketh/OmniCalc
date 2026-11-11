@@ -100,11 +100,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   /// The unit switches itself off after about ten minutes without a key (manual p.7); a tap wakes it, memory is kept.
   static const Duration _idleOff = Duration(minutes: 10);
+  /// Automatic power-off is disabled: it left a black box over the keys that looked like a rendering bug.
+  /// The OFF key (SHIFT AC) still switches the screen off by hand.
+  static const bool _autoOff = false;
   Timer? _idle;
 
   void _touchIdle() {
     _idle?.cancel();
-    if (_c.isOff) return;
+    if (!_autoOff || _c.isOff) return;
     _idle = Timer(_idleOff, _c.powerOff);
   }
 
@@ -272,7 +275,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               key: const ValueKey('calc-off-screen'),
               behavior: HitTestBehavior.opaque,
               onTap: _c.powerOn,
-              child: const ColoredBox(color: Color(0xFF000000)),
+              child: const ColoredBox(
+                color: Color(0xFF000000),
+                child: Center(
+                  child: Text(
+                    'Screen off. Tap to turn on',
+                    style: TextStyle(color: Color(0xFF8A8A8A), fontSize: 14),
+                  ),
+                ),
+              ),
             ),
           ),
         ]);
