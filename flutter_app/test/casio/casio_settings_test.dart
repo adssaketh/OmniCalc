@@ -8,11 +8,12 @@ import 'package:omnicalc/state/casio_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  test('defaults: Casio style, OmniCalc percent, math display, Norm 1', () {
+  test('defaults: Casio style, OmniCalc percent, decimals first with natural input, Norm 1', () {
     const s = CasioSettings();
     expect(s.useCasio, isTrue);
     expect(s.phonePercent, isTrue);
-    expect(s.decimalFirst, isFalse);
+    expect(s.decimalFirst, isTrue);
+    expect(s.displayFormat, CasioDisplayFormat.mathO);
     expect(s.numberFormat, CasioNumberFormat.norm1);
     expect(s.mixedFractions, isFalse);
     expect(s.recurring, isTrue);

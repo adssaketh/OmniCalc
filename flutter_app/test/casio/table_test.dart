@@ -65,14 +65,11 @@ void main() {
     expect(rows.first.f!.ex, isNotNull);
   });
 
-  test('30 rows with f(x), 31 is Insufficient MEM', () {
+  test('the phone allows 200 rows, 201 is Insufficient MEM', () {
     expect(gen('X', start: 1, end: 30).length, 30);
-    expect(kindOf(() => gen('X', start: 1, end: 31)), CasioErrorKind.insufficientMem);
-  });
-
-  test('20 rows with f(x),g(x), 21 is Insufficient MEM', () {
-    expect(gen('X', g: 'X', fg: true, start: 1, end: 20).length, 20);
-    expect(kindOf(() => gen('X', g: 'X', fg: true, start: 1, end: 21)), CasioErrorKind.insufficientMem);
+    expect(gen('X', start: 1, end: 200).length, 200);
+    expect(kindOf(() => gen('X', start: 1, end: 201)), CasioErrorKind.insufficientMem);
+    expect(gen('X', g: 'X', fg: true, start: 1, end: 200).length, 200);
   });
 
   test('End must be greater than Start; Step must be positive', () {

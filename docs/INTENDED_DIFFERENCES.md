@@ -260,3 +260,14 @@ EQN shows one solution at a time with buttons `=`, ▲, ▼ and AC (manual p.71)
 - **Disp (D-DISP-1):** the decimal point setting changes results only; input keeps the dot (manual).
 - **Pol/Rec in MathO (D-POLREC-1):** both outputs are shown on one line (`r = 5, θ = 53.13`); LineIO shows two lines.
 - **Recurring decimals outside COMP (D-RECUR-1):** the recurring mark is expanded only in COMP; other modes receive the raw mark.
+
+## Phone-first changes (not calculator behaviour)
+
+These parts of the fx-991ES PLUS were made for the phone on purpose:
+
+- **Results show decimals first** (`1÷3` = 0.3333333333); S⇔D gives the fraction, √ or π form. Input stays natural (stacked fractions and roots). Settings > Result display switches it back.
+- **No automatic power-off, no OFF key, no CONT (display contrast).**
+- **The app always opens in COMP.** Ans and the variables are still restored.
+- **No Stack ERROR.** The calculator's stack depth limits are gone.
+- **Larger tables:** STAT has 200 rows and TABLE allows 200 rows (the calculator has 40 and 30 / 20).
+- Still as on the calculator: matrices and vectors are at most 3×3, results above 9.999999999×10^99 are a Math ERROR, factorial stops at 69, and `2^3^2` is evaluated left to right.

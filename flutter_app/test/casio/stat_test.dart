@@ -25,12 +25,12 @@ String shown(CasioEngine e, CasioStat s, String expr) => StatCalc.evaluate(expr,
 
 void main() {
   group('manual examples (p.58-66)', () {
-    test('editor row limits: 40 / 20 / 26', () {
-      expect(statEditorRows(StatType.oneVar, false), 40);
-      expect(statEditorRows(StatType.linear, false), 40);
-      expect(statEditorRows(StatType.oneVar, true), 20);
-      expect(statEditorRows(StatType.linear, true), 26);
-      expect(StatData(StatType.linear, true).rows, 26);
+    test('the phone editor has 200 rows in every layout', () {
+      expect(statEditorRows(StatType.oneVar, false), 200);
+      expect(statEditorRows(StatType.linear, false), 200);
+      expect(statEditorRows(StatType.oneVar, true), 200);
+      expect(statEditorRows(StatType.linear, true), 200);
+      expect(StatData(StatType.linear, true).rows, 200);
     });
 
     test('example 2: mean 3 and population standard deviation 1.154700538 (FREQ column)', () {

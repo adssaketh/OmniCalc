@@ -62,14 +62,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   void initState() {
     super.initState();
     final history = context.read<HistoryStore>();
-    final saved = CasioRuntime.instance.saved;
     _c = CalculatorController(
       feedback: context.read<FeedbackService>(),
       engine: CasioRuntime.instance.engine,
       // the mode the unit was in when it was last used (Part 9, R)
-      initialMode: CasioMode.values.firstWhere((m) => m.name == saved.mode, orElse: () => CasioMode.comp),
-      initialBaseMode: BaseMode.values.firstWhere((m) => m.name == saved.baseMode, orElse: () => BaseMode.dec),
-      initialStatType: StatType.values.firstWhere((m) => m.name == saved.statType, orElse: () => StatType.oneVar),
+      // A phone calculator always opens in the plain calculator (COMP); Ans and the variables are still restored.
+      initialMode: CasioMode.comp,
+      initialBaseMode: BaseMode.dec,
+      initialStatType: StatType.oneVar,
       onAddHistoryRich: (
               {required expression, required result, required mode, rich}) =>
           history.add(
@@ -741,11 +741,6 @@ class _PortraitDisplay extends StatelessWidget {
                   trigger: '${c.expression}|${c.lastQuestion}', child: fit),
             )
           : fit;
-      // Phase 8c: SETUP > CONT. Level 5 is the normal look and adds no widget at all.
-      final contrast = CasioRuntime.instance.settings.contrast;
-      if (contrast < 5) {
-        answer = Opacity(key: const ValueKey('display-contrast'), opacity: 0.4 + 0.15 * (contrast - 1), child: answer);
-      }
     }
 
     final card = Container(

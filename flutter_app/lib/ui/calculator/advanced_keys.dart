@@ -324,7 +324,6 @@ List<_Adv> _keysFor(AdvancedTab tab, CalculatorController c, VoidCallback toggle
         _Adv('MODE', c.modeName, c.openModeMenu,
             labelSize: 12, textSm: true, role: _Role.primary),
         _Adv('CLR', 'setup / memory', c.openClrMenu, labelSize: 12, textSm: true, role: _Role.primary),
-        _Adv('OFF', 'screen off', c.powerOff, labelSize: 12, textSm: true, role: _Role.primary),
         inp('i', 'imaginary', 'i', textSm: true),
         inp('∠', 'polar angle', '∠', textSm: true),
         tpl('Abs', 'modulus', 'Abs('),

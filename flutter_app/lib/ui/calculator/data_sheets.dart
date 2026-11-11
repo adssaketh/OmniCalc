@@ -651,7 +651,7 @@ class _TableSheetState extends State<TableSheet> {
         child: rows == null
             ? Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text('Rows: up to ${tableMaxRows(fg: fg)} for the table format in SETUP.',
+                child: Text('Rows: up to ${tableMaxRows(fg: fg)}.',
                     style: appText(size: 12, color: t.onSurfaceVariant)),
               )
             : ListView(

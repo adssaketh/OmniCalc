@@ -24,12 +24,12 @@ total is the whole inventory.
 | A10 | `DEL` | Done | 4 | test/ui/calculator_controller_test.dart |
 | A11 | `INS` | Done | 8a | test/ui/calculator_es_test.dart |
 | A12 | `ON` (a tap on the dark screen wakes the unit; memory is kept) | Done | 7e | test/ui/verif_clr_power_test.dart |
-| A13 | `OFF` (OFF key in the Modes tab and ten idle minutes darken the screen) | Done | 7e | test/ui/verif_clr_power_test.dart |
+| A13 | `OFF` (removed on the phone: no OFF key and no idle power-off; the controller's power-off code remains) | Done | 7e | test/ui/verif_clr_power_test.dart |
 | A14 | `SHIFT` | Done | 8a | test/ui/calculator_es_test.dart |
 | A15 | `ALPHA` | Done | 8a | test/ui/calculator_es_test.dart |
 | A16 | REPLAY pad (◀ ▶ ▲ ▼) | Done | 8a | test/ui/calculator_es_test.dart |
 | A17 | `MODE` menu (COMP, CMPLX, BASE-N, EQN, STAT, MATRIX, VECTOR, TABLE; the last four open sheets instead of Casio screens) | Done | 7d-2 | test/ui/data_modes_test.dart |
-| A18 | `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec, complex format, STAT frequency and TABLE format settings, Disp dot or comma, CONT 1-5 as display brightness) | Done | 8c | test/ui/overlays/settings_disp_cont_test.dart |
+| A18 | `SETUP` (display format, angle incl. Gra, number format, fraction format, Rdec, complex format, STAT frequency and TABLE format settings, Disp dot or comma; CONT was removed on the phone) | Done | 8c | test/ui/overlays/settings_disp_cont_test.dart |
 | A19 | `CLR` Setup / Memory / All, each with Yes / Cancel (Modes tab) | Done | 7e | test/ui/verif_clr_power_test.dart |
 | A20 | `STO` | Done | 7b | test/casio/casio_engine_test.dart |
 | A21 | `RCL` (ES tab key, RCL annunciator; recalls the exact value into the line) | Done | - | test/casio/variables_test.dart |
@@ -90,7 +90,7 @@ total is the whole inventory.
 | G01 | CONST (40 entries, CODATA 2014) | Done | 7b | test/casio/casio_engine_test.dart |
 | G02 | CONV (40 entries, NIST SP 811) | Done | 7b | test/casio/casio_engine_test.dart |
 | X01 | input-range checks, every row of manual p.97-100 | Done | 7b | test/casio/casio_engine_test.dart |
-| X02 | error messages (Math, Syntax, Argument, Stack; the others belong to their modes. Stack ERROR sizes are not in the guide, unverified) | Done | - | test/casio/stack_error_test.dart |
+| X02 | error messages (Math, Syntax, Argument; the others belong to their modes. Stack ERROR was removed on the phone) | Done | - | test/casio/stack_error_test.dart |
 | X03 | calculation style, percent style, result display settings | Done | 7b | test/casio/casio_settings_test.dart |
 | X04 | differences from the legacy engine listed | Done | 7b | test/casio/legacy_diff_test.dart |
 | F01 | `∫` | Done | 7c | test/casio/calculus_test.dart |

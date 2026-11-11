@@ -19,7 +19,7 @@ class CasioSettings {
     this.useCasio = true,
     this.phonePercent = true,
     this.displayFormat = CasioDisplayFormat.mathO,
-    this.decimalFirst = false,
+    this.decimalFirst = true,
     this.numberFormat = CasioNumberFormat.norm1,
     this.digits = 0,
     this.mixedFractions = false,

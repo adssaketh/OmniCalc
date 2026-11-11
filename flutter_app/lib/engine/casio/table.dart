@@ -13,7 +13,8 @@ const double kTableDefaultEnd = 5;
 const double kTableDefaultStep = 1;
 
 /// Maximum rows for the setup table format.
-int tableMaxRows({required bool fg}) => fg ? 20 : 30;
+/// The calculator allows 30 (20 with g); the phone allows 200.
+int tableMaxRows({required bool fg}) => 200;
 
 /// One line of the table. A function value that could not be calculated (Math ERROR at that x) is null and shown as ERROR.
 class CasioTableRow {

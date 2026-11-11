@@ -25,11 +25,8 @@ enum StatType {
   final bool paired;
 }
 
-/// Rows the Statistics Editor offers (manual p.59): 40 with X only or X and Y, 20 with X and FREQ, 26 with X, Y and FREQ.
-int statEditorRows(StatType type, bool freq) {
-  if (!freq) return 40;
-  return type.paired ? 26 : 20;
-}
+/// Rows the Statistics Editor offers. The calculator has 40 (20 or 26 with FREQ) because of its memory; the phone does not.
+int statEditorRows(StatType type, bool freq) => 200;
 
 /// The data of the Statistics Editor: one entry per row, null for an empty cell.
 class StatData {

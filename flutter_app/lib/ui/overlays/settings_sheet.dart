@@ -52,8 +52,7 @@ enum SettingsSubSheet {
   resultDisplay,
   numberFormat,
   fractionFormat,
-  decimalPoint,
-  contrast
+  decimalPoint
 }
 
 /// `ThemeOption`.
@@ -1173,7 +1172,7 @@ class _SettingsSheetState extends State<SettingsSheet> {
                         key: const ValueKey('row-result-display'),
                         icon: LucideIconId.hash,
                         title: 'Result display',
-                        subtitle: cs.decimalFirst ? 'Decimal first (LineIO)' : 'Math (fractions, √ and π)',
+                        subtitle: cs.decimalFirst ? 'Decimals first' : 'Fractions, √ and π first',
                         chevron: true,
                         onTap: () => _openSub(SettingsSubSheet.resultDisplay),
                       ),
@@ -1208,14 +1207,6 @@ class _SettingsSheetState extends State<SettingsSheet> {
                         subtitle: cs.commaDecimal ? 'Comma in results (1,5)' : 'Dot in results (1.5)',
                         chevron: true,
                         onTap: () => _openSub(SettingsSubSheet.decimalPoint),
-                      ),
-                      _SettingsRow(
-                        key: const ValueKey('row-contrast'),
-                        icon: LucideIconId.hash,
-                        title: 'Display contrast (CONT)',
-                        subtitle: casioContrastLabel(cs.contrast),
-                        chevron: true,
-                        onTap: () => _openSub(SettingsSubSheet.contrast),
                       ),
                       _SettingsRow(
                         key: const ValueKey('row-complex-format'),
@@ -1523,12 +1514,12 @@ class _SettingsSheetState extends State<SettingsSheet> {
           description: 'What = shows first; S⇔D switches to the other form',
           selected: cs.decimalFirst,
           options: const [
-            _ChoiceOption<bool>(false, 'Math (fractions, √ and π)', 'MthIO-MathO: 2÷3 gives a fraction, √2×√3 gives √6.'),
-            _ChoiceOption<bool>(true, 'Decimal first', 'LineIO: results start as decimals, S⇔D gives the exact form.'),
+            _ChoiceOption<bool>(true, 'Decimals first', '2÷3 gives 0.6666666667. S⇔D gives the fraction, √ or π form.'),
+            _ChoiceOption<bool>(false, 'Fractions, √ and π first', '2÷3 gives a fraction, √2×√3 gives √6. S⇔D gives the decimal.'),
           ],
           onSelect: (id) {
-            CasioRuntime.instance.update((c) => c.copyWith(
-                decimalFirst: id, displayFormat: id ? CasioDisplayFormat.lineIO : CasioDisplayFormat.mathO));
+            // The input stays natural (stacked fractions, roots); only the form of the answer changes.
+            CasioRuntime.instance.update((c) => c.copyWith(decimalFirst: id, displayFormat: CasioDisplayFormat.mathO));
             _closeSub();
           },
           onClose: _closeSub,
@@ -1583,20 +1574,6 @@ class _SettingsSheetState extends State<SettingsSheet> {
           ],
           onSelect: (id) {
             CasioRuntime.instance.update((c) => c.copyWith(commaDecimal: id));
-            _closeSub();
-          },
-          onClose: _closeSub,
-        ),
-        _ChoiceSheet<int>(
-          isOpen: isOpen && _active == SettingsSubSheet.contrast,
-          title: 'Display contrast (CONT)',
-          description: 'How strong the calculator display is drawn. 5 is the normal look',
-          selected: cs.contrast,
-          options: [
-            for (final n in const [5, 4, 3, 2, 1]) _ChoiceOption<int>(n, casioContrastLabel(n), n == 5 ? 'Default' : 'Lighter'),
-          ],
-          onSelect: (id) {
-            CasioRuntime.instance.update((c) => c.copyWith(contrast: id));
             _closeSub();
           },
           onClose: _closeSub,
@@ -1915,10 +1892,4 @@ String casioNumberFormatLabel(CasioSettings c) => switch (c.numberFormat) {
       CasioNumberFormat.norm2 => 'Norm 2',
       CasioNumberFormat.fix => 'Fix ${c.digits}',
       CasioNumberFormat.sci => 'Sci ${c.digits}',
-    };
-
-/// Names of the five CONT levels (SETUP ▸ CONT, manual p.6).
-String casioContrastLabel(int level) => switch (level) {
-      5 => '5 (normal)',
-      _ => '$level',
     };
