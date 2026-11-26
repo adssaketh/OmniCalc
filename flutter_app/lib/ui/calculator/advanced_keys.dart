@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 
 import '../../theme/motion.dart';
@@ -9,6 +11,12 @@ import '../../state/drawer_layout.dart';
 import 'calculator_controller.dart';
 import 'key_glyph.dart';
 import 'spoken.dart';
+
+/// Landscape (tablet) key shape. The keys used to stretch to the full pane height, which made tall, narrow capsules on a
+/// tablet. Now a key is at most this many times taller than it is wide, and its corners are a fixed rounded-rectangle
+/// radius instead of a half-circle. Shared by the advanced keys and the main keypad so both panes match.
+const double kLandscapeKeyMaxAspect = 1.3;
+const double kLandscapeKeyRadius = 20;
 
 enum _Role { onSurface, primary, tertiary }
 
@@ -522,14 +530,25 @@ class AdvancedTabContent extends StatelessWidget {
     }
 
     final grid = landscape
-        ? Column(
-            children: [
-              for (var r = 0; r < rows.length; r++) ...[
-                if (r > 0) SizedBox(height: gap),
-                Expanded(child: rowOf(rows[r], r)),
-              ],
-            ],
-          )
+        ? LayoutBuilder(builder: (context, box) {
+            final keyW = (box.maxWidth - gap * (cols - 1)) / cols;
+            final maxRowH = keyW * kLandscapeKeyMaxAspect;
+            // as before the rows share the pane height, but never grow past the key shape limit
+            final fillH = box.hasBoundedHeight ? (box.maxHeight - gap * (rows.length - 1)) / rows.length : maxRowH;
+            final rowH = math.max(0.0, math.min(fillH, maxRowH));
+            return Align(
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var r = 0; r < rows.length; r++) ...[
+                    if (r > 0) SizedBox(height: gap),
+                    SizedBox(height: rowH, child: rowOf(rows[r], r)),
+                  ],
+                ],
+              ),
+            );
+          })
         : Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -569,7 +588,7 @@ class _AdvButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sm = width >= 640;
-    final radius = BorderRadius.circular(sm ? 26 : 22);
+    final radius = BorderRadius.circular(landscape ? kLandscapeKeyRadius : (sm ? 26 : 22));
     final inheritedSize = sm ? 14.0 : 12.0;
     final inheritedLine = sm ? 20.0 : 16.0;
 
@@ -631,12 +650,16 @@ class _AdvButton extends StatelessWidget {
       );
     }
 
+    // A label wider than its key scales down to fit (it used to run past the edge and get cut by the key's clip, e.g.
+    // "exit powe", "derivative"). Labels that already fit are not touched.
+    Widget fit(Widget w) => FittedBox(fit: BoxFit.scaleDown, child: w);
+
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (def.label.contains(_boxChar))
-          Text.rich(
+          fit(Text.rich(
             TextSpan(children: boxSpans(def.label, labelStyle.fontSize ?? inheritedSize, labelColor)),
             key: ValueKey('key-label:${def.label}'),
             semanticsLabel: spokenKey(def.label),
@@ -644,13 +667,13 @@ class _AdvButton extends StatelessWidget {
             softWrap: false,
             overflow: TextOverflow.visible,
             style: labelStyle,
-          )
+          ))
         else
-          Text(def.label, semanticsLabel: spokenKey(def.label), maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: labelStyle),
+          fit(Text(def.label, semanticsLabel: spokenKey(def.label), maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: labelStyle)),
         if (def.shiftLabel != null || def.alphaLabel != null)
-          layerLabels()
+          fit(layerLabels())
         else
-          Text(def.sub, maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: subStyle),
+          fit(Text(def.sub, maxLines: 1, softWrap: false, overflow: TextOverflow.visible, style: subStyle)),
       ],
     );
 
