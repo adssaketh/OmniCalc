@@ -18,6 +18,10 @@ import 'spoken.dart';
 const double kLandscapeKeyMaxAspect = 1.3;
 const double kLandscapeKeyRadius = 20;
 
+/// A key is never capped below this height: its label, sub label and padding need about 61 px, and a narrow key (phone in
+/// landscape) would otherwise overflow.
+const double kLandscapeKeyMinCap = 64;
+
 enum _Role { onSurface, primary, tertiary }
 
 enum _Kind { normal, formula, angle, active }
@@ -532,7 +536,7 @@ class AdvancedTabContent extends StatelessWidget {
     final grid = landscape
         ? LayoutBuilder(builder: (context, box) {
             final keyW = (box.maxWidth - gap * (cols - 1)) / cols;
-            final maxRowH = keyW * kLandscapeKeyMaxAspect;
+            final maxRowH = math.max(keyW * kLandscapeKeyMaxAspect, kLandscapeKeyMinCap);
             // as before the rows share the pane height, but never grow past the key shape limit
             final fillH = box.hasBoundedHeight ? (box.maxHeight - gap * (rows.length - 1)) / rows.length : maxRowH;
             final rowH = math.max(0.0, math.min(fillH, maxRowH));

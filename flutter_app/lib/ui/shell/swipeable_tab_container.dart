@@ -50,6 +50,7 @@ class SwipeableTabContainer extends StatefulWidget {
     this.tabBarBottomMargin,
     this.tabPillColor,
     this.fillHeight = false,
+    this.fadeEdges = false,
   });
 
   final List<TabItem> tabs;
@@ -68,6 +69,9 @@ class SwipeableTabContainer extends StatefulWidget {
 
   /// The content area takes the height left under the tab bar (`h-full flex-1` in the TSX) instead of its own height.
   final bool fillHeight;
+
+  /// Fade the edge of the tab strip that still has tabs hidden behind it (off by default: only the tablet keypad uses it).
+  final bool fadeEdges;
 
   @override
   State<SwipeableTabContainer> createState() => _SwipeableTabContainerState();
@@ -410,6 +414,7 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
               },
               child: _ScrollFade(
                 controller: _scroll,
+                enabled: widget.fadeEdges,
                 child: LayoutBuilder(
                 builder: (context, box) => SingleChildScrollView(
                   controller: _scroll,
@@ -505,9 +510,10 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
 /// Soft fade on the edge of the tab strip that still has tabs hidden behind it, so a half-visible tab ("Trig & Hyp" cut by
 /// the arrow) reads as "more this way" instead of as a clipped label. No fade while everything fits or at the scroll ends.
 class _ScrollFade extends StatefulWidget {
-  const _ScrollFade({required this.controller, required this.child});
+  const _ScrollFade({required this.controller, required this.child, required this.enabled});
 
   final ScrollController controller;
+  final bool enabled;
   final Widget child;
 
   @override
@@ -553,6 +559,7 @@ class _ScrollFadeState extends State<_ScrollFade> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.enabled) return widget.child;
     final c = widget.controller;
     final known = c.hasClients && c.position.hasContentDimensions;
     final offset = known ? c.offset : 0.0;
