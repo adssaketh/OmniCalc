@@ -1673,7 +1673,8 @@ class _LandscapeDisplay extends StatelessWidget {
             child: ClipRect(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Center(
+                child: Align(
+                    alignment: Alignment.bottomRight,
                     child: SizedBox(width: double.infinity, child: display)),
               ),
             ),
@@ -1726,8 +1727,7 @@ class _LandscapeKeys extends StatelessWidget {
     final pad = tw(w, 14, sm: 20);
     final colGap = tw(w, 10, sm: 12);
     final keyGap = tw(w, 8, sm: 10);
-    final minKey = tw(w, 46, sm: 54, md: 62);
-    final r = tw(w, 22, sm: 26);
+    final r = kLandscapeKeyRadius;
     final sm = w >= 640;
     final tabs = [
       for (final id in DrawerLayout.instance.tabs)
@@ -1820,27 +1820,36 @@ class _LandscapeKeys extends StatelessWidget {
       ],
     ];
 
-    final keypad = Column(
-      children: [
-        for (var i = 0; i < rows.length; i++) ...[
-          if (i > 0) SizedBox(height: keyGap),
-          Expanded(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: minKey),
-              child: Row(
-                children: [
-                  for (var k = 0; k < rows[i].length; k++) ...[
-                    if (k > 0) SizedBox(width: keyGap),
-                    Expanded(
-                        flex: rows[i][k].$1 == 2 ? 2 : 1, child: rows[i][k].$2),
+    // The rows share the pane height but a key is never more than kLandscapeKeyMaxAspect times taller than wide, so a tablet
+    // gets rounded-rectangle keys instead of tall capsules. Same limit as the advanced keys next to it.
+    final keypad = LayoutBuilder(builder: (context, box) {
+      final keyW = (box.maxWidth - keyGap * 3) / 4;
+      final maxRowH = keyW * kLandscapeKeyMaxAspect;
+      final fillH = box.hasBoundedHeight ? (box.maxHeight - keyGap * (rows.length - 1)) / rows.length : maxRowH;
+      final rowH = math.max(0.0, math.min(fillH, maxRowH));
+      return Align(
+        alignment: Alignment.topCenter,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < rows.length; i++) ...[
+              if (i > 0) SizedBox(height: keyGap),
+              SizedBox(
+                height: rowH,
+                child: Row(
+                  children: [
+                    for (var k = 0; k < rows[i].length; k++) ...[
+                      if (k > 0) SizedBox(width: keyGap),
+                      Expanded(flex: rows[i][k].$1 == 2 ? 2 : 1, child: rows[i][k].$2),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ),
-        ],
-      ],
-    );
+            ],
+          ],
+        ),
+      );
+    });
 
     return Container(
       padding: EdgeInsets.all(pad),

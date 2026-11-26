@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../theme/app_theme.dart';
@@ -407,7 +408,9 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
                   _scroll.jumpTo(target.toDouble());
                 }
               },
-              child: LayoutBuilder(
+              child: _ScrollFade(
+                controller: _scroll,
+                child: LayoutBuilder(
                 builder: (context, box) => SingleChildScrollView(
                   controller: _scroll,
                   scrollDirection: Axis.horizontal,
@@ -458,6 +461,7 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
                   ),
                 ),
               ),
+              ),
             ),
           ),
           if (widget.showNavButtons && wide) _ChevronButton(left: false, color: t.onSurfaceVariant, hover: t.surfaceContainerHigh, onTap: () => _scrollTabs(1)),
@@ -494,6 +498,92 @@ class _SwipeableTabContainerState extends State<SwipeableTabContainer> with Tick
         tabBar,
         if (widget.fillHeight) Expanded(child: content) else content,
       ],
+    );
+  }
+}
+
+/// Soft fade on the edge of the tab strip that still has tabs hidden behind it, so a half-visible tab ("Trig & Hyp" cut by
+/// the arrow) reads as "more this way" instead of as a clipped label. No fade while everything fits or at the scroll ends.
+class _ScrollFade extends StatefulWidget {
+  const _ScrollFade({required this.controller, required this.child});
+
+  final ScrollController controller;
+  final Widget child;
+
+  @override
+  State<_ScrollFade> createState() => _ScrollFadeState();
+}
+
+class _ScrollFadeState extends State<_ScrollFade> {
+  static const double _extent = 28;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_changed);
+  }
+
+  @override
+  void didUpdateWidget(_ScrollFade old) {
+    super.didUpdateWidget(old);
+    if (old.controller != widget.controller) {
+      old.controller.removeListener(_changed);
+      widget.controller.addListener(_changed);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_changed);
+    super.dispose();
+  }
+
+  void _changed() => _refresh();
+
+  void _refresh() {
+    if (!mounted) return;
+    if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() {});
+      });
+    } else {
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = widget.controller;
+    final known = c.hasClients && c.position.hasContentDimensions;
+    final offset = known ? c.offset : 0.0;
+    final max = known ? c.position.maxScrollExtent : 0.0;
+    final left = known && offset > 1;
+    final right = known && max - offset > 1;
+    final Widget body = (!left && !right)
+        ? widget.child
+        : ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: (rect) {
+              final f = rect.width <= 0 ? 0.0 : (_extent / rect.width).clamp(0.0, 0.5).toDouble();
+              return LinearGradient(
+                colors: [
+                  left ? const Color(0x00FFFFFF) : const Color(0xFFFFFFFF),
+                  const Color(0xFFFFFFFF),
+                  const Color(0xFFFFFFFF),
+                  right ? const Color(0x00FFFFFF) : const Color(0xFFFFFFFF),
+                ],
+                stops: [0, f, 1 - f, 1],
+              ).createShader(rect);
+            },
+            child: widget.child,
+          );
+    // the metrics (and so the fade) change when the strip is laid out, not only when it scrolls
+    return NotificationListener<ScrollMetricsNotification>(
+      onNotification: (_) {
+        _refresh();
+        return false;
+      },
+      child: body,
     );
   }
 }
