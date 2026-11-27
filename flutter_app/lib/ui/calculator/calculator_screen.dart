@@ -1824,7 +1824,7 @@ class _LandscapeKeys extends StatelessWidget {
     // gets rounded-rectangle keys instead of tall capsules. Same limit as the advanced keys next to it.
     final keypad = LayoutBuilder(builder: (context, box) {
       final keyW = (box.maxWidth - keyGap * 3) / 4;
-      final maxRowH = keyW * kLandscapeKeyMaxAspect;
+      final maxRowH = math.max(keyW * kLandscapeKeyMaxAspect, kLandscapeKeyMinCap);
       final fillH = box.hasBoundedHeight ? (box.maxHeight - keyGap * (rows.length - 1)) / rows.length : maxRowH;
       final rowH = math.max(0.0, math.min(fillH, maxRowH));
       return Align(
@@ -1869,6 +1869,7 @@ class _LandscapeKeys extends StatelessWidget {
                 showNavButtons: true,
                 tabBarBottomPadding: 4,
                 tabBarBottomMargin: 8,
+                fadeEdges: true,
                 fillHeight: true,
                 child: KeyedSubtree(
                   key: ValueKey(c.advancedTab),
